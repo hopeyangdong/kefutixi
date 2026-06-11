@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客服大模型风险防控-2026年</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background: #f5f7fa;
+            padding: 40px 20px;
+            min-height: 100vh;
+            color: #1a1a1a;
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .header .meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+        .header .objectives {
+            display: inline-flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .header .objectives .tag {
+            background: #0050ef;
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Cards */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+        .card h2 {
+            font-size: 20px;
+            color: #0050ef;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f0fe;
+        }
+        .card h3 {
+            font-size: 16px;
+            color: #333;
+            margin: 20px 0 12px 0;
+            padding-left: 10px;
+            border-left: 3px solid #0050ef;
+        }
+        .card h4 {
+            font-size: 14px;
+            color: #555;
+            margin: 16px 0 10px 0;
+            background: #f0f4ff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .card p {
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 12px;
+        }
+        .card blockquote {
+            border-left: 4px solid #dae8fc;
+            padding: 10px 16px;
+            background: #f8faff;
+            border-radius: 0 6px 6px 0;
+            margin: 12px 0;
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* Architecture flow */
+        .arch-flow {
+            display: flex;
+            gap: 0;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        .arch-flow .step {
+            flex: 1;
+            text-align: center;
+            padding: 16px 12px;
+            background: #0050ef;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+        }
+        .arch-flow .step:first-child { border-radius: 8px 0 0 8px; }
+        .arch-flow .step:last-child { border-radius: 0 8px 8px 0; }
+        .arch-flow .step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            z-index: 1;
+        }
+        .arch-flow .step .sub {
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.85;
+            display: block;
+            margin-top: 4px;
+        }
+
+
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 12px 0;
+        }
+        thead {
+            background: #f0f4ff;
+        }
+        th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dae8fc;
+            white-space: nowrap;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        tr:hover td { background: #fafbfd; }
+
+        /* Status badges */
+        .badge { 
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 28px;
+        }
+        .badge-done { background: #d4edda; color: #155724; }
+        .badge-todo { background: #fff3cd; color: #856404; }
+        .badge-no { background: #f8d7da; color: #721c24; }
+        .badge-tbd { background: #e2e3e5; color: #383d41; }
+
+        /* Level badges */
+        .level { 
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .level-bottom { background: #dc3545; color: #fff; }
+        .level-mid { background: #fd7e14; color: #fff; }
+        .level-high { background: #ffc107; color: #333; }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            border-radius: 8px;
+            background: #f8faff;
+            border: 1px solid #e8f0fe;
+        }
+        .stat-item .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0050ef;
+        }
+        .stat-item .label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Milestone */
+        .milestone {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 20px 24px;
+            border-radius: 10px;
+            margin: 16px 0;
+        }
+        .milestone h4 {
+            background: none;
+            color: #fff;
+            padding: 0;
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            display: block;
+        }
+        .milestone ul {
+            list-style: none;
+            padding: 0;
+        }
+        .milestone ul li {
+            padding: 4px 0;
+            font-size: 13px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .milestone ul li::before {
+            content: '⏰';
+            position: absolute;
+            left: 0;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #999;
+            padding-bottom: 20px;
+        }
+        .footer a { color: #0050ef; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header">
+            <h1>客服大模型风险防控-2026年</h1>
+            <div class="meta">即时零售大模型智能客服 · 风险防控全景方案</div>
+            <div class="objectives">
+                <span class="tag">🎯 底线风险透出率 YoY -10%</span>
+                <span class="tag">🛡️ 泛风险有效遏制</span>
+                <span class="tag">🚀 全业务安全落地</span>
+            </div>
+        </div>
+
+        <!-- Section 1: Architecture -->
+        <div class="card">
+            <h2>一、风险防控架构</h2>
+            <p>三层防控体系，覆盖服务全生命周期：</p>
+            <div class="arch-flow">
+                <div class="step">
+                    风险定义
+                    <span class="sub">定义"风险事件"和"风险因子"</span>
+                </div>
+                <div class="step">
+                    事前评测
+                    <span class="sub">上线/扩量前发现问题</span>
+                </div>
+                <div class="step">
+                    事中识别
+                    <span class="sub">实时策略识别与拦截预警</span>
+                </div>
+                <div class="step">
+                    事后处置
+                    <span class="sub">风险回溯与策略优化</span>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Diagram (inline SVG) -->
+        <div class="card" style="overflow-x:auto;">
+            <h2>架构流程图</h2>
+            <div style="min-width:900px;">
+<svg style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="955" height="686" viewBox="-0.5 -0.5 955 686" content="&lt;mxfile host=&quot;km.sankuai.com&quot; modified=&quot;2026-02-25T08:26:13.978Z&quot; agent=&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36&quot; etag=&quot;uxvhN1HCs7h613KQtg2c&quot; version=&quot;24.2.2&quot; type=&quot;embed&quot;&gt;&lt;diagram id=&quot;j9RF5pKgZ92qKmqadvVQ&quot; name=&quot;第 1 页&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;" style="background-color: rgb(255, 255, 255);"><defs/><rect fill="#ffffff" width="100%" height="100%" x="0" y="0"/><g><g><path d="M 8 127 L 478 3 L 948 127 Z" fill="#0150ef" stroke="none" pointer-events="all"/></g><g><rect x="175.12" y="58" width="605.77" height="50" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 604px; height: 1px; padding-top: 83px; margin-left: 176px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;"><font style="" color="#ffffff" size="1"><b style="font-size: 15px;">2026年愿景：客服大模型风险Agent落地，为新客服大模型扩量护航</b></font></div></div></div></foreignObject><text x="478" y="87" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">2026年愿景：客服大模型风险Agent落地，为新客服大模型扩量护航</text></switch></g></g><g><rect x="8" y="127" width="940" height="50" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 938px; height: 1px; padding-top: 152px; margin-left: 9px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;"><font style="font-size: 15px;">目标：<span style="color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;, Arial, sans-serif; text-align: start; background-color: rgb(255, 255, 255);">①底线</span>风险透出率YoY-10%；<span style="color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;, Arial, sans-serif; text-align: start; background-color: rgb(255, 255, 255);">②</span>泛风险有效遏制</font></div></div></div></foreignObject><text x="478" y="156" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">目标：①底线风险透出率YoY-10%；②泛风险有效遏制</text></switch></g></g><g><rect x="138" y="177" width="120" height="60" fill="#0050ef" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 207px; margin-left: 139px;"><div data-drawio-colors="color: #ffffff; " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(255, 255, 255); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">风险定义</div></div></div></foreignObject><text x="198" y="211" fill="#ffffff" font-family="Helvetica" font-size="12px" text-anchor="middle">风险定义</text></switch></g></g><g><rect x="278" y="177" width="120" height="60" fill="#0050ef" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 207px; margin-left: 279px;"><div data-drawio-colors="color: #ffffff; " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(255, 255, 255); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">事前安全评测</div></div></div></foreignObject><text x="338" y="211" fill="#ffffff" font-family="Helvetica" font-size="12px" text-anchor="middle">事前安全评测</text></switch></g></g><g><rect x="418" y="177" width="390" height="60" fill="#0050ef" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 388px; height: 1px; padding-top: 207px; margin-left: 419px;"><div data-drawio-colors="color: #ffffff; " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(255, 255, 255); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">事中风险识别</div></div></div></foreignObject><text x="613" y="211" fill="#ffffff" font-family="Helvetica" font-size="12px" text-anchor="middle">事中风险识别</text></switch></g></g><g><rect x="828" y="177" width="120" height="60" fill="#0050ef" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 207px; margin-left: 829px;"><div data-drawio-colors="color: #ffffff; " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(255, 255, 255); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">事后风险处置</div></div></div></foreignObject><text x="888" y="211" fill="#ffffff" font-family="Helvetica" font-size="12px" text-anchor="middle">事后风险处置</text></switch></g></g><g><rect x="8" y="257" width="940" height="60" fill="#dae8fc" stroke="none" pointer-events="all"/></g><g><rect x="8" y="272" width="60" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 287px; margin-left: 9px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;"><font style="font-size: 21px;">解读</font></div></div></div></foreignObject><text x="38" y="291" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">解读</text></switch></g></g><g><rect x="138" y="272" width="120" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 287px; margin-left: 139px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">定义“风险事件”和“风险因子”</div></div></div></foreignObject><text x="198" y="291" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">定义“风险事件”和“风险因子”</text></switch></g></g><g><rect x="278" y="272" width="120" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 287px; margin-left: 279px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">通过安全评测，上线/扩量前发现问题</div></div></div></foreignObject><text x="338" y="291" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">通过安全评测，上线/扩量前发现问题</text></switch></g></g><g><rect x="418" y="272" width="390" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 388px; height: 1px; padding-top: 287px; margin-left: 419px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">上线运行时，事中策略识别并发现风险，进行及时预警和拦截，使用代答或熔断人工的范式，避免风险的发生</div></div></div></foreignObject><text x="613" y="291" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">上线运行时，事中策略识别并发现风险，进行及时预警和拦截，使用代答或熔断人工的范式，避免风险的发生</text></switch></g></g><g><rect x="823" y="272" width="130" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 128px; height: 1px; padding-top: 287px; margin-left: 824px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">对已发生风险回捞和处置，推动风控策略优化</div></div></div></foreignObject><text x="888" y="291" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">对已发生风险回捞和处置，推动风控策略优化</text></switch></g></g><g><rect x="284" y="376" width="96" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 94px; height: 1px; padding-top: 391px; margin-left: 285px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">扩量评测标准</div></div></div></foreignObject><text x="332" y="395" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">扩量评测标准</text></switch></g></g><g><rect x="284" y="417" width="94" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 92px; height: 1px; padding-top: 432px; margin-left: 285px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">评测题集</div></div></div></foreignObject><text x="331" y="436" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">评测题集</text></switch></g></g><g><rect x="284" y="457" width="94" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 92px; height: 1px; padding-top: 472px; margin-left: 285px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">阅卷模型</div></div></div></foreignObject><text x="331" y="476" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">阅卷模型</text></switch></g></g><g><rect x="285" y="497" width="94" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 92px; height: 1px; padding-top: 512px; margin-left: 286px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">红蓝对抗</div></div></div></foreignObject><text x="332" y="516" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">红蓝对抗</text></switch></g></g><g><rect x="284" y="537" width="94" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 92px; height: 1px; padding-top: 552px; margin-left: 285px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">安全套件</div></div></div></foreignObject><text x="331" y="556" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">安全套件</text></switch></g></g><g><rect x="560" y="337" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 352px; margin-left: 561px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">意图识别</div></div></div></foreignObject><text x="600" y="356" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">意图识别</text></switch></g></g><g><rect x="468" y="337" width="83" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 81px; height: 1px; padding-top: 352px; margin-left: 469px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">账号识别</div></div></div></foreignObject><text x="510" y="356" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">账号识别</text></switch></g></g><g><path d="M 438 367 L 438 380.63" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/><path d="M 438 385.88 L 434.5 378.88 L 438 380.63 L 441.5 378.88 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/></g><g><rect x="408" y="337" width="60" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 352px; margin-left: 409px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">识别能力</div></div></div></foreignObject><text x="438" y="356" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">识别能力</text></switch></g></g><g><rect x="841" y="337" width="94" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 92px; height: 1px; padding-top: 352px; margin-left: 842px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">安全巡检</div></div></div></foreignObject><text x="888" y="356" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">安全巡检</text></switch></g></g><g><rect x="839.5" y="387" width="97" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 95px; height: 1px; padding-top: 402px; margin-left: 841px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">红蓝攻防</div></div></div></foreignObject><text x="888" y="406" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">红蓝攻防</text></switch></g></g><g><rect x="839.5" y="437" width="97" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 95px; height: 1px; padding-top: 452px; margin-left: 841px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">紧急修复</div></div></div></foreignObject><text x="888" y="456" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">紧急修复</text></switch></g></g><g><rect x="839.5" y="487" width="97" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 95px; height: 1px; padding-top: 502px; margin-left: 841px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">舆情消除</div></div></div></foreignObject><text x="888" y="506" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">舆情消除</text></switch></g></g><g><rect x="8" y="342" width="110" height="25" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 108px; height: 1px; padding-top: 355px; margin-left: 10px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: left;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;"><span style="font-size: 14px;"><b><i>服务底线风险</i></b></span></div></div></div></foreignObject><text x="10" y="358" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px">服务底线风险</text></switch></g></g><g><path d="M 36.5 594 L 936.5 594" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" stroke-dasharray="3 3" pointer-events="stroke"/></g><g><rect x="126.5" y="619" width="120" height="60" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 649px; margin-left: 128px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">核心目标<div>定义是否清晰</div></div></div></div></foreignObject><text x="187" y="653" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">核心目标&#xa;定义是否清晰</text></switch></g></g><g><rect x="3" y="614" width="120" height="70" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 118px; height: 1px; padding-top: 649px; margin-left: 5px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: left;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;"><div><span style="font-size: 16px;"><b><i>客服大模型</i></b></span></div><div><span style="font-size: 16px;"><b><i>人机协同</i></b></span></div></div></div></div></foreignObject><text x="5" y="653" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px">客服大模型&#xa;人机协同</text></switch></g></g><g><rect x="266.5" y="619" width="120" height="60" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 649px; margin-left: 268px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">核心目标<div>评测效率、拦截率、整改通过率</div></div></div></div></foreignObject><text x="327" y="653" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">核心目标&#xa;评测效率、拦截率、整改通过率</text></switch></g></g><g><rect x="406.5" y="619" width="390" height="60" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 388px; height: 1px; padding-top: 649px; margin-left: 408px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">核心目标<div>能力覆盖率、策略准确率、策略召回率</div></div></div></div></foreignObject><text x="602" y="653" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">核心目标&#xa;能力覆盖率、策略准确率、策略召回率</text></switch></g></g><g><rect x="816.5" y="619" width="120" height="60" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 118px; height: 1px; padding-top: 649px; margin-left: 818px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">核心目标<div>透出率、处置率</div></div></div></div></foreignObject><text x="877" y="653" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">核心目标&#xa;透出率、处置率</text></switch></g></g><g><rect x="18" y="182" width="40" height="20" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 38px; height: 1px; padding-top: 192px; margin-left: 19px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">已完成</div></div></div></foreignObject><text x="38" y="196" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">已完成</text></switch></g></g><g><rect x="18" y="212" width="40" height="20" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 38px; height: 1px; padding-top: 222px; margin-left: 19px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">待优化</div></div></div></foreignObject><text x="38" y="226" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">待优化</text></switch></g></g><g><rect x="138" y="327" width="130" height="160" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 128px; height: 1px; padding-top: 407px; margin-left: 140px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: left;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">“风险事件”定义：<div><ul><li>CAP标准</li><li>风险场景FAQ</li></ul><div>“风险因子”定义：</div></div><div><ul><li>关键人群标记</li><li>服务底线标准</li></ul></div></div></div></div></foreignObject><text x="140" y="411" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px">“风险事件”定义：CAP标准风险场景FAQ...</text></switch></g></g><g><path d="M 38 487 L 268 487" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" stroke-dasharray="3 3" pointer-events="stroke"/></g><g><rect x="8" y="502" width="110" height="25" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 108px; height: 1px; padding-top: 515px; margin-left: 10px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: left;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;"><span style="font-size: 14px;"><b><i>服务泛风险</i></b></span></div></div></div></foreignObject><text x="10" y="518" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px">服务泛风险</text></switch></g></g><g><rect x="138" y="487" width="130" height="100" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 128px; height: 1px; padding-top: 537px; margin-left: 140px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: left;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;"><div><div>“风险因子”定义：</div></div><div><ul><li>关键行为</li><li>异常人群</li></ul></div></div></div></div></foreignObject><text x="140" y="541" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px">“风险因子”定义：&#xa;关键行为异常人群</text></switch></g></g><g/><g><rect x="649" y="337" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 352px; margin-left: 650px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">情绪识别</div></div></div></foreignObject><text x="689" y="356" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">情绪识别</text></switch></g></g><g><rect x="737" y="337" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 352px; margin-left: 738px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">风险识别</div></div></div></foreignObject><text x="777" y="356" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">风险识别</text></switch></g></g><g><rect x="839.5" y="537" width="97" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 95px; height: 1px; padding-top: 552px; margin-left: 841px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">外溢分析</div></div></div></foreignObject><text x="888" y="556" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">外溢分析</text></switch></g></g><g><path d="M 438 417 L 438 437 L 438 417 L 438 430.63" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/><path d="M 438 435.88 L 434.5 428.88 L 438 430.63 L 441.5 428.88 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/></g><g><rect x="408" y="387" width="60" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 402px; margin-left: 409px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">防控能力</div></div></div></foreignObject><text x="438" y="406" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">防控能力</text></switch></g></g><g><rect x="468" y="387" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 402px; margin-left: 469px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">用户准入围栏</div></div></div></foreignObject><text x="508" y="406" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">用户准入围栏</text></switch></g></g><g><rect x="559" y="387" width="80" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 402px; margin-left: 560px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">C端围栏</div></div></div></foreignObject><text x="599" y="406" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">C端围栏</text></switch></g></g><g><rect x="649" y="387" width="80" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 402px; margin-left: 650px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">AI搭围栏</div></div></div></foreignObject><text x="689" y="406" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">AI搭围栏</text></switch></g></g><g><rect x="738" y="387" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 402px; margin-left: 739px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">操作围栏</div></div></div></foreignObject><text x="778" y="406" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">操作围栏</text></switch></g></g><g><rect x="469" y="437" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 452px; margin-left: 470px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">词库管理</div></div></div></foreignObject><text x="509" y="456" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">词库管理</text></switch></g></g><g><rect x="560" y="437" width="80" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 452px; margin-left: 561px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">模型管理</div></div></div></foreignObject><text x="600" y="456" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">模型管理</text></switch></g></g><g><rect x="650" y="437" width="80" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 452px; margin-left: 651px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">红蓝对抗</div></div></div></foreignObject><text x="690" y="456" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">红蓝对抗</text></switch></g></g><g><path d="M 438 467 L 438 480.63" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/><path d="M 438 485.88 L 434.5 478.88 L 438 480.63 L 441.5 478.88 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/></g><g><rect x="408" y="437" width="60" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 452px; margin-left: 409px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">策略能力</div></div></div></foreignObject><text x="438" y="456" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">策略能力</text></switch></g></g><g><rect x="739" y="437" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 452px; margin-left: 740px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">用户画像</div></div></div></foreignObject><text x="779" y="456" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">用户画像</text></switch></g></g><g><rect x="469" y="487" width="80" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 502px; margin-left: 470px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">风险屏蔽</div></div></div></foreignObject><text x="509" y="506" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">风险屏蔽</text></switch></g></g><g><rect x="560" y="487" width="80" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 502px; margin-left: 561px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">风险代答</div></div></div></foreignObject><text x="600" y="506" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">风险代答</text></switch></g></g><g><rect x="650" y="487" width="80" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 502px; margin-left: 651px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">熔断转人工</div></div></div></foreignObject><text x="690" y="506" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">熔断转人工</text></switch></g></g><g><path d="M 438 517 L 437 517 L 437 530.63" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="stroke"/><path d="M 437 535.88 L 433.5 528.88 L 437 530.63 L 440.5 528.88 Z" fill="rgb(0, 0, 0)" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="all"/></g><g><rect x="408" y="487" width="60" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 502px; margin-left: 409px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">处置能力</div></div></div></foreignObject><text x="438" y="506" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">处置能力</text></switch></g></g><g><rect x="739" y="487" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 502px; margin-left: 740px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">大模型反思</div></div></div></foreignObject><text x="779" y="506" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">大模型反思</text></switch></g></g><g><rect x="468" y="537" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 552px; margin-left: 469px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">运营平台</div></div></div></foreignObject><text x="508" y="556" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">运营平台</text></switch></g></g><g><rect x="559" y="537" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 552px; margin-left: 560px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">badcase管理</div></div></div></foreignObject><text x="599" y="556" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">badcase管理</text></switch></g></g><g><rect x="649" y="537" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 552px; margin-left: 650px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">外溢治理</div></div></div></foreignObject><text x="689" y="556" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">外溢治理</text></switch></g></g><g><rect x="407" y="537" width="60" height="30" fill="none" stroke="none" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 552px; margin-left: 408px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">治理能力</div></div></div></foreignObject><text x="437" y="556" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">治理能力</text></switch></g></g><g><rect x="738" y="537" width="80" height="30" fill="#e1d5e7" stroke="#9673a6" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 78px; height: 1px; padding-top: 552px; margin-left: 739px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">透出治理</div></div></div></foreignObject><text x="778" y="556" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">透出治理</text></switch></g></g><g><rect x="284" y="337" width="96" height="30" fill="#fff2cc" stroke="#d6b656" pointer-events="all"/></g><g><g transform="translate(-0.5 -0.5)"><switch><foreignObject pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility" style="overflow: visible; text-align: left;"><div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 94px; height: 1px; padding-top: 352px; margin-left: 285px;"><div data-drawio-colors="color: rgb(0, 0, 0); " style="box-sizing: border-box; font-size: 0px; text-align: center;"><div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">数据清洗</div></div></div></foreignObject><text x="332" y="356" fill="rgb(0, 0, 0)" font-family="Helvetica" font-size="12px" text-anchor="middle">数据清洗</text></switch></g></g></g><switch><g requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"/><a transform="translate(0,-5)" xlink:href="https://www.drawio.com/doc/faq/svg-export-text-problems" target="_blank"><text text-anchor="middle" font-size="10px" x="50%" y="100%">Text is not SVG - cannot display</text></a></switch></svg>
+            </div>
+        </div>
+
+        <!-- Section 2: Risk Scope -->
+        <div class="card">
+            <h2>二、风险防控范围及建设状态</h2>
+
+            <div class="legend">
+                <span><span class="badge badge-done">✅</span> 已完成</span>
+                <span><span class="badge badge-todo">⭕️</span> 待建设</span>
+                <span><span class="badge badge-no">❌</span> 不建设</span>
+                <span><span class="badge badge-tbd">❓</span> 待定</span>
+                <span><span class="level level-bottom">底线</span> 红线不可触碰</span>
+                <span><span class="level level-mid">中线</span> 重点管控</span>
+                <span><span class="level level-high">高线</span> 持续优化</span>
+            </div>
+
+            <!-- 合规风险 -->
+            <h4>🔐 合规风险</h4>
+            <table>
+                <thead><tr><th>风险类型</th><th>风险描述</th><th>等级</th><th>事前</th><th>事中</th><th>事后</th><th>备注</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td><strong>信息安全</strong></td>
+                        <td>与客户沟通中，必须对个人信息、隐私和商业秘密严格保密，不得泄露、出售或非法提供</td>
+                        <td><span class="level level-bottom">底线</span></td>
+                        <td><span class="badge badge-done">✅</span></td>
+                        <td><span class="badge badge-done">✅</span></td>
+                        <td><span class="badge badge-todo">⭕️</span></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><strong>套取用户信息</strong></td>
+                        <td>通过伪装用户本人等异常手法，单点或批量套取用户个人信息</td>
+                        <td><span class="level level-bottom">底线</span></td>
+                        <td><span class="badge badge-done">✅</span></td>
+                        <td><span class="badge badge-todo">⭕️</span></td>
+                        <td><span class="badge badge-todo">⭕️</span></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 内容风险 -->
+            <h4>📝 内容风险</h4>
+            <table>
+                <thead><tr><th>风险类型</th><th>风险描述</th><th>等级</th><th>事前</th><th>事中</th><th>事后</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>指令攻击</strong></td><td>用户试图通过指令攻击绕过安全限制</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td></tr>
+                    <tr><td><strong>涉政</strong></td><td>内安标准-A底线：1号违规、重要人物、国家实体形象、涉政言论等</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td></tr>
+                    <tr><td><strong>涉黄</strong></td><td>内安标准-A底线-九色情</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td></tr>
+                    <tr><td><strong>暴恐</strong></td><td>内安标准-A底线-十暴恐极端</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td></tr>
+                    <tr><td><strong>邪教迷信</strong></td><td>内安标准-A底线-十一邪教迷信</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td></tr>
+                    <tr><td><strong>违法商品和信息</strong></td><td>内安标准-A底线-十二违法政策法律的商品和信息</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td></tr>
+                    <tr><td><strong>未成年人违规</strong></td><td>内安标准-A底线-十三未成年人违规</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td></tr>
+                </tbody>
+            </table>
+
+            <!-- 服务风险 -->
+            <h4>💬 服务风险</h4>
+            <table>
+                <thead><tr><th>风险类型</th><th>风险描述</th><th>等级</th><th>事前</th><th>事中</th><th>事后</th><th>备注</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>辱骂</strong></td><td>直接或间接对客户贬低、辱骂、威胁等攻击性言论</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td></td></tr>
+                    <tr><td><strong>诅咒</strong></td><td>明确或隐蔽方式使用诅咒话语</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td></td></tr>
+                    <tr><td><strong>威胁</strong></td><td>向客户表达胁迫性、恐吓性内容</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td></td></tr>
+                    <tr><td><strong>歧视</strong></td><td>基于种族/性别/年龄/地域等采取不公平对待</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td></td></tr>
+                    <tr><td><strong>引导外投</strong></td><td>主动引导客户去外部渠道投诉</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td>外投未拦截 ❌</td></tr>
+                    <tr><td><strong>承诺未兑现（非退赔）</strong></td><td>给予承诺但因职责/权限/操作问题未兑现</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-tbd">❓</span></td><td>重点业务630试点</td></tr>
+                    <tr><td><strong>禁用言论</strong></td><td>出现禁用敏感词或内部术语</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td></td></tr>
+                    <tr><td><strong>推诿</strong></td><td>拒绝处理客户问题或拒绝提供工号</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-done">✅</span></td><td></td></tr>
+                    <tr><td><strong>空场</strong></td><td>无故不与客户沟通交流</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-tbd">❓</span></td><td></td></tr>
+                    <tr><td><strong>交互恶化</strong></td><td>重复话术、缺乏同理性、不安慰用户</td><td><span class="level level-high">高线</span></td><td><span class="badge badge-tbd">❓</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-todo">⭕️</span></td><td>有舆情，630试点；事后先行</td></tr>
+                    <tr><td><strong>逻辑与事实错误</strong></td><td>输出信息与信号信息不一致</td><td><span class="level level-high">高线</span></td><td><span class="badge badge-tbd">❓</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-tbd">❓</span></td><td>重点业务630试点</td></tr>
+                    <tr><td><strong>自我认知</strong></td><td>错误认知自己为人工，或认知为商家/骑手</td><td><span class="level level-high">高线</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-todo">⭕️</span></td><td>630前上线</td></tr>
+                    <tr><td><strong>极端负面情绪</strong></td><td>识别客户极端负面情绪变化</td><td><span class="level level-high">高线</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-todo">⭕️</span></td><td>识别能力已建设</td></tr>
+                    <tr><td><strong>无关话题</strong></td><td>用户进线非客服场景问题</td><td><span class="level level-high">高线</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-tbd">❓</span></td><td>需前置环节源头改善</td></tr>
+                </tbody>
+            </table>
+
+            <!-- 业务风险 -->
+            <h4>📋 业务风险</h4>
+            <table>
+                <thead><tr><th>风险类型</th><th>风险描述</th><th>等级</th><th>事前</th><th>事中</th><th>事后</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>风险场景</strong></td><td>73场景风险场景FAQ设计规范事件</td><td><span class="level level-bottom">底线</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-todo">⭕️</span></td></tr>
+                </tbody>
+            </table>
+
+            <!-- 资金风险 -->
+            <h4>💰 资金风险</h4>
+            <table>
+                <thead><tr><th>风险类型</th><th>风险描述</th><th>等级</th><th>事前</th><th>事中</th><th>事后</th><th>备注</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>薅羊毛</strong></td><td>恶意、批量进线进行骗赔骗退</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-todo">⭕️</span></td><td>离线段式聚类</td></tr>
+                    <tr><td><strong>错误退赔</strong></td><td>错误承诺赔付、退错订单、错误金额等</td><td><span class="level level-high">高线</span></td><td><span class="badge badge-tbd">❓</span></td><td><span class="badge badge-tbd">❓</span></td><td><span class="badge badge-tbd">❓</span></td><td>探索事后巡检能力</td></tr>
+                    <tr><td><strong>过度承诺（退赔）</strong></td><td>超过业务设定的承诺金额</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-todo">⭕️</span></td><td>大额退赔推人工审核</td></tr>
+                    <tr><td><strong>承诺未兑现（退赔）</strong></td><td>承诺退款或赔付未操作</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-tbd">❓</span></td><td></td></tr>
+                    <tr><td><strong>黑灰产（退赔）</strong></td><td>识别进线黑灰产退赔问题</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-todo">⭕️</span></td><td><span class="badge badge-tbd">❓</span></td><td></td></tr>
+                </tbody>
+            </table>
+
+            <!-- 舆情风险 -->
+            <h4>📢 舆情风险</h4>
+            <table>
+                <thead><tr><th>风险类型</th><th>风险描述</th><th>等级</th><th>事前</th><th>事中</th><th>事后</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>热敏舆情</strong></td><td>热敏舆情话题需妥善处理</td><td><span class="level level-mid">中线</span></td><td><span class="badge badge-no">❌</span></td><td><span class="badge badge-done">✅</span></td><td><span class="badge badge-no">❌</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 3: Timeline -->
+        <div class="card">
+            <h2>三、整体建设节奏</h2>
+            <div class="milestone">
+                <h4>🏁 关键里程碑：6月30日前</h4>
+                <ul>
+                    <li>交互恶化 — 事后巡检上线</li>
+                    <li>自我认知 — 事中+事后上线</li>
+                    <li>承诺未兑现(非退赔) — 事中630试点</li>
+                    <li>逻辑与事实错误 — 事中630试点</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section 4: Stats -->
+        <div class="card">
+            <h2>建设状态统计</h2>
+            <table>
+                <thead><tr><th>状态</th><th>事前</th><th>事中</th><th>事后</th><th>合计</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="badge badge-done">✅ 已完成</span></td><td>13</td><td>16</td><td>14</td><td><strong>43</strong></td></tr>
+                    <tr><td><span class="badge badge-todo">⭕️ 待建设</span></td><td>3</td><td>10</td><td>8</td><td><strong>21</strong></td></tr>
+                    <tr><td><span class="badge badge-no">❌ 不建设</span></td><td>8</td><td>4</td><td>2</td><td><strong>14</strong></td></tr>
+                    <tr><td><span class="badge badge-tbd">❓ 待定</span></td><td>3</td><td>2</td><td>6</td><td><strong>11</strong></td></tr>
+                </tbody>
+            </table>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="number">27</div>
+                    <div class="label">风险类型总数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">6</div>
+                    <div class="label">风险域</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" style="color:#155724;">43</div>
+                    <div class="label">已完成能力项</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number" style="color:#856404;">21</div>
+                    <div class="label">待建设能力项</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- References -->
+        <div class="card">
+            <h2>引用文档</h2>
+            <ul style="list-style:none;padding:0;">
+                <li style="padding:8px 0;border-bottom:1px solid #eee;">📄 <a href="https://km.sankuai.com/collabpage/2748293277" style="color:#0050ef;text-decoration:none;">客服大模型风险防控-2026年（原文）</a></li>
+                <li style="padding:8px 0;border-bottom:1px solid #eee;">📄 客服大模型风险防控范围-2026年</li>
+                <li style="padding:8px 0;border-bottom:1px solid #eee;">📄 2026-大模型风险防控大图</li>
+                <li style="padding:8px 0;">📄 风险场景FAQ设计规范</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            生成自学城文档 · km.sankuai.com/collabpage/2748293277
+        </div>
+
+    </div>
+</body>
+</html>
