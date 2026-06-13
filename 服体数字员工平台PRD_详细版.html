@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服体数字员工平台 PRD — 完整详细版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background: #f5f7fa;
+            padding: 40px 20px;
+            color: #1a1a1a;
+            line-height: 1.7;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 44px 36px;
+            background: linear-gradient(135deg, #0050ef 0%, #4a90d9 100%);
+            border-radius: 16px;
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(0,80,239,0.2);
+            margin-bottom: 28px;
+        }
+        .header h1 { font-size: 34px; margin-bottom: 8px; letter-spacing: 1px; }
+        .header .sub { font-size: 14px; opacity: 0.82; margin-bottom: 20px; }
+        .header .tags { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .header .tag {
+            background: rgba(255,255,255,0.18);
+            color: #fff;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.28);
+        }
+
+        /* TOC */
+        .toc {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 22px 28px;
+            margin-bottom: 24px;
+        }
+        .toc-title { font-size: 15px; font-weight: 700; color: #0050ef; margin-bottom: 14px; }
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 6px;
+        }
+        .toc-grid a {
+            color: #333; text-decoration: none; font-size: 13.5px;
+            padding: 6px 10px; border-radius: 6px; transition: all 0.2s;
+        }
+        .toc-grid a:hover { background: #f0f4ff; color: #0050ef; }
+        .toc-grid a .n { color: #0050ef; font-weight: 700; margin-right: 6px; }
+
+        /* Card */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            font-size: 20px; color: #0050ef;
+            padding-bottom: 10px; margin-bottom: 18px;
+            border-bottom: 2px solid #e8f0fe;
+        }
+        .card h3 {
+            font-size: 15.5px; color: #1a1a1a; margin: 22px 0 12px 0;
+            padding-left: 12px; border-left: 3px solid #0050ef; font-weight: 700;
+        }
+        .card h4 {
+            font-size: 14px; color: #555; margin: 16px 0 10px 0;
+            background: #f0f4ff; padding: 7px 12px;
+            border-radius: 6px; display: inline-block; font-weight: 600;
+        }
+        .card p { font-size: 14px; color: #444; margin-bottom: 10px; }
+        .card ul, .card ol { padding-left: 20px; margin: 8px 0 14px 0; }
+        .card li { font-size: 14px; color: #444; margin-bottom: 5px; }
+        .card blockquote {
+            border-left: 4px solid #dae8fc; padding: 12px 16px;
+            background: #f8faff; border-radius: 0 6px 6px 0;
+            margin: 12px 0; font-size: 13.5px; color: #555;
+        }
+        code {
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 12.5px; background: #f0f4ff;
+            color: #0050ef; padding: 1px 6px; border-radius: 3px;
+        }
+        pre {
+            background: #1a1a2e; color: #e0e6f8;
+            border-radius: 8px; padding: 16px;
+            font-size: 13px; overflow-x: auto; margin: 12px 0;
+            line-height: 1.6;
+        }
+        pre code { background: none; color: inherit; padding: 0; }
+
+        /* Tables */
+        .tbl { overflow-x: auto; margin: 12px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead { background: #f0f4ff; }
+        th { padding: 10px 12px; text-align: left; font-weight: 600; color: #333; border-bottom: 2px solid #dae8fc; white-space: nowrap; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+        tr:hover td { background: #fafbfd; }
+
+        /* Badges */
+        .badge {
+            display: inline-block; padding: 3px 9px;
+            border-radius: 4px; font-size: 12px; font-weight: 500;
+        }
+        .bd-blue { background: #e8f0fe; color: #0050ef; }
+        .bd-green { background: #d4edda; color: #155724; }
+        .bd-orange { background: #fff3cd; color: #856404; }
+        .bd-red { background: #f8d7da; color: #721c24; }
+        .bd-gray { background: #e2e3e5; color: #383d41; }
+        .bd-purple { background: #e8daef; color: #6c3483; }
+        .bd-teal { background: #d1ecf1; color: #0c5460; }
+        .bd-yellow { background: #fef3cd; color: #664d03; }
+
+        /* Feature Grid */
+        .fg { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; margin: 16px 0; }
+        .fi {
+            border: 1px solid #e8f0fe; border-radius: 10px; padding: 18px;
+            transition: all 0.2s;
+        }
+        .fi:hover { box-shadow: 0 4px 14px rgba(0,80,239,0.1); border-color: #0050ef; }
+        .fi-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .fi-num {
+            width: 26px; height: 26px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; flex-shrink: 0;
+            background: #e8f0fe; color: #0050ef;
+        }
+        .fi-title { font-size: 14.5px; font-weight: 700; color: #1a1a1a; }
+        .fi-desc { font-size: 13px; color: #666; line-height: 1.6; }
+
+        /* Role Cards */
+        .rc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 14px 0; }
+        .rcc {
+            text-align: center; padding: 22px 14px;
+            border: 1px solid #e8f0fe; border-radius: 10px;
+            background: linear-gradient(180deg, #f8faff 0%, #fff 100%);
+        }
+        .rcc .ri { font-size: 30px; margin-bottom: 8px; }
+        .rcc .rn { font-size: 14px; font-weight: 700; color: #0050ef; margin-bottom: 5px; }
+        .rcc .rd { font-size: 12px; color: #666; line-height: 1.5; }
+
+        /* Arch Flow */
+        .af { display: flex; margin: 18px 0; flex-wrap: wrap; }
+        .af .step {
+            flex: 1; min-width: 120px; text-align: center;
+            padding: 14px 10px; background: #0050ef; color: #fff;
+            font-size: 13px; font-weight: 600; position: relative;
+        }
+        .af .step:first-child { border-radius: 8px 0 0 8px; }
+        .af .step:last-child { border-radius: 0 8px 8px 0; }
+        .af .step .sub { font-size: 11px; font-weight: 400; opacity: 0.82; display: block; margin-top: 3px; }
+        .af .step-alt { background: #4a90d9; }
+        .af .step-light { background: #6eb5ff; }
+
+        /* Timeline */
+        .tl { position: relative; padding-left: 22px; margin: 14px 0; }
+        .tl::before { content:''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: #dae8fc; }
+        .tli { position: relative; margin-bottom: 20px; padding-left: 18px; }
+        .tli::before {
+            content:''; position: absolute; left: -19px; top: 6px;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #0050ef; border: 2px solid #fff;
+            box-shadow: 0 0 0 2px #dae8fc;
+        }
+        .tli .tv { font-size: 14px; font-weight: 700; color: #0050ef; }
+        .tli .td { font-size: 12px; color: #999; margin-left: 10px; }
+        .tli .tc { font-size: 13px; color: #444; line-height: 1.8; margin-top: 5px; }
+
+        /* Warning Box */
+        .warn {
+            background: #fff8e1; border-left: 4px solid #ffc107;
+            padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0;
+            font-size: 13.5px; color: #664d03;
+        }
+        .info-box {
+            background: #e8f4fd; border-left: 4px solid #0050ef;
+            padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0;
+            font-size: 13.5px; color: #0c3547;
+        }
+        .success-box {
+            background: #d4edda; border-left: 4px solid #28a745;
+            padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0;
+            font-size: 13.5px; color: #155724;
+        }
+
+        /* Step process */
+        .steps { counter-reset: step; }
+        .step-item {
+            display: flex; gap: 14px; margin-bottom: 14px;
+            align-items: flex-start;
+        }
+        .step-num {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: #0050ef; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+        }
+        .step-body { flex: 1; }
+        .step-title { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+        .step-desc { font-size: 13px; color: #555; }
+
+        /* API param table */
+        .param-table th { font-size: 12px; background: #f7f9ff; }
+        .param-table td { font-size: 12.5px; }
+        .param-table .req { color: #dc3545; font-weight: 700; }
+        .param-table .opt { color: #999; }
+
+        @media (max-width: 768px) {
+            .rc { grid-template-columns: 1fr; }
+            .fg { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============================
+     HEADER
+============================= -->
+<div class="header">
+    <h1>服体数字员工平台</h1>
+    <div class="sub">完整产品需求文档（PRD）· v2.0 · 2026-06-12 · https://aibuddy.sankuai.com</div>
+    <div class="tags">
+        <span class="tag">🏢 团队级数字人管理</span>
+        <span class="tag">🔗 深度集成服体生态</span>
+        <span class="tag">👥 多人共享开箱即用</span>
+        <span class="tag">🛡️ 五层安全防控体系</span>
+        <span class="tag">💰 全链路Token效率治理</span>
+        <span class="tag">🧠 数据驱动自进化</span>
+        <span class="tag">🤝 Multi-Agent协作</span>
+        <span class="tag">🔌 OpenAPI双协议接入</span>
+    </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+    <div class="toc-title">📋 目录</div>
+    <div class="toc-grid">
+        <a href="#overview"><span class="n">01</span>产品概述与背景</a>
+        <a href="#users"><span class="n">02</span>目标用户与角色</a>
+        <a href="#features"><span class="n">03</span>13大核心功能模块</a>
+        <a href="#digital-worker"><span class="n">04</span>数字员工全生命周期</a>
+        <a href="#skill"><span class="n">05</span>Skill体系管理</a>
+        <a href="#safety"><span class="n">06</span>安全防护体系（五层）</a>
+        <a href="#token"><span class="n">07</span>Token效率治理体系</a>
+        <a href="#group-chat"><span class="n">08</span>群聊虚拟员工（详细）</a>
+        <a href="#catclaw-a2a"><span class="n">09</span>CatClaw A2A调用</a>
+        <a href="#personal"><span class="n">10</span>个人助理模式</a>
+        <a href="#multi-agent"><span class="n">11</span>Multi-Agent协作</a>
+        <a href="#monitoring"><span class="n">12</span>全链路监控</a>
+        <a href="#openapi-overview"><span class="n">13</span>OpenAPI接入方案</a>
+        <a href="#openapi-rpc"><span class="n">14</span>RPC+MQ接口详情</a>
+        <a href="#openapi-https"><span class="n">15</span>HTTPS+Pike接口详情</a>
+        <a href="#daxiang-bot"><span class="n">16</span>大象机器人接入（详细）</a>
+        <a href="#config-guide"><span class="n">17</span>配置指南（全量）</a>
+        <a href="#skill-eval"><span class="n">18</span>Skill评测框架</a>
+        <a href="#arch-relations"><span class="n">19</span>系统定位与架构关系</a>
+        <a href="#landing-roadmap"><span class="n">20</span>业务落地Roadmap</a>
+        <a href="#versions"><span class="n">21</span>版本迭代记录（全量）</a>
+        <a href="#appendix"><span class="n">22</span>附录：FAQ与常用链接</a>
+    </div>
+</div>
+
+<!-- ============================
+     01 产品概述
+============================= -->
+<div class="card" id="overview">
+    <h2>一、产品概述与背景</h2>
+
+    <h3>1.1 产品背景——三大困境</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>困境</th><th>核心问题</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><span class="badge bd-red">铺不开、管不住</span><br>规模化落地之困</td>
+                <td>① 使用门槛高：用户不清楚如何安装 Skill、版本升级操作不熟悉<br>② 环境冲突多：个人 Skill 数量庞大，互相冲突导致效果事倍功半<br>③ 运维压力大：缺乏统一版本管控与健康度监测，无法批量定位问题根因</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-orange">控不严、防不住</span><br>安全合规之困</td>
+                <td>① 公司通用安全策略无法覆盖服体个性化安全诉求<br>② 缺乏对高敏感系统数据的精准识别与外传限制<br>③ 赔付、分单等高风险 Skill 缺少细粒度权限管控</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-gray">用不深、长不大</span><br>业务提效之困</td>
+                <td>① 优秀经验散落个人空间，未形成组织级资产<br>② 数字员工缺乏组织化能力演进机制<br>③ 各自调教、重复造轮子，Token 利用率低</td>
+            </tr>
+        </tbody>
+    </table></div>
+
+    <h3>1.2 产品定位</h3>
+    <blockquote>
+        <strong>服体数字员工平台</strong>是专为服体业务侧各团队打造的<strong>数字人管理与协作平台</strong>，深度集成服体业务系统生态（太平洋工作台、生产力系统、星脉、工具箱、灵枢卡片等），支持多人共享的团队助理模式，沉淀可复用的 AI 员工资产与 Skill 体系，并提供完整的安全防控、成本监测与数据驱动自进化能力。<br><br>
+        与个人 AI 助手不同，服体数字员工强调的是<strong>团队级</strong>共享管理——由数字员工主理人统一配置和维护，团队成员开箱即用，无需每人单独调教。
+    </blockquote>
+
+    <h3>1.3 核心价值</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>核心价值</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><span class="badge bd-blue">服务资产沉淀</span></td><td>数字员工、Skill 等沉淀为组织资产，支持跨业务线复用</td></tr>
+            <tr><td><span class="badge bd-blue">深度集成服体生态</span></td><td>与太平洋工作台、星脉等服体核心系统深度打通，自然语言即可完成跨系统操作</td></tr>
+            <tr><td><span class="badge bd-blue">共享模式高效协作</span></td><td>多人共享同一团队助理，统一版本管控 + 灰度发布 + 一键回滚，全程无中断</td></tr>
+            <tr><td><span class="badge bd-blue">安全防控有保障</span></td><td>构建多层纵深防御体系，全量操作写入审计日志，敏感操作可追责回溯</td></tr>
+            <tr><td><span class="badge bd-blue">成本透明可控</span></td><td>构建全链路 Token 效率监测及优化体系，支持多维度追踪 Token 用量及干预</td></tr>
+            <tr><td><span class="badge bd-blue">数据驱动自进化</span></td><td>全链路 Tracing，基于核心指标驱动 Skill 和数字人迭代，数字人越用越聪明</td></tr>
+        </tbody>
+    </table></div>
+</div>
+
+<!-- ============================
+     02 目标用户
+============================= -->
+<div class="card" id="users">
+    <h2>二、目标用户与角色</h2>
+    <div class="rc">
+        <div class="rcc">
+            <div class="ri">👤</div>
+            <div class="rn">普通用户（团队成员）</div>
+            <div class="rd">通过大象直接与数字员工对话，完成工单查询、知识检索、批量操作等日常任务。开箱即用，无需学习配置。</div>
+        </div>
+        <div class="rcc">
+            <div class="ri">🛠️</div>
+            <div class="rn">数字员工主理人</div>
+            <div class="rd">业务负责人或技术骨干，负责创建、配置和维护数字员工，管理 Skill、权限、渠道绑定等。</div>
+        </div>
+        <div class="rcc">
+            <div class="ri">⚙️</div>
+            <div class="rn">平台管理员</div>
+            <div class="rd">负责平台整体运维，管理租户、模型白名单、安全策略等全局配置。</div>
+        </div>
+    </div>
+
+    <h3>模型选择建议</h3>
+    <div class="info-box">
+        模型测评建议选择优先级：<strong>Kimi 系列 &gt; GLM 系列 &gt; MiniMa 系列</strong>
+    </div>
+</div>
+
+<!-- ============================
+     03 13大功能模块
+============================= -->
+<div class="card" id="features">
+    <h2>三、13大核心功能模块</h2>
+    <div class="fg">
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">1</span><span class="fi-title">数字员工管理</span></div>
+            <div class="fi-desc">全生命周期管理：创建、配置、复制、收藏、授权和销毁。支持角色设定、模型配置、System Prompt、渠道绑定、人群授权（按 MIS / 组织架构 / 太平洋工作组三种方式）。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">2</span><span class="fi-title">Skill 体系管理</span></div>
+            <div class="fi-desc">与 Friday Skill 平台深度打通，支持搜索安装全量 Skill，支持上传至 Friday 服体数字人空间，统计每 Skill 单次 Token 损耗，Skill 自进化（自动聚合会话记录挖掘优化建议）。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">3</span><span class="fi-title">工具执行审批</span></div>
+            <div class="fi-desc">高风险操作（赔付、分单等）提供执行审批机制。支持"单次允许"、"会话允许"、"拒绝"。系统自动识别高风险工具默认启用审批，可按人群配置审批要求。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">4</span><span class="fi-title">持久记忆（Memory）</span></div>
+            <div class="fi-desc">接入 OpenViking，三层结构分层管理。记忆不随会话结束丢失。支持指令、上下文压缩、模型主动提取三种写入方式。历史会话 TTL 过期后首次对话减少 75% Token 消耗。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">5</span><span class="fi-title">任务模式（定时/长耗时）</span></div>
+            <div class="fi-desc">7×24 小时工作。支持自然语言创建周期性任务，也可在管理端可视化创建。接入 Crane 企业级调度（秒级精度）。进度实时展示，支持中止，结果推送大象指定群。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">6</span><span class="fi-title">群聊模式（虚拟账号）</span></div>
+            <div class="fi-desc">独立虚拟号，零个人身份、无个人记忆。白名单准入 + 静默拦截。已对接学城、LogCenter（Code 预计 6.15），支持群聊场景下多租户完全隔离。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">7</span><span class="fi-title">CatClaw A2A 调用</span></div>
+            <div class="fi-desc">在个人助理 CatClaw 中通过自然语言调用服体数字人。安装 <code>ai-buddy-a2a</code> Skill 后，根据数字人 description 自动匹配路由，任务转交执行并返回结果，超时上限 600 秒。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">8</span><span class="fi-title">数字人 Team 模式</span></div>
+            <div class="fi-desc">招募多个数字人组建协作团队（AgentTeam + SubAgent）。任务自动拆分为子任务，不同 SubAgent 并行处理，数字人 A 可主动找数字人 B 沟通完成复杂工作。支持级联中断和可观测能力。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">9</span><span class="fi-title">安全防护体系（五层）</span></div>
+            <div class="fi-desc">身份认证 + 输入输出过滤 + 权限管控 + 执行隔离（Harness/Sandbox）+ 全链路审计。接入 RMS 内容安全策略，<code>/safe</code> 安全模式切换美团私有化部署模型，数据不出域。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">10</span><span class="fi-title">全链路监控与数据大盘</span></div>
+            <div class="fi-desc">四维指标：成本&效率（Token + 缓存命中率）、性能（E2E Latency / TTFT）、流量（Query/LLM/工具调用次数）、可用性（成功率/熔断/异常会话分析）。支持 Token 用量 Query 维度下钻。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">11</span><span class="fi-title">Token 效率治理体系</span></div>
+            <div class="fi-desc">输入压缩（上下文管理/按需加载/PromptCache，比 CatClaw 节省约 37%，主动压缩后降低约 60%+）+ 输出控制（流式/max_token）+ 调用策略（动态路由/分级缓存/AgentLoop 熔断）。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">12</span><span class="fi-title">自定义 Plugin / Hooks</span></div>
+            <div class="fi-desc">数字人可动态加载自定义 Plugin/Hooks，通过配置台统一管理各调用方的个性化配置，在执行链路关键节点插入自定义逻辑。支持 CatClaw 记忆与 Skill 一键迁移至服体数字员工。</div>
+        </div>
+        <div class="fi">
+            <div class="fi-head"><span class="fi-num">13</span><span class="fi-title">数字人自进化</span></div>
+            <div class="fi-desc">开启后系统自动识别 Skill 及定时任务的优化机会，从 Token 用量、执行耗时、成功率、调用频次等维度给出改进建议，经人工审核采纳即可生效。</div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================
+     04 数字员工生命周期
+============================= -->
+<div class="card" id="digital-worker">
+    <h2>四、数字员工全生命周期管理</h2>
+
+    <h3>4.1 创建数字员工（步骤详解）</h3>
+    <div class="steps">
+        <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-body">
+                <div class="step-title">登录平台后台</div>
+                <div class="step-desc">访问 <code>https://aibuddy.sankuai.com/#/</code>，使用美团内部账号登录，进入管理端数字员工列表，点击「新建」。</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-body">
+                <div class="step-title">填写基本信息</div>
+                <div class="step-desc">填写数字员工名称（创建后无法修改，请谨慎）、角色定位（如「交付管理助手」「一线坐席助手」）、服务范围描述（CatClaw A2A 路由依赖此字段）。</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-body">
+                <div class="step-title">配置模型与 FridayKey</div>
+                <div class="step-desc">选择底层模型（推荐优先级：Kimi 系列 &gt; GLM 系列 &gt; MiniMa 系列），填写 FridayKey（APPID）。未激活 Friday 租户：访问 <code>https://friday.sankuai.com/</code> 点击个人用户；已激活：访问 <code>https://friday.sankuai.com/budget/serviceManage</code> 复制 APPID。</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-body">
+                <div class="step-title">编写 System Prompt</div>
+                <div class="step-desc">编写角色设定、行为规范、服务范围约束等指导性提示词。系统内置默认提示词，可按需修改。</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-body">
+                <div class="step-title">关联 Skill</div>
+                <div class="step-desc">在 Skill 管理模块搜索并添加所需 Skill（支持直接搜索 Friday 平台全量 Skill）。添加后点击「加载工具」按钮触发工具解析。</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">6</div>
+            <div class="step-body">
+                <div class="step-title">配置工具权限与审批</div>
+                <div class="step-desc">系统自动解析 Skill 中所有工具，可按需配置权限和审批要求。开启审批开关 → 配置审批人群，用户触发该工具时自动发送审批请求，通过后才执行。</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">7</div>
+            <div class="step-body">
+                <div class="step-title">配置接入渠道</div>
+                <div class="step-desc">绑定大象机器人渠道（参考「大象机器人接入」章节），发布后即可在大象中使用。</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">8</div>
+            <div class="step-body">
+                <div class="step-title">用户授权</div>
+                <div class="step-desc">支持按 MIS、组织架构、太平洋工作组三种方式授权使用人群，授权后相关人群方可与该数字员工交互。</div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="step-num">9</div>
+            <div class="step-body">
+                <div class="step-title">测试验证</div>
+                <div class="step-desc">通过大象渠道或后台调试环境测试，确认工具调用、权限控制、审批流程正常。</div>
+            </div>
+        </div>
+    </div>
+
+    <h3>4.2 数字员工配置项一览</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>配置项</th><th>说明</th><th>必填</th></tr></thead>
+        <tbody>
+            <tr><td>数字员工角色设定</td><td>定义角色名（如「交付管理助手」）和角色描述（影响 A2A 路由匹配精度）</td><td><span class="badge bd-red">必填</span></td></tr>
+            <tr><td>模型配置</td><td>选择底层模型，配置 FridayKey（APPID）</td><td><span class="badge bd-red">必填</span></td></tr>
+            <tr><td>System Prompt</td><td>角色设定、行为规范、服务范围约束等</td><td><span class="badge bd-orange">建议</span></td></tr>
+            <tr><td>Skill 绑定</td><td>搜索并添加业务 Skill，添加后点击「加载工具」</td><td><span class="badge bd-orange">建议</span></td></tr>
+            <tr><td>工具权限配置</td><td>按工具设置是否需要审批、审批人群</td><td><span class="badge bd-gray">按需</span></td></tr>
+            <tr><td>渠道绑定</td><td>大象机器人渠道（Bot ID、卡片 ID、Client ID/Secret）</td><td><span class="badge bd-orange">建议</span></td></tr>
+            <tr><td>使用人群授权</td><td>MIS / 组织架构 / 太平洋工作组三种方式</td><td><span class="badge bd-red">必填</span></td></tr>
+            <tr><td>定时任务推送群 ID</td><td>找到群 ID → 数字员工定时任务 tab → 编辑，输入群 ID 后需按 Enter 保存</td><td><span class="badge bd-gray">按需</span></td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>4.3 租户管理</h3>
+    <ul>
+        <li>用户登录后默认创建<strong>个人租户</strong>，右上角点「创建租户」可创建<strong>团队租户</strong></li>
+        <li>租户授权支持按人员、组织架构、太平洋工作组三种方式</li>
+        <li>授权后相关人群即可访问该租户下的数字员工</li>
+    </ul>
+</div>
+
+<!-- ============================
+     05 Skill体系
+============================= -->
+<div class="card" id="skill">
+    <h2>五、Skill 体系管理</h2>
+
+    <h3>5.1 Skill 分类</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>分类</th><th>说明</th><th>示例</th></tr></thead>
+        <tbody>
+            <tr><td><span class="badge bd-blue">业务规则类</span></td><td>基于服体业务规则执行决策或判断</td><td>赔付规则校验、退款规则审核</td></tr>
+            <tr><td><span class="badge bd-green">信息查询类</span></td><td>从各系统查询数据并返回结构化信息</td><td>工单查询、星脉数据查询、太平洋知识库检索</td></tr>
+            <tr><td><span class="badge bd-orange">情绪处理类</span></td><td>识别用户情绪并给出处理建议</td><td>客户投诉安抚、情绪预警</td></tr>
+            <tr><td><span class="badge bd-purple">流程工具调用类</span></td><td>通过工具调用完成多步骤操作流程</td><td>批量分单、工单批量质检、表格填充</td></tr>
+            <tr><td><span class="badge bd-red">安全风控类</span></td><td>执行安全校验、权限检查等防控逻辑</td><td>骗赔检测、黑名单拦截、合规审核</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>5.2 Skill 自进化流程</h3>
+    <div class="af">
+        <div class="step">采集会话记录<span class="sub">全量 Query Tracing</span></div>
+        <div class="step">AI 聚合分析<span class="sub">挖掘优化建议</span></div>
+        <div class="step">生成改进方案<span class="sub">Skill/定时任务</span></div>
+        <div class="step">人工审核采纳<span class="sub">主理人确认</span></div>
+        <div class="step">生效更新<span class="sub">版本管控</span></div>
+    </div>
+
+    <h3>5.3 Skill 安装方式</h3>
+    <ul>
+        <li>平台内 Skill 市场直接搜索 → 一键安装</li>
+        <li>支持直接搜索 Friday 平台全量 Skill 并安装</li>
+        <li>支持上传自研 Skill 至 Friday 服体数字人空间</li>
+        <li>安装后点击「加载工具」触发工具解析，确认工具列表无误后配置权限</li>
+    </ul>
+
+    <h3>5.4 太平洋工作台 Skill 化进展</h3>
+    <div class="info-box">
+        太平洋 Skill 化占比约 <strong>66%</strong>，累计收集需求 <strong>38 项</strong>，已完成 <strong>30 项</strong>
+    </div>
+</div>
+
+<!-- ============================
+     06 安全防护
+============================= -->
+<div class="card" id="safety">
+    <h2>六、安全防护体系（五层）</h2>
+
+    <div class="af">
+        <div class="step">第一层<br>身份认证<span class="sub">MOA / SSO</span></div>
+        <div class="step step-alt">第二层<br>输入输出过滤<span class="sub">RMS内容安全</span></div>
+        <div class="step">第三层<br>权限管控<span class="sub">工具拦截</span></div>
+        <div class="step step-alt">第四层<br>执行隔离<span class="sub">Harness/Sandbox</span></div>
+        <div class="step">第五层<br>全链路审计<span class="sub">可视化回溯</span></div>
+    </div>
+
+    <h3>6.1 各层详细说明</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>层级</th><th>措施</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><span class="badge bd-blue">第一层</span><br>身份认证防御</td>
+                <td>MOA 登录 / SSO 无感换票</td>
+                <td>所有数字员工操作都基于用户身份，Skill 依赖本机 MOA 登录态自动换票，确认 MOA 已登录后才能执行</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-blue">第二层</span><br>输入输出过滤</td>
+                <td>RMS 内容安全策略（v6.12 新增）</td>
+                <td>在用户输入、模型输出两个环节接入 RMS 内容安全策略，主动拦截涉黄涉恐等高风险内容</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-blue">第三层</span><br>权限管控</td>
+                <td>工具权限拦截 + 审批确认</td>
+                <td>Skill 安装后自动解析 CLI 工具，支持分人群控制工具权限；高风险工具默认启用审批；数字人维度支持按 MIS/组织架构/工作组分配使用权限</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-blue">第四层</span><br>执行隔离</td>
+                <td>Harness 直执行 + Sandbox 隔离</td>
+                <td>内置工具及加白工具在 Harness 层直执行（跳过 Sandbox 冷启动，提升速度）；非可信工具隔离到 Sandbox 环境执行，防止越权操作</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-blue">第五层</span><br>全链路审计</td>
+                <td>可视化审计日志</td>
+                <td>支持可视化查询数字人粒度的 Tool 执行记录、Query 拦截记录、模型回复记录，全量操作可追责回溯</td>
+            </tr>
+        </tbody>
+    </table></div>
+
+    <h3>6.2 安全模式（<code>/safe</code>）</h3>
+    <blockquote>
+        输入 <code>/safe</code> 即可开启安全模式，自动切换至<strong>美团私有化部署模型</strong>，支持访问密级数据，确保数据不出域、零泄漏风险。
+    </blockquote>
+
+    <h3>6.3 群聊场景安全边界（三大残余风险）</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>风险</th><th>问题</th><th>解决方案</th></tr></thead>
+        <tbody>
+            <tr><td><span class="badge bd-red">指令归属模糊</span></td><td>群聊中多用户交替发言，机器人难以判断指令主体</td><td>虚拟账号模式，不绑定任何个人 MIS，消除个人身份混用</td></tr>
+            <tr><td><span class="badge bd-red">长期记忆污染</span></td><td>多用户对话混入记忆，污染个人画像，导致私聊场景行为偏移</td><td>群聊机器人无个人记忆，不记录群成员个人偏好</td></tr>
+            <tr><td><span class="badge bd-red">主人权限被动借用</span></td><td>群内成员通过向机器人下指令，间接触发主人权限操作</td><td>虚拟号专属授权，仅拥有群内公共资源访问权限，无法触达个人数据</td></tr>
+        </tbody>
+    </table></div>
+</div>
+
+<!-- ============================
+     07 Token效率
+============================= -->
+<div class="card" id="token">
+    <h2>七、Token 效率治理体系</h2>
+
+    <div class="tbl"><table>
+        <thead><tr><th>策略维度</th><th>具体措施</th><th>效果</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><span class="badge bd-blue">输入压缩</span><br>减少输入 Token</td>
+                <td>① 上下文窗口管理<br>② Skills 按需加载<br>③ Memory 分层召回（只加载最相关记忆）<br>④ Prompt 规范检测<br>⑤ PromptCache 优化</td>
+                <td>PromptCache 优化后比 CatClaw 节省约 <strong>37%</strong>；主动压缩摘要后降低约 <strong>60%+</strong></td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-blue">输出控制</span><br>减少输出 Token</td>
+                <td>① 流式输出<br>② max_token 限制<br>③ 对模型输出长度合理约束</td>
+                <td>精简输出，避免模型冗长回答</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-blue">调用策略优化</span><br>减少模型调用次数</td>
+                <td>① 模型动态路由<br>② 分级缓存<br>③ AgentLoop 熔断<br>④ Skill/CLI 协议约束<br>⑤ 历史会话 TTL 过期（失效后首次对话减少 75% Token）</td>
+                <td>减少无效的模型交互次数</td>
+            </tr>
+        </tbody>
+    </table></div>
+
+    <h3>费用查看与追踪</h3>
+    <ul>
+        <li>支持按<strong>组织、FridayKey、MIS</strong>等维度查看费用汇总及明细</li>
+        <li>支持 Query 维度下钻分析每一轮模型交互 Token 使用情况</li>
+        <li>Skill 单次 Token 执行损耗统计，识别高消耗 Skill</li>
+        <li>超长消息（2 万字符以上）自动转文件，避免 Token 浪费</li>
+    </ul>
+</div>
+
+<!-- ============================
+     08 群聊虚拟员工
+============================= -->
+<div class="card" id="group-chat">
+    <h2>八、群聊虚拟员工（详细设计）</h2>
+
+    <h3>8.1 核心设计原则</h3>
+    <blockquote>
+        群聊机器人 ≠ 个人助理的群聊延伸，而是一个<strong>独立的公共服务实体</strong>——不继承任何个人身份和权限，通过独立虚拟号获得受控的公共资源访问能力，未授权的群一律静默拦截。
+    </blockquote>
+
+    <div class="tbl"><table>
+        <thead><tr><th>原则</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><span class="badge bd-green">零个人身份</span></td><td>不绑定任何个人用户的 SSO 登录态、API Key 或个人数据，仅拥有面向群内公共资源的独立访问权限</td></tr>
+            <tr><td><span class="badge bd-green">功能边界清晰</span></td><td>只提供群内通用的公共服务（文档协同、任务管理、信息查询），不提供个人代理能力（代查个人数据、代操作个人资源）</td></tr>
+            <tr><td><span class="badge bd-green">无个人记忆</span></td><td>不维护个人记忆，不记录群成员的个人偏好或历史行为，避免记忆污染和数据泄露</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>8.2 运行时链路</h3>
+    <div class="af">
+        <div class="step">大象群消息监听</div>
+        <div class="step">查询群是否绑定虚拟账号</div>
+        <div class="step step-alt">已绑定<br>替换 MIS 为虚拟账号</div>
+        <div class="step">Skill执行/鉴权</div>
+        <div class="step">返回结果</div>
+    </div>
+    <div class="warn">⚠️ 未绑定虚拟账号的群：一律静默拦截，不响应、不回复、不记录，提示管理员配置虚拟账号。</div>
+
+    <h3>8.3 虚拟号 vs 个人账号对比</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>维度</th><th>个人机器人</th><th>群聊机器人（虚拟账号）</th></tr></thead>
+        <tbody>
+            <tr><td>身份</td><td>绑定个人 MIS</td><td>独立虚拟号</td></tr>
+            <tr><td>权限来源</td><td>个人 SSO 换票</td><td>虚拟号专属授权</td></tr>
+            <tr><td>数据范围</td><td>个人全部数据</td><td>仅群内公共资源</td></tr>
+            <tr><td>登录态</td><td>个人 MOA 登录</td><td>虚拟号独立登录</td></tr>
+            <tr><td>记忆</td><td>个人持久化记忆</td><td>无个人记忆</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>8.4 各系统对接状态</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>系统</th><th>对接状态</th><th>权限配置方式</th><th>所需 Skill</th></tr></thead>
+        <tbody>
+            <tr><td>学城</td><td><span class="badge bd-green">✅ 已支持</span></td><td>通过批量 MIS 号配置（暂无法直接搜索）⚠️ 需提前为文档目录授权</td><td><a href="https://friday.sankuai.com/skills/skill-detail?id=3367">学城 Skill</a></td></tr>
+            <tr><td>LogCenter</td><td><span class="badge bd-green">✅ 已支持</span></td><td>可直接搜索 MIS 配置</td><td><a href="https://friday.sankuai.com/skills/skill-detail?id=3018">LogCenter Skill</a></td></tr>
+            <tr><td>Code</td><td><span class="badge bd-orange">预计 6.15 接入</span></td><td>—</td><td>—</td></tr>
+            <tr><td>魔数</td><td><span class="badge bd-gray">待建设</span></td><td>—</td><td>—</td></tr>
+            <tr><td>Raptor</td><td><span class="badge bd-gray">待建设</span></td><td>—</td><td><a href="https://friday.sankuai.com/skills/skill-detail?id=4657">Raptor Skill</a></td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>8.5 虚拟员工创建步骤</h3>
+    <div class="steps">
+        <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">创建数字员工</div><div class="step-desc">在 <code>https://aibuddy.sankuai.com/#/workspace/claw-manage</code> 创建数字员工</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">接入渠道启用群聊</div><div class="step-desc">在接入渠道配置中开启群聊支持（当前只支持群聊渠道使用虚拟员工）</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">创建虚拟员工</div><div class="step-desc">⚠️ 虚拟员工创建后无法修改名称，请谨慎起名</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">配置群信息</div><div class="step-desc">输入群号后<strong>需按 Enter 保存群号</strong></div></div></div>
+    </div>
+</div>
+
+<!-- ============================
+     09 CatClaw A2A
+============================= -->
+<div class="card" id="catclaw-a2a">
+    <h2>九、CatClaw A2A 调用服体数字人</h2>
+
+    <h3>9.1 功能介绍</h3>
+    <p>AI Buddy A2A 提供外部 Agent 工具调用服体数字人能力，支持在 CatClaw 中通过自然语言调用服体数字人，完成工单查询、业务咨询等任务，无需切换系统。</p>
+    <ul>
+        <li>根据用户需求<strong>自动匹配</strong>最合适的数字人（基于 description 字段语义匹配）</li>
+        <li>将任务原样转交数字人执行，返回完整结果</li>
+        <li>支持查看当前有权使用的数字人列表</li>
+        <li>超时上限：<strong>600 秒</strong></li>
+    </ul>
+
+    <h3>9.2 使用 SOP</h3>
+    <div class="steps">
+        <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">安装 Skill</div><div class="step-desc">打开 <a href="https://skills.sankuai.com/skill-detail?id=89029">ai-buddy-a2a（Skill ID: 89029）</a>，点击一键安装到 Agent</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">确认数字人权限</div><div class="step-desc">确认有权访问的数字人列表（需同时具备<strong>租户 + 分配人权限</strong>）；确认数字人的 description 是否准确，CatClaw 依据此字段路由数字人</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">CatClaw 发起调用</div><div class="step-desc">直接在对话框描述需求，自动完成「匹配数字人 → 调用 → 返回结果」全流程<br><code>/aibuddy 查询工单 2403197828 的处理进度</code></div></div></div>
+    </div>
+
+    <h3>9.3 常见问题</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>问题</th><th>解决方案</th></tr></thead>
+        <tbody>
+            <tr><td>提示「暂无权限使用该数字人」</td><td>联系数字人管理员，确认 MIS、工作组或大象组织已在授权列表内</td></tr>
+            <tr><td>路由结果不符合预期</td><td>管理员在后台完善数字人的 description，CatClaw 根据此字段做语义路由</td></tr>
+            <tr><td>调用很慢</td><td>数字人处理复杂任务最长可能需要 600 秒，可重试或拆解任务分批提问</td></tr>
+            <tr><td>MOA 未登录</td><td>Skill 依赖本机 MOA 登录态，确认 MOA 已登录后重试</td></tr>
+        </tbody>
+    </table></div>
+</div>
+
+<!-- ============================
+     10 个人助理模式
+============================= -->
+<div class="card" id="personal">
+    <h2>十、个人助理模式（AIBuddy）</h2>
+
+    <blockquote>
+        个人助理模式是为个人用户设计的轻量接入方式，无需经过大象机器人复杂的接入流程，通过 AIBuddy 公众号直接使用，1 分钟完成创建。
+    </blockquote>
+
+    <h3>创建步骤</h3>
+    <div class="steps">
+        <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">创建数字员工</div><div class="step-desc">在平台<strong>个人租户</strong>下点击「创建员工」，选择「<strong>个人助理</strong>」</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">新增接入渠道</div><div class="step-desc">在接入渠道中添加，系统自动绑定默认大象机器人（无需另行申请）</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">配置 FridayKey</div><div class="step-desc">未激活：访问 friday.sankuai.com 点击个人用户；已激活：复制 APPID</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">添加 Skill</div><div class="step-desc">在 Skills 管理栏目搜索并添加所需 Skill</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-body"><div class="step-title">开始使用</div><div class="step-desc">大象搜索机器人名称，即可开始对话</div></div></div>
+    </div>
+
+    <h3>记忆迁移</h3>
+    <p>支持将 CatClaw 的记忆与 Skill 一键迁移至服体数字员工。迁移教程：<a href="https://km.sankuai.com/collabpage/2766218670">https://km.sankuai.com/collabpage/2766218670</a></p>
+</div>
+
+<!-- ============================
+     11 Multi-Agent
+============================= -->
+<div class="card" id="multi-agent">
+    <h2>十一、Multi-Agent 协作（AgentTeam + SubAgent）</h2>
+
+    <h3>11.1 协作模式</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>模式</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><span class="badge bd-blue">AgentTeam</span></td><td>招募多个数字人组建协作团队，由主数字人调度各子数字人完成任务</td></tr>
+            <tr><td><span class="badge bd-purple">SubAgent</span></td><td>任务自动拆分为子任务，由不同 SubAgent 并行处理，支持级联中断</td></tr>
+            <tr><td><span class="badge bd-green">A2A 通信</span></td><td>数字人 A 可主动找数字人 B 进行沟通，协同完成复杂工作任务</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>11.2 可观测能力</h3>
+    <ul>
+        <li>任务进度实时展示：包括 Agent 执行步骤、大模型推理内容、工具执行进度和耗时</li>
+        <li>历史对话压缩进度、子任务进度可视化</li>
+        <li>会话分析支持 Agent 执行过程明细（执行轨迹、LLM 推理过程、工具调用耗时、工具出入参）</li>
+        <li>支持中止正在执行中的任务</li>
+    </ul>
+</div>
+
+<!-- ============================
+     12 全链路监控
+============================= -->
+<div class="card" id="monitoring">
+    <h2>十二、全链路监控与数据大盘</h2>
+
+    <div class="tbl"><table>
+        <thead><tr><th>监控维度</th><th>指标</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><span class="badge bd-blue">成本 &amp; 效率</span></td>
+                <td>Token 消耗量、PromptCache 命中率、Skill 单次 Token 损耗、费用汇总（按组织/FridayKey/MIS）</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-green">性能</span></td>
+                <td>E2E Latency（端到端延迟）、TTFT（首 Token 时间）、工具调用耗时</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-orange">流量</span></td>
+                <td>Query 调用次数、LLM 调用次数、工具调用次数、Skill 调用次数</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-red">可用性</span></td>
+                <td>调用成功率、模型熔断次数、异常会话筛选与多维分析</td>
+            </tr>
+        </tbody>
+    </table></div>
+
+    <h3>会话分析</h3>
+    <ul>
+        <li>明细查看每次 Query 的执行轨迹</li>
+        <li>LLM 推理过程、工具调用耗时、工具出入参全链路可视化</li>
+        <li>Token 使用按 Query 维度下钻分析</li>
+    </ul>
+</div>
+
+<!-- ============================
+     13 OpenAPI 方案概述
+============================= -->
+<div class="card" id="openapi-overview">
+    <h2>十三、OpenAPI 接入方案概述</h2>
+
+    <blockquote>
+        服体数字员工平台（AIBuddy）提供两套 OpenAPI，支持外部业务系统与数字员工进行消息交互、会话管理等集成对接。两套方案功能对等，按技术栈选择接入方式。
+    </blockquote>
+
+    <div class="tbl"><table>
+        <thead><tr><th>方案</th><th>适用场景</th><th>协议</th><th>回复推送</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><span class="badge bd-blue">Https + Pike 方案</span></td>
+                <td>面向前端/Web/nocode 系统，降低接入门槛，快速打通业务与 AI 能力</td>
+                <td>HTTPS REST</td>
+                <td>Pike WebSocket 异步推送（流式）</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-purple">RPC + MQ 方案</span></td>
+                <td>面向 Java 后端服务，高并发、消息可靠性/幂等性要求高的场景</td>
+                <td>美团 OCTO RPC</td>
+                <td>Mafka MQ 异步投递</td>
+            </tr>
+        </tbody>
+    </table></div>
+
+    <h3>前置条件</h3>
+    <ul>
+        <li>已在平台创建数字员工并获取 <code>aiEmployeeId</code></li>
+        <li>RPC 方案：配置 Mafka MQ 消费者订阅 topic</li>
+        <li>HTTPS 方案：集成 Pike SDK（<code>npm install @dp/pike-message-web</code>）</li>
+    </ul>
+</div>
+
+<!-- ============================
+     14 OpenAPI RPC
+============================= -->
+<div class="card" id="openapi-rpc">
+    <h2>十四、OpenAPI 接口详情——RPC + MQ 方案</h2>
+
+    <p><strong>Appkey：</strong><code>com.sankuai.cscpacific.claw.bridgeservice</code><br>
+    <strong>接口类：</strong><code>com.sankuai.csc.claw.bridge.api.openapi.OpenapiRemoteService</code><br>
+    <strong>Maven 依赖：</strong></p>
+    <pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;com.sankuai&lt;/groupId&gt;
+  &lt;artifactId&gt;csc-claw-bridge-api&lt;/artifactId&gt;
+  &lt;version&gt;1.0.4&lt;/version&gt;  &lt;!-- 带附件用 1.0.5 --&gt;
+&lt;/dependency&gt;</code></pre>
+
+    <h3>接口总览</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>方法</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><code>queryText</code></td><td>发送文本消息，回复通过 Mafka MQ 异步推送</td></tr>
+            <tr><td><code>query</code></td><td>发送消息（可带文件附件），回复通过 Mafka MQ 异步推送</td></tr>
+            <tr><td><code>queryConversationList</code></td><td>分页查询历史会话列表</td></tr>
+            <tr><td><code>queryConversationMessages</code></td><td>获取指定会话的历史消息记录</td></tr>
+            <tr><td><code>deleteConversation</code></td><td>删除会话及全部消息（不可逆）</td></tr>
+            <tr><td><code>queryLastMessageByQueryId</code></td><td>根据 queryId 查询最新会话记录</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>4.1 发送消息（queryText）</h3>
+    <p><strong>入参：</strong><code>OpenapiSendDTO</code></p>
+    <div class="tbl"><table class="param-table">
+        <thead><tr><th>参数名</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><code>mis</code></td><td>String</td><td class="req">是</td><td>调用方用户的 MIS 号，用于 MQ 消息路由</td></tr>
+            <tr><td><code>aiEmployeeId</code></td><td>Long</td><td class="req">是</td><td>目标数字员工 ID，在平台管理端获取</td></tr>
+            <tr><td><code>message</code></td><td>String</td><td class="req">是</td><td>用户消息内容（纯文本）</td></tr>
+            <tr><td><code>conversationId</code></td><td>String</td><td class="req">是</td><td>会话 ID，首次传空，后续消息传返回的会话 ID</td></tr>
+            <tr><td><code>queryId</code></td><td>String</td><td class="req">是</td><td>本次请求的唯一 ID（UUID），用于匹配 MQ 回包</td></tr>
+            <tr><td><code>customerEnd</code></td><td>Integer</td><td class="req">是</td><td>渠道类型，RPC 调用传 <code>8</code></td></tr>
+        </tbody>
+    </table></div>
+
+    <p><strong>出参：</strong><code>RespDTO&lt;OpenapiSendResponseDTO&gt;</code></p>
+    <div class="tbl"><table class="param-table">
+        <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><code>queryId</code></td><td>String</td><td>与请求 queryId 一致，原样透传</td></tr>
+            <tr><td><code>conversationId</code></td><td>String</td><td>本次会话 ID</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>MQ 推送消息结构（Mafka）</h3>
+    <p><strong>Topic：</strong><code>csc_claw_openapi_reply</code>　　<strong>消费者组建议格式：</strong><code>{appkey}_openapi_consumer</code></p>
+    <pre><code>{
+  "mis": "heyuchun03",
+  "queryId": "550e8400-e29b-41d4-a716-446655440000",
+  "content": "工单 TT20260527001 当前状态为处理中",
+  "streamFinish": false,
+  "resultCode": 0
+}</code></pre>
+    <div class="tbl"><table class="param-table">
+        <thead><tr><th>字段</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><code>type</code></td><td>消息类型，固定 <code>1001</code>（接收端必须过滤其他 type）</td></tr>
+            <tr><td><code>queryId</code></td><td>与请求中的 queryId 一致，用于匹配回包</td></tr>
+            <tr><td><code>content</code></td><td>本次推送的增量文本。结束帧时为空字符串</td></tr>
+            <tr><td><code>streamFinish</code></td><td><code>true</code> = 本次回复结束，<code>false</code> = 后续还有内容</td></tr>
+            <tr><td><code>resultCode</code></td><td><code>0</code> = 正常；非 0 = 异常（content 无意义，展示错误提示）</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>MQ 接入注意事项</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>要点</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td>MIS 过滤</td><td>Topic 为共享信道，消费者必须从消息 header 中读取 <code>mis</code> 字段，只处理属于本系统用户的消息</td></tr>
+            <tr><td>幂等消费</td><td>MQ 可能重复投递，消费者需做幂等处理（已处理的 queryId + streamFinish 忽略重复帧）</td></tr>
+            <tr><td>超时兜底</td><td>建议发送后启动 60s 定时器，若 streamFinish 未到达则主动结束 loading 并提示超时</td></tr>
+            <tr><td>异常处理</td><td>resultCode 非 0 时 content 无意义；消费者 process 方法始终返回 Success 避免重试风暴</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>MQ 消费者 Java DTO 定义</h3>
+    <pre><code>@Data
+public class OpenApiMQMessage {
+    private String mis;           // 消息路由 MIS
+    private String queryId;       // 与请求 queryId 一致
+    private String content;       // 增量文本（streamFinish=true 时为空字符串）
+    private Boolean streamFinish; // true = 本次回复结束
+    private Integer resultCode;   // 0=正常，非0=异常
+}</code></pre>
+
+    <h3>4.5 查询会话列表（queryConversationList）</h3>
+    <div class="tbl"><table class="param-table">
+        <thead><tr><th>参数名</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><code>mis</code></td><td>String</td><td class="req">是</td><td>人员 MIS</td></tr>
+            <tr><td><code>pageNum</code></td><td>Integer</td><td class="req">是</td><td>页码，从 1 开始</td></tr>
+            <tr><td><code>pageSize</code></td><td>Integer</td><td class="req">是</td><td>每页数量，建议 20~50</td></tr>
+            <tr><td><code>aiEmployeeId</code></td><td>Long</td><td class="opt">否</td><td>按数字员工 ID 过滤</td></tr>
+            <tr><td><code>customerEnd</code></td><td>Integer</td><td class="opt">否</td><td>渠道类型过滤</td></tr>
+        </tbody>
+    </table></div>
+</div>
+
+<!-- ============================
+     15 OpenAPI HTTPS
+============================= -->
+<div class="card" id="openapi-https">
+    <h2>十五、OpenAPI 接口详情——HTTPS + Pike 方案</h2>
+
+    <div class="tbl"><table>
+        <thead><tr><th>项目</th><th>值</th></tr></thead>
+        <tbody>
+            <tr><td>协议</td><td>HTTPS，Content-Type: <code>application/json</code>，POST</td></tr>
+            <tr><td>BaseURL（生产）</td><td><code>https://aibuddy.sankuai.com</code></td></tr>
+            <tr><td>BaseURL（测试）</td><td><code>https://claw.csp.test.sankuai.com</code></td></tr>
+            <tr><td>通用响应结构</td><td><code>{"code": "200", "msg": "成功", "data": {...}}</code></td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>接口总览</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>路径</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><code>POST /api/openapi/queryText</code></td><td>发送文本消息，回复通过 Pike WebSocket 异步推送</td></tr>
+            <tr><td><code>POST /api/openapi/query</code></td><td>发送消息（可带附件，multipart/form-data）</td></tr>
+            <tr><td><code>POST /api/openapi/conversation/list</code></td><td>分页查询历史会话列表</td></tr>
+            <tr><td><code>POST /api/openapi/conversation/messages</code></td><td>获取指定会话的历史消息记录</td></tr>
+            <tr><td><code>POST /api/openapi/conversation/delete</code></td><td>删除会话及全部消息（不可逆）</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>Pike SDK 接入指南</h3>
+    <pre><code>npm install @dp/pike-message-web</code></pre>
+    <div class="tbl"><table>
+        <thead><tr><th>配置项</th><th>生产</th><th>测试</th></tr></thead>
+        <tbody>
+            <tr><td>bizId</td><td><code>Openapi-Employee-query</code></td><td><code>Openapi-Employee-query-test</code></td></tr>
+            <tr><td>EndPoints</td><td><code>https://pikem0-bj.sankuai.com</code><br><code>https://pikem1.sankuai.com</code></td><td><code>http://pikem0.inf.test.sankuai.com</code></td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>Pike 接入注意事项</h3>
+    <ul>
+        <li><code>alias</code> 必须等于 <code>mis</code></li>
+        <li><code>queryId</code> 由前端 UUID 生成</li>
+        <li>必须过滤 <code>type !== 1001</code> 的消息</li>
+        <li>建议 60s 超时兜底</li>
+        <li>页面卸载需调用 <code>destroy()</code></li>
+    </ul>
+
+    <h3>conversationId 格式说明</h3>
+    <div class="warn">⚠️ 会话记录保存和查询时 conversationId 格式为 <code>{channelType}:{aiEmployeeId}:{conversationId}</code>，但调用 query 接口时只需要纯 conversationId，需注意格式转换！</div>
+
+    <h3>错误码参考</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>code</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td><code>200</code></td><td>成功</td></tr>
+            <tr><td><code>400</code></td><td>请求参数错误 / 资源不存在</td></tr>
+            <tr><td><code>401</code></td><td>未登录 / 登录态失效</td></tr>
+            <tr><td><code>403</code></td><td>无权限</td></tr>
+            <tr><td><code>500</code></td><td>服务内部异常</td></tr>
+        </tbody>
+    </table></div>
+</div>
+
+<!-- ============================
+     16 大象机器人接入
+============================= -->
+<div class="card" id="daxiang-bot">
+    <h2>十六、大象自定义机器人接入（详细步骤）</h2>
+
+    <div class="af">
+        <div class="step">办公开发者后台<span class="sub">xopen.sankuai.com</span></div>
+        <div class="step step-alt">应用开放平台<span class="sub">资源权限申请</span></div>
+        <div class="step">服体数字员工平台<span class="sub">aibuddy.sankuai.com</span></div>
+        <div class="step step-alt">开始对话<span class="sub">大象搜索机器人</span></div>
+    </div>
+
+    <h3>第一步：办公开发者后台（xopen.sankuai.com）</h3>
+    <div class="steps">
+        <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">创建企业内部应用</div><div class="step-desc">修改应用名称和详情信息</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">启用机器人功能</div><div class="step-desc">在「应用功能」中启用机器人</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">添加机器人权限（4 类）</div><div class="step-desc">
+            大象消息：「发送单聊/群组消息」「获取单聊/群组消息」「获取用户发送至机器人 at 消息」「获取与更新群组信息」<br>
+            卡片权限：「跨场域动态卡片」<br>
+            云盘资源权限（用于图片消息识别）
+        </div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">创建 AI 回复卡片</div><div class="step-desc">
+            选择「AI 卡片」→ 下载附件文件（数字员工回复卡片.json）→ 导入后保存并发布<br>
+            ⚠️ <strong>记录卡片 ID，卡片编辑后需重新发布，状态要变为「已发布」</strong><br>
+            ⚠️ <strong>卡片配置需删除多余组件，否则保存报错</strong>
+        </div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-body"><div class="step-title">配置事件订阅</div><div class="step-desc">
+            事件订阅 Appkey：<code>com.sankuai.cscpacific.claw.bridgeservice</code><br>
+            添加事件：「用户给机器人单聊消息事件」「群聊消息」<br>
+            <strong>无需开通「获取群组所有消息」「获取群组 @所有人消息」权限</strong>
+        </div></div></div>
+        <div class="step-item"><div class="step-num">6</div><div class="step-body"><div class="step-title">配置机器人可见范围</div><div class="step-desc">配置后才能在大象中搜到机器人</div></div></div>
+        <div class="step-item"><div class="step-num">7</div><div class="step-body"><div class="step-title">发布配置</div><div class="step-desc">⚠️ <strong>需 TL 和大象同学两次审批</strong>，请确保审批通过后才生效</div></div></div>
+    </div>
+
+    <h3>第二步：应用开放平台（资源申请）</h3>
+    <p>切换到「我的资源」申请以下四类资源权限：</p>
+    <ul>
+        <li><span class="badge bd-blue">大象应用</span></li>
+        <li><span class="badge bd-blue">办公卡片</span></li>
+        <li><span class="badge bd-blue">大象机器人</span></li>
+        <li><span class="badge bd-blue">大象云盘</span></li>
+    </ul>
+
+    <h3>第三步：服体数字员工平台（填写信息）</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>配置项</th><th>来源</th></tr></thead>
+        <tbody>
+            <tr><td><strong>Bot ID</strong></td><td>办公开发者后台 → 「应用功能」→「机器人」页面里的 BotId 字段</td></tr>
+            <tr><td><strong>卡片 ID</strong></td><td>办公开发者后台 → 「应用功能」→「跨场域动态卡片」页面里的模板 ID</td></tr>
+            <tr><td><strong>Client ID</strong></td><td>办公开发者后台 → 「凭证与基础信息」→ 前往应用开放平台 → 身份 ID</td></tr>
+            <tr><td><strong>Client Secret</strong></td><td>同上 → 身份凭证</td></tr>
+            <tr><td><strong>FridayKey (APPID)</strong></td><td>friday.sankuai.com/budget/serviceManage 复制 APPID</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>常见问题排查</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>问题</th><th>原因 &amp; 解决</th></tr></thead>
+        <tbody>
+            <tr><td>发布后不生效</td><td>全流程涉及两次审批（TL + 大象同学），请确保审批通过</td></tr>
+            <tr><td>卡片保存报错</td><td>删除多余组件后再保存</td></tr>
+            <tr><td>大象搜不到机器人</td><td>确保已配置机器人可见范围</td></tr>
+            <tr><td>机器人不回复消息</td><td>① 卡片配置正确且已发布 ② 接入时已配置卡片 ID ③ 事件订阅已开通相关权限</td></tr>
+            <tr><td>消息格式非 MD</td><td>同上，检查卡片 ID 是否正确填写</td></tr>
+        </tbody>
+    </table></div>
+</div>
+
+<!-- ============================
+     17 配置指南
+============================= -->
+<div class="card" id="config-guide">
+    <h2>十七、完整配置指南</h2>
+
+    <h3>17.1 推荐模型选择</h3>
+    <div class="info-box">优先级：<strong>Kimi 系列 &gt; GLM 系列 &gt; MiniMa 系列</strong></div>
+
+    <h3>17.2 定时任务推送群消息配置</h3>
+    <ol>
+        <li>进入群聊 → 点击群信息 → 获取群 ID</li>
+        <li>进入数字员工详情 → 「定时任务」tab → 点击编辑</li>
+        <li>在最下面添加群 ID → <strong>输入后需按 Enter 才能保存，然后再选择</strong></li>
+    </ol>
+
+    <h3>17.3 Memory 管理</h3>
+    <ul>
+        <li>主理人可在后台查看用户维度的记忆内容（Memory 支持后台管理）</li>
+        <li>支持定期对全量会话记忆进行整合与清洗，发现新业务场景诉求点</li>
+        <li>Memory 采用 OpenViking 三层结构分层管理，分层检索</li>
+    </ul>
+
+    <h3>17.4 工具审批配置步骤</h3>
+    <ol>
+        <li>在数字员工配置后台，找到需要审批的工具（如没有解析出工具，点击「<strong>加载工具</strong>」按钮重试）</li>
+        <li>开启<strong>审批开关</strong>，配置审批人群</li>
+        <li>用户触发该工具时，系统自动发送审批请求，审批通过后才执行</li>
+    </ol>
+</div>
+
+<!-- ============================
+     18 Skill 评测框架
+============================= -->
+<div class="card" id="skill-eval">
+    <h2>十八、Skill 评测框架标准 V1.0</h2>
+
+    <h3>18.1 三层评测框架</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>层级</th><th>维度</th><th>权重</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><span class="badge bd-blue">静态质量层</span></td>
+                <td>Skill 格式规范、Description 质量、工具链完整性、知识注入质量、安全合规</td>
+                <td>30%</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-green">动态执行层</span></td>
+                <td>单轮执行（工具选择准确性、参数提取准确性）<br>多轮对话（意图延续性、纠错能力）<br>执行与调度稳定性、成本效率</td>
+                <td>50%</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-orange">业务效果层</span></td>
+                <td>岗位链路结果、任务完成率、用户满意度</td>
+                <td>20%</td>
+            </tr>
+        </tbody>
+    </table></div>
+
+    <h3>18.2 消融实验设计（三维度）</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>消融维度</th><th>实验设计</th></tr></thead>
+        <tbody>
+            <tr><td>Description 消融</td><td>屏蔽/简化 Description，测试路由准确率下降幅度</td></tr>
+            <tr><td>工具链消融</td><td>逐一移除工具，评估关键工具对成功率的贡献</td></tr>
+            <tr><td>知识注入消融</td><td>移除知识库注入，测试模型幻觉率变化</td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>18.3 效率提升 Skill 静态评测（5 维度，各 6 分）</h3>
+    <ul>
+        <li>Skill 元信息规范性（名称/版本/描述/输入输出定义）</li>
+        <li>工具链完整性与可执行性</li>
+        <li>知识内容准确性与时效性</li>
+        <li>安全边界设计（拒绝越权操作）</li>
+        <li>格式与可维护性</li>
+    </ul>
+
+    <h3>18.4 Skill 评测平台建设（四层）</h3>
+    <div class="af">
+        <div class="step">数据层<span class="sub">Case库/Ground Truth</span></div>
+        <div class="step step-alt">评估器层<span class="sub">规则/模型/人工</span></div>
+        <div class="step">调度层<span class="sub">自动化执行</span></div>
+        <div class="step step-alt">分析层<span class="sub">归因/优化建议</span></div>
+    </div>
+</div>
+
+<!-- ============================
+     19 系统架构关系
+============================= -->
+<div class="card" id="arch-relations">
+    <h2>十九、系统定位与架构关系</h2>
+
+    <h3>19.1 三系统定位</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>模块</th><th>一句话定位</th><th>详细说明</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><span class="badge bd-purple">BPI 工作台 &amp; 规则中枢</span></td>
+                <td>Skill 生产车间</td>
+                <td>工作台是壳，规则中枢是工作台的子能力/tab。规则中枢 = 生产并存储 Skill 的平台，Skill 是其产物</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-blue">服体数字员工平台</span></td>
+                <td>Skill 的应用载体</td>
+                <td>底层执行引擎，挂载各种 Skill（含洗好的业务 Skill + 听音/数据探查等通用 Skill），是 Agent 能力的核心载体</td>
+            </tr>
+            <tr>
+                <td><span class="badge bd-green">太平洋工作台</span></td>
+                <td>Skill 的消费方</td>
+                <td>数字员工的消费方，支持请求调用 Skill 或数字员工，结果回显给坐席</td>
+            </tr>
+        </tbody>
+    </table></div>
+
+    <h3>19.2 交互链路</h3>
+    <div class="af">
+        <div class="step">BPI工作台<br>（规则中枢）<span class="sub">生产Skill</span></div>
+        <div class="step step-alt">数字员工平台<span class="sub">挂载&执行Skill</span></div>
+        <div class="step">太平洋工作台<span class="sub">调用&回显</span></div>
+        <div class="step step-alt">坐席用户<span class="sub">获取结果</span></div>
+    </div>
+
+    <h3>19.3 集成生态</h3>
+    <div class="fg" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))">
+        <div class="fi"><div class="fi-head"><span class="fi-title">太平洋工作台</span></div><div class="fi-desc">工单管理、审批流程、知识库检索、坐席操作台</div></div>
+        <div class="fi"><div class="fi-head"><span class="fi-title">星脉</span></div><div class="fi-desc">服体业务数据查询、商户/骑手信息</div></div>
+        <div class="fi"><div class="fi-head"><span class="fi-title">Friday 平台</span></div><div class="fi-desc">Skill 市场管理，FridayKey（APPID）</div></div>
+        <div class="fi"><div class="fi-head"><span class="fi-title">大象</span></div><div class="fi-desc">主要消息渠道，自定义机器人接入</div></div>
+        <div class="fi"><div class="fi-head"><span class="fi-title">灵枢卡片</span></div><div class="fi-desc">富交互展示，AI 回复卡片</div></div>
+        <div class="fi"><div class="fi-head"><span class="fi-title">学城</span></div><div class="fi-desc">文档知识库，虚拟员工已对接</div></div>
+        <div class="fi"><div class="fi-head"><span class="fi-title">LogCenter</span></div><div class="fi-desc">日志查询，虚拟员工已对接</div></div>
+        <div class="fi"><div class="fi-head"><span class="fi-title">Mafka MQ</span></div><div class="fi-desc">RPC 方案消息异步推送</div></div>
+    </div>
+</div>
+
+<!-- ============================
+     20 业务落地 Roadmap
+============================= -->
+<div class="card" id="landing-roadmap">
+    <h2>二十、业务落地 Roadmap（AI at Work）</h2>
+
+    <h3>7 步落地流程</h3>
+    <div class="steps">
+        <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">与战队负责人宣导对齐</div><div class="step-desc">统一各方对盘点维度、颗粒度及输出规范的理解</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">角色工作内容结构化盘点</div><div class="step-desc">依据标准化模板对各岗位角色进行系统化梳理（交付管理、工具运营、流程运营等）</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">角色融合与场景抽象</div><div class="step-desc">提炼跨角色的高频业务场景与标准化作业流程，识别可抽象为数字人 Skill 的共性需求</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">优先级排序与里程碑规划</div><div class="step-desc">综合评估三个维度：耗时占比 × 覆盖人群规模 × 技术实现复杂度</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-body"><div class="step-title">协作开发与进度跟进</div><div class="step-desc">每日站会机制；数字人分三阶段实践（基础能力 → 复杂流程 → 自进化）</div></div></div>
+        <div class="step-item"><div class="step-num">6</div><div class="step-body"><div class="step-title">交叉验收与经验沉淀</div><div class="step-desc">量化记录应用效果，输出技术最佳实践文档和 Skill 能力合集</div></div></div>
+        <div class="step-item"><div class="step-num">7</div><div class="step-body"><div class="step-title">试点验证与规模化推广</div><div class="step-desc">小范围试点 → 优化迭代 → 全战队推广</div></div></div>
+    </div>
+
+    <h3>典型提效案例</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>场景</th><th>提效幅度</th><th>说明</th></tr></thead>
+        <tbody>
+            <tr><td>客服一线管理数字人（工单复盘+分配）</td><td><span class="badge bd-green">10~20%</span></td><td>批量分配工单、工单信息整理</td></tr>
+            <tr><td>工单事后整理</td><td><span class="badge bd-green">80%</span></td><td>工单记录填写自动化</td></tr>
+            <tr><td>资管客服培训数字员工</td><td><span class="badge bd-green">30%</span></td><td>课件制作、考题制作、日常运维</td></tr>
+            <tr><td>排班管理</td><td><span class="badge bd-green">30%</span></td><td>资源管理数字员工</td></tr>
+            <tr><td>考勤答疑</td><td><span class="badge bd-green">50%</span></td><td>资源管理数字员工</td></tr>
+        </tbody>
+    </table></div>
+</div>
+
+<!-- ============================
+     21 版本迭代
+============================= -->
+<div class="card" id="versions">
+    <h2>二十一、版本迭代记录（全量）</h2>
+
+    <div class="tl">
+        <div class="tli">
+            <span class="tv">v6.12</span><span class="td">2026-06-12</span><span class="badge bd-green">最新</span>
+            <div class="tc">
+                ① 数字人 Team 模式（多数字人协作，A 主动找 B 沟通）<br>
+                ② 大象个人助理 × 数字人打通（A2A，ai-buddy-a2a Skill）<br>
+                ③ 数字人自进化（Token用量/耗时/成功率/频次多维优化建议）<br>
+                ④ 数字人支持复制、收藏<br>
+                ⑤ 数字人支持汇总群消息<br>
+                ⑥ 大象群聊模式全量升级为虚拟账号模式（学城+LogCenter已对接）<br>
+                ⑦ 接入 RMS 内容安全策略（输入+输出双环节）
+            </div>
+        </div>
+        <div class="tli">
+            <span class="tv">v6.5</span><span class="td">2026-06-05</span>
+            <div class="tc">
+                ① 全链路监控 &amp; 数据大盘（四大维度指标）<br>
+                ② 大象个人助理记忆一键迁移至服体数字员工<br>
+                ③ 支持自定义 Plugin / Hooks<br>
+                ④ 新增文枢文件下载能力<br>
+                ⑤ 高风险工具默认启用用户审批流程
+            </div>
+        </div>
+        <div class="tli">
+            <span class="tv">v5.29</span><span class="td">2026-05-29</span>
+            <div class="tc">
+                ① 支持个人助理模式（通过 AIBuddy 公众号直接使用）<br>
+                ② 支持安全模式（<code>/safe</code> 切换私有化模型）<br>
+                ③ 统一使用 Friday Skill（支持上传+一键安装全量 Skills）<br>
+                ④ 支持费用汇总与明细查看<br>
+                ⑤ 大象群聊模式升级虚拟账号（内测）<br>
+                ⑥ 支持超长消息转发（2 万字符以上自动转文件）
+            </div>
+        </div>
+        <div class="tli">
+            <span class="tv">v5.22</span><span class="td">2026-05-22</span>
+            <div class="tc">
+                ① 任务进度实时展示和中止（步骤/推理/耗时/子任务进度）<br>
+                ② 会话分析支持 Agent 执行过程明细（执行轨迹/LLM推理/工具出入参）<br>
+                ③ AgentTeam 和 SubAgent 全量开放<br>
+                ④ 历史会话 TTL 过期（失效后首次对话减少 75% Token）<br>
+                ⑤ 历史对话压缩、Skill 自进化支持 Token 消耗记账
+            </div>
+        </div>
+        <div class="tli">
+            <span class="tv">v5.15</span><span class="td">2026-05-15</span>
+            <div class="tc">
+                ① 支持直接搜索 Friday 平台 Skill 并安装<br>
+                ② 支持 AgentTeam 及任务自动拆分 SubAgent 模式<br>
+                ③ 数字人可用模型及安全策略支持后台维护
+            </div>
+        </div>
+        <div class="tli">
+            <span class="tv">v5.8</span><span class="td">2026-05-08</span>
+            <div class="tc">
+                ① 支持 Excel 文件识别理解<br>
+                ② Memory 支持后台管理（主理人可查看用户维度记忆）<br>
+                ③ Skill 单次 Token 执行损耗统计<br>
+                ④ Skill 自进化（自动聚合会话记录，挖掘新技能和优化建议）<br>
+                ⑤ 大象渠道 <code>/new</code> 后支持新 session 维度查看<br>
+                ⑥ 全链路性能监控（支持端到端全链路监控和下钻）<br>
+                ⑦ 组织权限收敛
+            </div>
+        </div>
+        <div class="tli">
+            <span class="tv">v4.29</span><span class="td">2026-04-29</span>
+            <div class="tc">
+                ① 定时任务支持将执行结果推送到指定群内<br>
+                ② 支持群聊模式
+            </div>
+        </div>
+        <div class="tli">
+            <span class="tv">v4.28</span><span class="td">2026-04-28</span>
+            <div class="tc">
+                ① 任务模式（周期性任务，可视化管理任务状态）<br>
+                ② 工具执行审批确认（后台按人群配置）<br>
+                ③ Memory 升级成 OpenViking（指令/上下文压缩/模型主动提取，分层检索）<br>
+                ④ Token 使用明细优化（Query 维度下钻分析）<br>
+                ⑤ 租户权限支持按组织授权
+            </div>
+        </div>
+        <div class="tli">
+            <span class="tv">v4.24</span><span class="td">2026-04-24</span>
+            <div class="tc">
+                ① PromptCache 完成一轮优化（比 CatClaw 节省约 37% Token）<br>
+                ② 工具执行提速（内置工具在 Harness 层直执行，跳过 Sandbox 冷启动）<br>
+                ③ 工具拦截功能（配置台按人群配置）<br>
+                ④ 权限管控增强（按 MIS/组织架构/太平洋工作组分配）<br>
+                ⑤ 安全审计（可视化查询 Tool执行/Query拦截/模型回复记录）<br>
+                <em>🎨 预告：Memory升级（OpenViking）、Session管理、Skill自进化、MultiAgent</em>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================
+     22 附录
+============================= -->
+<div class="card" id="appendix">
+    <h2>二十二、附录：FAQ 与常用链接</h2>
+
+    <h3>常用链接</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>资源</th><th>链接</th></tr></thead>
+        <tbody>
+            <tr><td>服体数字员工平台</td><td><a href="https://aibuddy.sankuai.com/#/">https://aibuddy.sankuai.com/#/</a></td></tr>
+            <tr><td>平台 FAQ</td><td><a href="https://km.sankuai.com/collabpage/2759545115">2759545115</a></td></tr>
+            <tr><td>用户手册</td><td><a href="https://km.sankuai.com/collabpage/2760204008">2760204008</a></td></tr>
+            <tr><td>版本更新日志</td><td><a href="https://km.sankuai.com/collabpage/2759030901">2759030901</a></td></tr>
+            <tr><td>大象机器人配置手册</td><td><a href="https://km.sankuai.com/collabpage/2754198717">2754198717</a></td></tr>
+            <tr><td>个人助理创建</td><td><a href="https://km.sankuai.com/collabpage/2765364574">2765364574</a></td></tr>
+            <tr><td>群聊模式文档</td><td><a href="https://km.sankuai.com/collabpage/2763216059">2763216059</a></td></tr>
+            <tr><td>虚拟员工使用手册</td><td><a href="https://km.sankuai.com/collabpage/2767398564">2767398564</a></td></tr>
+            <tr><td>CatClaw 调用数字人</td><td><a href="https://km.sankuai.com/collabpage/2767766238">2767766238</a></td></tr>
+            <tr><td>OpenAPI 总览</td><td><a href="https://km.sankuai.com/collabpage/2765363854">2765363854</a></td></tr>
+            <tr><td>OpenAPI RPC+MQ 详情</td><td><a href="https://km.sankuai.com/collabpage/2764769408">2764769408</a></td></tr>
+            <tr><td>OpenAPI HTTPS+Pike 详情</td><td><a href="https://km.sankuai.com/collabpage/2765411993">2765411993</a></td></tr>
+            <tr><td>Harness 提效能力介绍</td><td><a href="https://km.sankuai.com/collabpage/2764766944">2764766944</a></td></tr>
+            <tr><td>Skill 评测框架</td><td><a href="https://km.sankuai.com/collabpage/2754561181">2754561181</a></td></tr>
+            <tr><td>数字员工建设计划</td><td><a href="https://km.sankuai.com/collabpage/2759687553">2759687553</a></td></tr>
+            <tr><td>记忆迁移教程</td><td><a href="https://km.sankuai.com/collabpage/2766218670">2766218670</a></td></tr>
+            <tr><td>办公开发者后台</td><td><a href="https://xopen.sankuai.com/home">https://xopen.sankuai.com/home</a></td></tr>
+            <tr><td>Friday 平台</td><td><a href="https://friday.sankuai.com/budget/serviceManage">friday.sankuai.com</a></td></tr>
+            <tr><td>AI Buddy A2A Skill</td><td><a href="https://skills.sankuai.com/skill-detail?id=89029">Skill ID: 89029</a></td></tr>
+            <tr><td>系统三方关系说明</td><td><a href="https://km.sankuai.com/collabpage/2762565510">2762565510</a></td></tr>
+        </tbody>
+    </table></div>
+
+    <h3>名词解释</h3>
+    <div class="tbl"><table>
+        <thead><tr><th>名词</th><th>解释</th><th>关键字段</th></tr></thead>
+        <tbody>
+            <tr><td>数字人</td><td>AI 智能体实体，由主理人在平台后台创建并配置，具备独立角色、Skill、模型配置和权限管控</td><td><code>aiEmployeeId</code></td></tr>
+            <tr><td>会话</td><td>用户与数字人之间一次完整对话的上下文容器，维持多轮对话的连贯性</td><td><code>conversationId</code></td></tr>
+            <tr><td>消息</td><td>交互基本单元，分 user/assistant/tool 三种类型</td><td><code>messageType</code></td></tr>
+            <tr><td>FridayKey</td><td>Friday 平台的 APPID，数字员工调用模型所需的计费凭证</td><td><code>APPID</code></td></tr>
+            <tr><td>Harness</td><td>数字员工执行引擎，内置工具直接在 Harness 层执行（无需 Sandbox 冷启动，速度更快）</td><td>—</td></tr>
+            <tr><td>A2A</td><td>Agent to Agent，指 CatClaw 调用服体数字人的跨 Agent 通信能力</td><td><code>ai-buddy-a2a</code></td></tr>
+        </tbody>
+    </table></div>
+</div>
+
+</div>
+</body>
+</html>
