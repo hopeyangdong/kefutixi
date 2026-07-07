@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大模型智能客服在线基线文档</title>
+<style>
+:root {
+  --primary: #6366f1;
+  --primary-bg: #eef2ff;
+  --green: #10b981;
+  --green-bg: #ecfdf5;
+  --red: #ef4444;
+  --red-bg: #fef2f2;
+  --amber: #f59e0b;
+  --amber-bg: #fffbeb;
+  --blue: #3b82f6;
+  --blue-bg: #eff6ff;
+  --purple: #8b5cf6;
+  --purple-bg: #f5f3ff;
+  --teal: #14b8a6;
+  --teal-bg: #f0fdfa;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #1e293b;
+  --text-sec: #64748b;
+  --border: #e2e8f0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; line-height:1.7; }
+
+/* Hero */
+.hero { background:linear-gradient(135deg,#312e81 0%,#4338ca 40%,#6366f1 100%); color:#fff; padding:48px 24px 40px; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; top:-60%; right:-20%; width:500px; height:500px; background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%); }
+.hero::after { content:''; position:absolute; bottom:-40%; left:-10%; width:400px; height:400px; background:radial-gradient(circle,rgba(99,102,241,0.3) 0%,transparent 70%); }
+.hero-inner { max-width:960px; margin:0 auto; position:relative; z-index:1; }
+.hero h1 { font-size:2rem; font-weight:800; margin-bottom:8px; letter-spacing:-0.5px; }
+.hero .subtitle { font-size:1rem; opacity:0.85; margin-bottom:16px; }
+.hero .badges { display:flex; flex-wrap:wrap; gap:8px; }
+.badge { padding:4px 14px; border-radius:20px; font-size:0.78rem; font-weight:600; background:rgba(255,255,255,0.15); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.2); }
+
+/* Container */
+.container { max-width:960px; margin:0 auto; padding:0 16px; }
+
+/* Section */
+.section { margin:24px auto; max-width:960px; padding:0 16px; }
+.section-title { display:flex; align-items:center; gap:10px; font-size:1.25rem; font-weight:700; margin-bottom:16px; padding-bottom:8px; border-bottom:2px solid var(--border); }
+.section-title .icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+
+/* Cards */
+.card { background:var(--card); border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04); padding:24px; margin-bottom:16px; }
+.card-title { font-size:1rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+
+/* Dimension Overview Grid */
+.dim-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+@media(max-width:768px) { .dim-grid { grid-template-columns:repeat(2,1fr); } }
+.dim-card { border-radius:14px; padding:18px 16px; position:relative; overflow:hidden; transition:transform 0.2s; }
+.dim-card:hover { transform:translateY(-2px); }
+.dim-card .dim-num { font-size:2rem; font-weight:800; opacity:0.12; position:absolute; top:8px; right:12px; }
+.dim-card .dim-icon { font-size:1.5rem; margin-bottom:6px; }
+.dim-card .dim-name { font-size:0.9rem; font-weight:700; margin-bottom:4px; }
+.dim-card .dim-metric { font-size:0.75rem; color:var(--text-sec); }
+
+/* Tables */
+table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+thead th { background:#f1f5f9; color:var(--text); font-weight:700; padding:10px 12px; text-align:left; border-bottom:2px solid var(--border); white-space:nowrap; }
+tbody td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+tbody tr:hover { background:#f8fafc; }
+
+/* Tags */
+.tag { display:inline-block; padding:2px 10px; border-radius:12px; font-size:0.72rem; font-weight:600; }
+.tag-red { background:var(--red-bg); color:var(--red); }
+.tag-amber { background:var(--amber-bg); color:var(--amber); }
+.tag-green { background:var(--green-bg); color:var(--green); }
+.tag-blue { background:var(--blue-bg); color:var(--blue); }
+.tag-purple { background:var(--purple-bg); color:var(--purple); }
+.tag-teal { background:var(--teal-bg); color:var(--teal); }
+
+/* Note Boxes */
+.note { border-radius:12px; padding:14px 18px; margin:12px 0; font-size:0.85rem; display:flex; gap:10px; align-items:flex-start; }
+.note-blue { background:var(--blue-bg); border-left:4px solid var(--blue); }
+.note-amber { background:var(--amber-bg); border-left:4px solid var(--amber); }
+.note-green { background:var(--green-bg); border-left:4px solid var(--green); }
+.note-purple { background:var(--purple-bg); border-left:4px solid var(--primary); }
+
+/* Formula Block */
+.formula { background:#1e293b; color:#e2e8f0; border-radius:10px; padding:14px 20px; font-family:"JetBrains Mono","Fira Code",monospace; font-size:0.85rem; margin:10px 0; overflow-x:auto; }
+.formula .key { color:#a5b4fc; font-weight:600; }
+.formula .op { color:#fbbf24; }
+.formula .val { color:#34d399; }
+
+/* Multi-dim Radar (CSS version) */
+.radar-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+@media(max-width:640px) { .radar-grid { grid-template-columns:1fr; } }
+.radar-item { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; background:#f8fafc; }
+.radar-label { min-width:120px; font-size:0.82rem; font-weight:600; }
+.radar-bar-wrap { flex:1; height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden; }
+.radar-bar { height:100%; border-radius:4px; }
+.radar-val { font-size:0.78rem; font-weight:700; min-width:40px; text-align:right; }
+
+/* Two Part Split */
+.split-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:640px) { .split-2 { grid-template-columns:1fr; } }
+
+/* Principle Cards */
+.principle-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+@media(max-width:640px) { .principle-grid { grid-template-columns:1fr; } }
+.principle-card { border-radius:12px; padding:16px; border:1px solid var(--border); }
+.principle-card h4 { font-size:0.9rem; margin-bottom:6px; }
+.principle-card p { font-size:0.8rem; color:var(--text-sec); }
+
+/* Pending List */
+.pending-list { list-style:none; }
+.pending-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); font-size:0.85rem; }
+.pending-item:last-child { border-bottom:none; }
+.pending-num { width:28px; height:28px; border-radius:50%; background:var(--primary-bg); color:var(--primary); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; flex-shrink:0; }
+.pending-status { margin-left:auto; }
+
+/* Section Dimension Header */
+.dim-header { display:flex; align-items:center; gap:14px; margin-bottom:16px; padding:16px 20px; border-radius:14px; }
+.dim-header .dim-h-num { font-size:2.5rem; font-weight:800; opacity:0.2; }
+.dim-header .dim-h-title { font-size:1.15rem; font-weight:700; }
+.dim-header .dim-h-desc { font-size:0.82rem; opacity:0.8; margin-top:2px; }
+
+/* Subsection */
+.subsection { margin-top:14px; }
+.subsection-title { font-size:0.95rem; font-weight:700; margin-bottom:10px; padding-left:10px; border-left:3px solid var(--primary); }
+
+/* Footer */
+.footer { text-align:center; padding:32px 16px; color:var(--text-sec); font-size:0.75rem; }
+</style>
+</head>
+<body>
+
+<!-- ===== Hero ===== -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1>📐 大模型智能客服在线基线文档</h1>
+    <div class="subtitle">建立多维基线体系，确保系统能力评估不因单一维度而结论片面</div>
+    <div class="badges">
+      <span class="badge">📊 8个子维度</span>
+      <span class="badge">🎯 关键结果 + 过程 + 交付链路</span>
+      <span class="badge">⚖️ 多维交叉验证</span>
+      <span class="badge">📋 在线渠道</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 一、文档目的 ===== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--primary-bg);color:var(--primary);">🎯</span>
+    一、文档目的
+  </div>
+  <div class="card">
+    <p style="font-size:0.9rem;">本文档建立大模型智能客服（在线渠道）的<strong>多维基线体系</strong>。通过定义关键结果和过程指标的基线水位，确保对系统能力的评估不因只关注某一维度而导致结论片面。</p>
+    <div class="note note-purple" style="margin-top:14px;">
+      <span>💡</span>
+      <div><strong>核心思路</strong>：以关键结果指标 + 过程指标 + 交付链路关键节点构建多维基线，为系统能力提供客观、可追溯的参照标准。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 二、基线总览 ===== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--blue-bg);color:var(--blue);">📋</span>
+    二、基线总览 — 8维全景
+  </div>
+
+  <div class="dim-grid">
+    <div class="dim-card" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;">
+      <div class="dim-num">①</div>
+      <div class="dim-icon">📈</div>
+      <div class="dim-name">智能解决率</div>
+      <div class="dim-metric">剔除问卷口径解决率</div>
+    </div>
+    <div class="dim-card" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;">
+      <div class="dim-num">②</div>
+      <div class="dim-icon">💰</div>
+      <div class="dim-name">成本</div>
+      <div class="dim-metric">被动人工服务占比</div>
+    </div>
+    <div class="dim-card" style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border:1px solid #fed7aa;">
+      <div class="dim-num">③a</div>
+      <div class="dim-icon">💸</div>
+      <div class="dim-name">退赔准确率</div>
+      <div class="dim-metric">退款准确率 + 赔付准确率</div>
+    </div>
+    <div class="dim-card" style="background:linear-gradient(135deg,#fef2f2,#fecaca);border:1px solid #fca5a5;">
+      <div class="dim-num">③b</div>
+      <div class="dim-icon">⚖️</div>
+      <div class="dim-name">判责准确率</div>
+      <div class="dim-metric">扣款代码 × 责任方</div>
+    </div>
+    <div class="dim-card" style="background:linear-gradient(135deg,#fefce8,#fef9c3);border:1px solid #fde68a;">
+      <div class="dim-num">④a</div>
+      <div class="dim-icon">🔍</div>
+      <div class="dim-name">风险透出</div>
+      <div class="dim-metric">风险漏透率 / 误透率</div>
+    </div>
+    <div class="dim-card" style="background:linear-gradient(135deg,#fdf2f8,#fce7f3);border:1px solid #f9a8d4;">
+      <div class="dim-num">④b</div>
+      <div class="dim-icon">🛡️</div>
+      <div class="dim-name">风险拦截</div>
+      <div class="dim-metric">拦截成功率 / 漏拦率</div>
+    </div>
+    <div class="dim-card" style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:1px solid #99f6e4;">
+      <div class="dim-num">⑤</div>
+      <div class="dim-icon">⏱️</div>
+      <div class="dim-name">端到端响应时长</div>
+      <div class="dim-metric">P50 / P90 / P99</div>
+    </div>
+    <div class="dim-card" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #c4b5fd;">
+      <div class="dim-num">⑥</div>
+      <div class="dim-icon">🪙</div>
+      <div class="dim-name">Session成本</div>
+      <div class="dim-metric">单次会话token消耗×单价</div>
+    </div>
+  </div>
+
+  <!-- Overview Table -->
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title">📊 维度总览矩阵</div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>维度</th><th>维度名称</th><th>核心指标</th><th>基线逻辑</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tag tag-blue">①</span></td><td>智能解决率</td><td>剔除问卷口径解决率</td><td>是否达到正常产品能力水位</td></tr>
+          <tr><td><span class="tag tag-green">②</span></td><td>成本</td><td>被动人工服务占比</td><td>智能未解→人工溢出是否可控</td></tr>
+          <tr><td><span class="tag tag-amber">③-a</span></td><td>退赔准确率</td><td>退款准确率 + 赔付准确率</td><td>基于退赔原则，模型退赔决策是否正确</td></tr>
+          <tr><td><span class="tag tag-red">③-b</span></td><td>判责准确率</td><td>扣款代码准确率 × 责任方准确率</td><td>退赔后责任归属是否正确</td></tr>
+          <tr><td><span class="tag tag-amber">④-a</span></td><td>风险透出</td><td>风险漏透率 / 误透率</td><td>模型是否正确识别并透出风险信号</td></tr>
+          <tr><td><span class="tag tag-red">④-b</span></td><td>风险拦截</td><td>拦截成功率 / 漏拦率</td><td>透出后下游拦截机制是否生效</td></tr>
+          <tr><td><span class="tag tag-teal">⑤</span></td><td>工程端到端响应时长</td><td>P50 / P90 / P99</td><td>用户发起请求到收到完整回复的端到端耗时</td></tr>
+          <tr><td><span class="tag tag-purple">⑥</span></td><td>单session成本</td><td>token消耗 × 单价</td><td>单个用户session的模型推理成本</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 三、维度①：智能解决率 ===== -->
+<div class="section">
+  <div class="dim-header" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);">
+    <div class="dim-h-num" style="color:#3b82f6;">①</div>
+    <div>
+      <div class="dim-h-title" style="color:#1e40af;">📈 智能问题解决率（剔除问卷口径）</div>
+      <div class="dim-h-desc" style="color:#3b82f6;">是否达到正常产品能力水位</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="subsection">
+      <div class="subsection-title">3.1 指标定义</div>
+      <div class="formula">
+        <span class="key">解决率</span> <span class="op">=</span> <span class="val">在线智能_解决量</span> <span class="op">/</span> (<span class="val">在线智能_评价量</span> <span class="op">+</span> <span class="val">未解转人工智能问卷量</span>)
+      </div>
+      <div class="note note-blue">
+        <span>📌</span>
+        <div><strong>口径说明</strong>：评价量(<code>is_smart_eval=1</code>) 和 未解转人工(<code>transfer_staff_nps_type_id=2</code>) 互斥，两者相加构成完整评价分母。</div>
+      </div>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">3.2 基线值</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>时间窗口</th><th>解决率</th><th>数据来源</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td>（示例：2025.11）</td><td>（示例：56.1%）</td><td>驾驶舱/日报</td><td>正常水位参考</td></tr>
+            <tr><td colspan="4" style="text-align:center;color:var(--amber);">⚠️ 【待补充】请填写当前确认的基线值及来源数据</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">3.3 基线标准</div>
+      <div class="note note-amber"><span>⚠️</span><div>【待补充】达标线、容忍波动区间、观察周期等</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 四、维度②：被动人工服务占比 ===== -->
+<div class="section">
+  <div class="dim-header" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">
+    <div class="dim-h-num" style="color:#10b981;">②</div>
+    <div>
+      <div class="dim-h-title" style="color:#065f46;">💰 被动人工服务占比（成本指标）</div>
+      <div class="dim-h-desc" style="color:#10b981;">智能未解→人工溢出是否可控</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="subsection">
+      <div class="subsection-title">4.1 指标定义</div>
+      <p style="font-size:0.88rem;">含义：智能未解决后转人工的服务量占总服务量比例，代表<strong>人工成本压力</strong>。</p>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">4.2 基线值</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>时间窗口</th><th>被动人工占比</th><th>数据来源</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td colspan="4" style="text-align:center;color:var(--amber);">⚠️ 【待补充】当前人工占比数据及目标线</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">4.3 基线标准</div>
+      <div class="note note-amber"><span>⚠️</span><div>【待补充】目标值上限、是否分场景设定阈值等</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 五、维度③-a：退赔准确率 ===== -->
+<div class="section">
+  <div class="dim-header" style="background:linear-gradient(135deg,#fff7ed,#ffedd5);">
+    <div class="dim-h-num" style="color:#f97316;">③a</div>
+    <div>
+      <div class="dim-h-title" style="color:#c2410c;">💸 退赔准确率</div>
+      <div class="dim-h-desc" style="color:#f97316;">基于退赔原则，模型退赔决策是否正确</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="split-2">
+      <!-- 退款 -->
+      <div>
+        <div class="card-title">💳 5.1 退款准确率</div>
+        <div class="subsection">
+          <div class="subsection-title">退款原则（基线依据）</div>
+          <div class="note note-amber"><span>⚠️</span><div>【待补充 - yangdong26 提供】</div></div>
+          <p style="font-size:0.82rem;color:var(--text-sec);margin-top:8px;">指引：请提供退款原则文档，包括：</p>
+          <ul style="font-size:0.82rem;color:var(--text-sec);padding-left:20px;margin-top:4px;">
+            <li><strong>L1 业务可退</strong>：平台规则明确应退的场景</li>
+            <li><strong>L2 服务流程不可退</strong>：运营策略层面管控</li>
+            <li><strong>L3 底线不可退</strong>：绝对红线（欺诈/薅羊毛）</li>
+          </ul>
+        </div>
+        <div class="subsection" style="margin-top:14px;">
+          <div class="subsection-title">退款现状数据</div>
+          <div class="note note-amber"><span>⚠️</span><div>【待补充 - yangdong26 提供】整体退款率、分场景退款率、退款限额/上限规则、退款准确率</div></div>
+        </div>
+        <div class="subsection" style="margin-top:14px;">
+          <div class="subsection-title">基线标准</div>
+          <div class="note note-amber"><span>⚠️</span><div>【待补充】退款准确率目标值、抽样方法、评判规则</div></div>
+        </div>
+      </div>
+      <!-- 赔付 -->
+      <div>
+        <div class="card-title">🏷️ 5.2 赔付准确率</div>
+        <div class="subsection">
+          <div class="subsection-title">赔付原则（基线依据）</div>
+          <div class="note note-amber"><span>⚠️</span><div>【待补充 - yangdong26 提供】</div></div>
+          <p style="font-size:0.82rem;color:var(--text-sec);margin-top:8px;">指引：请提供赔付原则文档，包括：</p>
+          <ul style="font-size:0.82rem;color:var(--text-sec);padding-left:20px;margin-top:4px;">
+            <li>哪些场景应赔付、赔付标准</li>
+            <li>赔付金额上限/规则</li>
+            <li>禁止赔付的场景</li>
+          </ul>
+        </div>
+        <div class="subsection" style="margin-top:14px;">
+          <div class="subsection-title">赔付现状数据</div>
+          <div class="note note-amber"><span>⚠️</span><div>【待补充 - yangdong26 提供】整体赔付率、分场景/分责任方赔付数据、赔付准确率</div></div>
+        </div>
+        <div class="subsection" style="margin-top:14px;">
+          <div class="subsection-title">基线标准</div>
+          <div class="note note-amber"><span>⚠️</span><div>【待补充】赔付准确率目标值、抽样方法、评判规则</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 六、维度③-b：判责准确率 ===== -->
+<div class="section">
+  <div class="dim-header" style="background:linear-gradient(135deg,#fef2f2,#fecaca);">
+    <div class="dim-h-num" style="color:#ef4444;">③b</div>
+    <div>
+      <div class="dim-h-title" style="color:#991b1b;">⚖️ 判责准确率</div>
+      <div class="dim-h-desc" style="color:#ef4444;">退赔后责任归属是否正确</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="subsection">
+      <div class="subsection-title">6.1 指标定义</div>
+      <p style="font-size:0.88rem;">判责由两个要素共同构成：</p>
+      <div class="split-2" style="margin-top:10px;">
+        <div class="note note-blue">
+          <span>📋</span>
+          <div><strong>扣款代码（code）</strong><br>决定扣谁的钱、用什么理由扣</div>
+        </div>
+        <div class="note note-green">
+          <span>👥</span>
+          <div><strong>责任方</strong><br>平台 / 骑手 / 商家 / 用户 / 天气·客观因素</div>
+        </div>
+      </div>
+      <p style="font-size:0.85rem;margin-top:10px;color:var(--text-sec);">两者组合决定最终谁承担成本，任一错误都意味着判责不准确。</p>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">6.2 判责现状</div>
+      <div class="note note-amber"><span>⚠️</span><div>【待补充】当前判责准确率数据、分责任方占比分布、典型判错case类型、餐损改判率</div></div>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">6.3 基线标准</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>子指标</th><th>定义</th><th>目标值</th><th>验证方法</th></tr></thead>
+          <tbody>
+            <tr><td>扣款代码准确率</td><td>code 选择是否正确</td><td style="color:var(--amber);">【待定】</td><td style="color:var(--amber);">【待定】</td></tr>
+            <tr><td>责任方准确率</td><td>责任归属是否正确</td><td style="color:var(--amber);">【待定】</td><td style="color:var(--amber);">【待定】</td></tr>
+            <tr><td><strong>综合判责准确率</strong></td><td>code × 责任方均正确</td><td style="color:var(--amber);">【待定】</td><td style="color:var(--amber);">【待定】</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 七、维度④：风险溢出率 ===== -->
+<div class="section">
+  <div class="dim-header" style="background:linear-gradient(135deg,#fefce8,#fef9c3);">
+    <div class="dim-h-num" style="color:#f59e0b;">④</div>
+    <div>
+      <div class="dim-h-title" style="color:#92400e;">🛡️ 风险溢出率</div>
+      <div class="dim-h-desc" style="color:#f59e0b;">模型透出 + 下游拦截，两段独立验证</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="note note-blue" style="margin-bottom:16px;">
+      <span>ℹ️</span>
+      <div>风险溢出验证分两段：<strong>Part 1</strong> 模型是否正确透出风险信号 + <strong>Part 2</strong> 透出后拦截是否生效。两段独立验证，各有独立基线。</div>
+    </div>
+    <div class="split-2">
+      <!-- Part 1 -->
+      <div>
+        <div class="card-title">🔍 Part 1 - 模型风险透出</div>
+        <p style="font-size:0.82rem;color:var(--text-sec);margin-bottom:10px;">验证目标：模型在应该透出风险信号时，是否正确透出了。</p>
+        <table>
+          <thead><tr><th>子指标</th><th>定义</th><th>基线值</th></tr></thead>
+          <tbody>
+            <tr><td>风险漏透率</td><td>应透出但未透出的比例</td><td style="color:var(--amber);">⚠️待补充</td></tr>
+            <tr><td>风险误透率</td><td>不应透出但错误透出的比例</td><td style="color:var(--amber);">⚠️待补充</td></tr>
+          </tbody>
+        </table>
+        <div class="note note-amber" style="margin-top:10px;"><span>⚠️</span><div>待补充：「风险」的具体定义和分类、模型风险识别漏报/误报数据</div></div>
+      </div>
+      <!-- Part 2 -->
+      <div>
+        <div class="card-title">🛡️ Part 2 - 透出后拦截</div>
+        <p style="font-size:0.82rem;color:var(--text-sec);margin-bottom:10px;">验证目标：风险信号已透出后，下游拦截机制是否有效执行。</p>
+        <table>
+          <thead><tr><th>子指标</th><th>定义</th><th>基线值</th></tr></thead>
+          <tbody>
+            <tr><td>拦截成功率</td><td>透出后被正确拦截的比例</td><td style="color:var(--amber);">⚠️待补充</td></tr>
+            <tr><td>漏拦率</td><td>透出后未被拦截、造成损失</td><td style="color:var(--amber);">⚠️待补充</td></tr>
+          </tbody>
+        </table>
+        <div class="note note-amber" style="margin-top:10px;"><span>⚠️</span><div>待补充：拦截机制实现方式、拦截成功率数据、漏拦损失案例</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 八、维度⑤：工程端到端响应时长 ===== -->
+<div class="section">
+  <div class="dim-header" style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
+    <div class="dim-h-num" style="color:#14b8a6;">⑤</div>
+    <div>
+      <div class="dim-h-title" style="color:#134e4a;">⏱️ 工程端到端响应时长</div>
+      <div class="dim-h-desc" style="color:#14b8a6;">用户发起请求到收到完整回复的端到端耗时</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="subsection">
+      <div class="subsection-title">8.1 指标定义</div>
+      <div class="formula">
+        <span class="key">端到端响应时长</span> <span class="op">=</span> <span class="val">用户发送请求时刻</span> <span class="op">→</span> <span class="val">用户收到完整回复时刻</span> <span class="op">(ms)</span>
+      </div>
+      <div class="note note-blue" style="margin-top:8px;">
+        <span>📌</span>
+        <div>取 <strong>P50 / P90 / P99</strong> 三档统计，覆盖模型推理、RAG检索、上下文拼装、网络传输等全链路。仅统计正常完成session，超时/断连单独标记。</div>
+      </div>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">8.2 基线值</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>分位</th><th>响应时长(ms)</th><th>数据来源</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tag-green">P50</span></td><td style="color:var(--amber);">⚠️ 待补充</td><td>工程监控平台</td><td></td></tr>
+            <tr><td><span class="tag tag-amber">P90</span></td><td style="color:var(--amber);">⚠️ 待补充</td><td>工程监控平台</td><td></td></tr>
+            <tr><td><span class="tag tag-red">P99</span></td><td style="color:var(--amber);">⚠️ 待补充</td><td>工程监控平台</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">8.3 关键分段</div>
+      <p style="font-size:0.85rem;color:var(--text-sec);margin-bottom:8px;">建议按以下维度拆分响应时长构成：</p>
+      <div class="radar-grid">
+        <div class="radar-item"><span style="font-size:1.1rem;">📦</span><span class="radar-label">上下文拼装（含RAG检索）</span></div>
+        <div class="radar-item"><span style="font-size:1.1rem;">🧠</span><span class="radar-label">模型推理（首token/全量）</span></div>
+        <div class="radar-item"><span style="font-size:1.1rem;">⚙️</span><span class="radar-label">后处理 & 网络传输</span></div>
+        <div class="radar-item"><span style="font-size:1.1rem;">🔄</span><span class="radar-label">超时/重试比例</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 九、维度⑥：单session成本消耗 ===== -->
+<div class="section">
+  <div class="dim-header" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);">
+    <div class="dim-h-num" style="color:#8b5cf6;">⑥</div>
+    <div>
+      <div class="dim-h-title" style="color:#5b21b6;">🪙 单session成本消耗</div>
+      <div class="dim-h-desc" style="color:#8b5cf6;">单个用户session的模型推理成本</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="subsection">
+      <div class="subsection-title">9.1 指标定义</div>
+      <div class="formula">
+        <span class="key">单session成本</span> <span class="op">=</span> <span class="val">Σ(各轮次 input_tokens + output_tokens)</span> <span class="op">×</span> <span class="val">对应模型单价</span>
+      </div>
+      <div class="note note-blue" style="margin-top:8px;">
+        <span>📌</span>
+        <div>统计单个完整用户会话（从进线到结束）所消耗的全部模型推理成本。包含主模型调用、辅助模型（意图识别/实体抽取等）、embedding检索成本。以<strong>元/session</strong>为单位。</div>
+      </div>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">9.2 基线值</div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>指标项</th><th>数值</th><th>数据来源</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td>平均 input tokens/session</td><td style="color:var(--amber);">⚠️ 待补充</td><td>模型调用日志</td><td></td></tr>
+            <tr><td>平均 output tokens/session</td><td style="color:var(--amber);">⚠️ 待补充</td><td>模型调用日志</td><td></td></tr>
+            <tr><td><strong>单session综合成本(元)</strong></td><td style="color:var(--amber);">⚠️ 待补充</td><td>按模型定价折算</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="subsection" style="margin-top:20px;">
+      <div class="subsection-title">9.3 成本构成拆分</div>
+      <p style="font-size:0.85rem;color:var(--text-sec);margin-bottom:8px;">建议按以下维度拆分成本构成：</p>
+      <div class="radar-grid">
+        <div class="radar-item"><span style="font-size:1.1rem;">🧠</span><span class="radar-label">主模型推理成本</span></div>
+        <div class="radar-item"><span style="font-size:1.1rem;">🔧</span><span class="radar-label">辅助模型成本</span></div>
+        <div class="radar-item"><span style="font-size:1.1rem;">🔗</span><span class="radar-label">Embedding/RAG检索成本</span></div>
+        <div class="radar-item"><span style="font-size:1.1rem;">🔄</span><span class="radar-label">多轮对话逐轮成本趋势</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 十、基线使用原则 ===== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--green-bg);color:var(--green);">📏</span>
+    十、基线使用原则
+  </div>
+  <div class="principle-grid">
+    <div class="principle-card" style="border-top:3px solid var(--blue);">
+      <h4>🔗 10.1 多维交叉</h4>
+      <p>不允许只通过单一维度评估。<strong>八个子维度必须全部达标</strong>，任一维度未达标即判定未达基线。</p>
+    </div>
+    <div class="principle-card" style="border-top:3px solid var(--green);">
+      <h4>📊 10.2 基线对比</h4>
+      <p>对比<strong>正常水位期数据</strong>（非实验虚高期、非异常波动期），确保基线锚点真实反映产品能力。</p>
+    </div>
+    <div class="principle-card" style="border-top:3px solid var(--amber);">
+      <h4>📂 10.3 场景分层</h4>
+      <p>整体指标通过不代表局部无恶化。需按<strong>场景域</strong>（配送/餐品/售后/退款等）分层验证，防止以整体平均掩盖局部退化。</p>
+    </div>
+    <div class="principle-card" style="border-top:3px solid var(--purple);">
+      <h4>📅 10.4 时间窗口</h4>
+      <p>基线观察期不少于<strong>1周稳态数据</strong>，排除短期波动、节假日、突发事件等干扰。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 十一、待补充材料清单 ===== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--amber-bg);color:var(--amber);">📝</span>
+    十一、待补充材料清单
+  </div>
+  <div class="card">
+    <ul class="pending-list">
+      <li class="pending-item">
+        <span class="pending-num">1</span>
+        <span>退款原则文档</span>
+        <span style="font-size:0.8rem;color:var(--text-sec);">yangdong26</span>
+        <span class="pending-status"><span class="tag tag-amber">待提供</span></span>
+      </li>
+      <li class="pending-item">
+        <span class="pending-num">2</span>
+        <span>赔付原则文档</span>
+        <span style="font-size:0.8rem;color:var(--text-sec);">yangdong26</span>
+        <span class="pending-status"><span class="tag tag-amber">待提供</span></span>
+      </li>
+      <li class="pending-item">
+        <span class="pending-num">3</span>
+        <span>退款/赔付现状数据及限额</span>
+        <span style="font-size:0.8rem;color:var(--text-sec);">yangdong26</span>
+        <span class="pending-status"><span class="tag tag-amber">待提供</span></span>
+      </li>
+      <li class="pending-item">
+        <span class="pending-num">4</span>
+        <span>判责现状数据（分责任方）</span>
+        <span style="font-size:0.8rem;color:var(--text-sec);">待指定</span>
+        <span class="pending-status"><span class="tag tag-amber">待提供</span></span>
+      </li>
+      <li class="pending-item">
+        <span class="pending-num">5</span>
+        <span>风险定义及风险透出/拦截现状数据</span>
+        <span style="font-size:0.8rem;color:var(--text-sec);">待指定</span>
+        <span class="pending-status"><span class="tag tag-amber">待提供</span></span>
+      </li>
+      <li class="pending-item">
+        <span class="pending-num">6</span>
+        <span>解决率/人工占比基线确认值</span>
+        <span style="font-size:0.8rem;color:var(--text-sec);">待指定</span>
+        <span class="pending-status"><span class="tag tag-amber">待提供</span></span>
+      </li>
+      <li class="pending-item">
+        <span class="pending-num">7</span>
+        <span>工程端到端响应时长数据（P50/P90/P99）</span>
+        <span style="font-size:0.8rem;color:var(--text-sec);">待指定（工程侧）</span>
+        <span class="pending-status"><span class="tag tag-amber">待提供</span></span>
+      </li>
+      <li class="pending-item">
+        <span class="pending-num">8</span>
+        <span>模型调用token消耗及单session成本数据</span>
+        <span style="font-size:0.8rem;color:var(--text-sec);">待指定（工程侧）</span>
+        <span class="pending-status"><span class="tag tag-amber">待提供</span></span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  大模型智能客服在线基线文档 · 仅供内部使用 · 所有者：杨东 · 补充后由 yangdong26 统一整合
+</div>
+
+</body>
+</html>
