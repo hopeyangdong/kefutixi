@@ -399,78 +399,120 @@ tr:hover { background: #f8fafc; }
     一、总览 — 核心飞轮
   </div>
 
-  <div class="card flywheel-container">
-    <div class="flywheel-layers">
+  <div class="card" style="padding:32px 24px;">
+    <!-- SVG Flywheel Diagram -->
+    <svg viewBox="0 0 880 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;">
+      <defs>
+        <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="#f97316"/>
+        </marker>
+        <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="#3b82f6"/>
+        </marker>
+        <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="#94a3b8"/>
+        </marker>
+        <linearGradient id="nodeGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#dbeafe"/>
+          <stop offset="100%" stop-color="#bfdbfe"/>
+        </linearGradient>
+        <linearGradient id="supportGreen" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ecfdf5"/>
+          <stop offset="100%" stop-color="#d1fae5"/>
+        </linearGradient>
+        <linearGradient id="supportPurple" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f5f3ff"/>
+          <stop offset="100%" stop-color="#ede9fe"/>
+        </linearGradient>
+      </defs>
 
-      <!-- Layer Label -->
-      <div class="flywheel-label" style="color:#f97316;font-weight:700;">
-        ⬡ 飞轮 — 一次优化的逻辑链路
-      </div>
+      <!-- === Layer 1 Label === -->
+      <text x="40" y="24" font-size="13" font-weight="700" fill="#3b82f6">⬡ 飞轮 — 一次优化的逻辑链路</text>
 
-      <!-- Layer 1: Core Loop -->
-      <div style="position:relative; padding-top:44px; margin-bottom:24px;">
-        <div class="loop-return"></div>
-        <div class="loop-label">🔄 循环驱动</div>
-        <div class="flywheel-loop">
-          <div class="fw-node blue-node">💡 问题发现</div>
-          <div class="fw-arrow">→</div>
-          <div class="fw-node blue-node">📝 流程产出</div>
-          <div class="fw-arrow">→</div>
-          <div class="fw-node blue-node">🤖 模型承接</div>
-          <div class="fw-arrow">→</div>
-          <div class="fw-node blue-node">📈 效果观测</div>
-        </div>
-      </div>
+      <!-- === Loop Return (dashed arc from 效果观测 back to 问题发现) === -->
+      <path d="M 760,70 Q 760,18 440,18 Q 120,18 120,70"
+            stroke="#3b82f6" stroke-width="2" stroke-dasharray="6,4" fill="none"
+            marker-end="url(#arrowBlue)"/>
+      <rect x="400" y="6" width="80" height="22" rx="11" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="440" y="21" font-size="11" font-weight="600" fill="#3b82f6" text-anchor="middle">🔄 循环</text>
 
-      <!-- Connectors -->
-      <div style="display:flex; justify-content:space-around; padding:0 30px; margin-bottom:4px;">
-        <div style="text-align:center;">
-          <div style="width:2px;height:16px;background:#fdba74;margin:0 auto;"></div>
-          <div style="color:#f97316;font-size:0.6rem;">▼</div>
-        </div>
-        <div style="text-align:center; position:relative;">
-          <div style="width:2px;height:16px;background:#fdba74;margin:0 auto;"></div>
-          <div style="color:#f97316;font-size:0.6rem;">▼</div>
-          <div style="position:absolute;top:2px;left:20px;font-size:0.65rem;color:var(--text-sec);white-space:nowrap;">(痛点定义+方案)</div>
-        </div>
-        <div style="text-align:center; position:relative;">
-          <div style="width:2px;height:16px;background:#fdba74;margin:0 auto;"></div>
-          <div style="color:#f97316;font-size:0.6rem;">▼</div>
-          <div style="position:absolute;top:2px;left:20px;font-size:0.65rem;color:var(--text-sec);white-space:nowrap;">(Skill落地+上线)</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="width:2px;height:16px;background:#22c55e;margin:0 auto;"></div>
-          <div style="color:#22c55e;font-size:0.6rem;">▼</div>
-        </div>
-      </div>
+      <!-- === 4 Core Nodes (blue) === -->
+      <!-- 问题发现 -->
+      <rect x="60" y="50" width="150" height="48" rx="12" fill="url(#nodeGrad)" stroke="#3b82f6" stroke-width="2"/>
+      <text x="135" y="79" font-size="14" font-weight="700" fill="#1e40af" text-anchor="middle">💡 问题发现</text>
+      <!-- Arrow 1→2 -->
+      <line x1="210" y1="74" x2="248" y2="74" stroke="#f97316" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
 
-      <!-- Layer 2: Work Domains -->
-      <div class="flywheel-label" style="color:#f97316;font-weight:700;">
-        ⬡ 工作域 — 日常运营动作
-      </div>
-      <div class="flywheel-domains">
-        <div class="fw-domain d1">
-          指标监控与异常响应
-          <div class="fw-domain-sub">Case 分析与问题发现</div>
-        </div>
-        <div class="fw-domain d2" style="grid-column: span 2;">
-          策略迭代与模型优化
-          <div class="fw-domain-sub">同时接收「流程产出」和「模型承接」</div>
-        </div>
-        <div class="fw-domain d4">
-          实验管理与效果评估
-        </div>
-      </div>
+      <!-- 流程产出 -->
+      <rect x="258" y="50" width="150" height="48" rx="12" fill="url(#nodeGrad)" stroke="#3b82f6" stroke-width="2"/>
+      <text x="333" y="79" font-size="14" font-weight="700" fill="#1e40af" text-anchor="middle">📝 流程产出</text>
+      <!-- Arrow 2→3 -->
+      <line x1="408" y1="74" x2="466" y2="74" stroke="#f97316" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
 
-      <!-- Layer 3: Support -->
-      <div style="margin-top:16px;">
-        <div class="flywheel-support">
-          <div class="fw-support s1">🛡️ 风险防控与合规巡检</div>
-          <div class="fw-support s2">📢 协同拉齐与汇报沟通</div>
-        </div>
-        <div class="support-label">保障层 — 贯穿飞轮全程，不属于特定环节</div>
-      </div>
-    </div>
+      <!-- 模型承接 -->
+      <rect x="476" y="50" width="150" height="48" rx="12" fill="url(#nodeGrad)" stroke="#3b82f6" stroke-width="2"/>
+      <text x="551" y="79" font-size="14" font-weight="700" fill="#1e40af" text-anchor="middle">🤖 模型承接</text>
+      <!-- Arrow 3→4 -->
+      <line x1="626" y1="74" x2="664" y2="74" stroke="#f97316" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+
+      <!-- 效果观测 -->
+      <rect x="674" y="50" width="150" height="48" rx="12" fill="url(#nodeGrad)" stroke="#3b82f6" stroke-width="2"/>
+      <text x="749" y="79" font-size="14" font-weight="700" fill="#1e40af" text-anchor="middle">📈 效果观测</text>
+
+      <!-- === Connectors: Flywheel → Work Domains === -->
+      <!-- 问题发现 → 指标监控 -->
+      <line x1="135" y1="98" x2="135" y2="228" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowGray)"/>
+
+      <!-- 流程产出 → 策略迭代 (left entry) -->
+      <line x1="333" y1="98" x2="400" y2="228" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowGray)"/>
+      <text x="345" y="168" font-size="11" fill="#64748b" transform="rotate(12,345,168)">(痛点定义+方案)</text>
+
+      <!-- 模型承接 → 策略迭代 (right entry) -->
+      <line x1="551" y1="98" x2="490" y2="228" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowGray)"/>
+      <text x="515" y="168" font-size="11" fill="#64748b" transform="rotate(-8,515,168)">(Skill落地+上线)</text>
+
+      <!-- 效果观测 → 实验管理 -->
+      <line x1="749" y1="98" x2="749" y2="228" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowGray)"/>
+
+      <!-- === Layer 2 Label === -->
+      <text x="40" y="218" font-size="13" font-weight="700" fill="#f97316">⬡ 工作域 — 日常运营动作</text>
+
+      <!-- === Work Domain Cards (uniform size) === -->
+      <!-- 指标监控与异常响应 -->
+      <rect x="30" y="232" width="230" height="80" rx="10" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+      <text x="145" y="262" font-size="13" font-weight="700" fill="#c2410c" text-anchor="middle">指标监控与异常响应</text>
+      <text x="145" y="282" font-size="11" fill="#78716c" text-anchor="middle">Case 分析与问题发现</text>
+      <text x="145" y="300" font-size="10" fill="#a8a29e" text-anchor="middle">覆盖飞轮「问题发现」环节</text>
+
+      <!-- 策略迭代与模型优化 -->
+      <rect x="280" y="232" width="320" height="80" rx="10" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+      <text x="440" y="262" font-size="13" font-weight="700" fill="#c2410c" text-anchor="middle">策略迭代与模型优化</text>
+      <text x="440" y="282" font-size="11" fill="#78716c" text-anchor="middle">同时接收「流程产出」和「模型承接」</text>
+      <text x="440" y="300" font-size="10" fill="#a8a29e" text-anchor="middle">痛点定义 → 方案产出 → Skill落地</text>
+
+      <!-- 实验管理与效果评估 -->
+      <rect x="620" y="232" width="230" height="80" rx="10" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+      <text x="735" y="262" font-size="13" font-weight="700" fill="#15803d" text-anchor="middle">实验管理与效果评估</text>
+      <text x="735" y="282" font-size="11" fill="#78716c" text-anchor="middle">灰度验证 → 量化回溯</text>
+      <text x="735" y="300" font-size="10" fill="#a8a29e" text-anchor="middle">覆盖飞轮「效果观测」环节</text>
+
+      <!-- === Layer 3: Support === -->
+      <!-- Dashed border to show "贯穿全程" -->
+      <rect x="30" y="370" width="820" height="60" rx="10" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="440" y="348" font-size="12" font-weight="600" fill="#94a3b8" text-anchor="middle">保障层 — 贯穿飞轮全程，不属于特定环节</text>
+
+      <!-- 风险防控 -->
+      <rect x="40" y="376" width="390" height="46" rx="10" fill="url(#supportGreen)" stroke="#a7f3d0" stroke-width="1.5"/>
+      <text x="235" y="404" font-size="13" font-weight="700" fill="#065f46" text-anchor="middle">🛡️ 风险防控与合规巡检</text>
+
+      <!-- 协同汇报 -->
+      <rect x="450" y="376" width="390" height="46" rx="10" fill="url(#supportPurple)" stroke="#c4b5fd" stroke-width="1.5"/>
+      <text x="645" y="404" font-size="13" font-weight="700" fill="#5b21b6" text-anchor="middle">📢 协同拉齐与汇报沟通</text>
+
+      <!-- Vertical dashed lines from support to flywheel (subtle, showing "贯穿") -->
+      <line x1="235" y1="370" x2="235" y2="312" stroke="#d1d5db" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="645" y1="370" x2="645" y2="312" stroke="#d1d5db" stroke-width="1" stroke-dasharray="3,3"/>
+    </svg>
   </div>
 </div>
 
