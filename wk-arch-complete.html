@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外客链路架构 · 完整版</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --primary: #6366f1;
+    --l1: #3b82f6; --l2: #6366f1; --l3: #8b5cf6; --l4: #a855f7;
+    --l5: #d946ef; --l6: #ec4899; --l7: #f43f5e;
+    --card-bg: #ffffff;
+    --text: #1e293b; --text-secondary: #64748b; --text-muted: #94a3b8;
+    --border: #e2e8f0;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --mono: "SF Mono", "Fira Code", "Cascadia Code", Menlo, Consolas, monospace;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -4px rgba(0,0,0,.04);
+    --radius: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; -webkit-font-smoothing: antialiased; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 30%, #a855f7 60%, #ec4899 100%);
+    color: #fff; padding: 56px 24px 48px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(0,0,0,.1) 0%, transparent 50%);
+  }
+  .hero * { position: relative; z-index: 1; }
+  .hero h1 { font-size: 2.4em; font-weight: 800; letter-spacing: .02em; margin-bottom: 8px; text-shadow: 0 2px 12px rgba(0,0,0,.15); }
+  .hero .subtitle { font-size: 1.1em; opacity: .92; margin-bottom: 24px; font-weight: 400; }
+  .hero .badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; }
+  .hero .badge {
+    background: rgba(255,255,255,.18); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.25);
+    padding: 6px 18px; border-radius: 20px; font-size: .88em; font-weight: 500; white-space: nowrap;
+  }
+  .hero .date-note { font-size: .85em; opacity: .7; margin-top: 8px; }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow);
+    border: 1px solid var(--border); margin-top: 28px; overflow: hidden;
+  }
+  .card-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .card-header .layer-num {
+    width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: .95em; flex-shrink: 0;
+  }
+  .card-header h2 { font-size: 1.2em; font-weight: 700; }
+  .card-header .desc { font-size: .88em; color: var(--text-secondary); margin-left: auto; }
+  .card-body { padding: 20px 24px 24px; }
+
+  /* Section titles */
+  .section-title {
+    font-size: 1.35em; font-weight: 700; margin: 40px 0 4px; padding-left: 14px;
+    border-left: 4px solid var(--primary); color: var(--text); line-height: 1.4;
+  }
+  .section-subtitle { color: var(--text-secondary); font-size: .9em; margin-bottom: 4px; padding-left: 18px; }
+
+  /* Annotation box */
+  .anno-box {
+    background: linear-gradient(135deg, #eef2ff, #faf5ff); border: 1px solid #c7d2fe;
+    border-radius: var(--radius); padding: 20px 24px; margin-top: 28px;
+  }
+  .anno-box h3 { font-size: 1.05em; color: var(--primary); margin-bottom: 10px; }
+  .anno-box ul { padding-left: 20px; }
+  .anno-box li { margin-bottom: 6px; color: var(--text-secondary); font-size: .93em; }
+  .anno-box li strong { color: var(--text); }
+
+  /* Tags / Pills */
+  .tag {
+    display: inline-block; padding: 2px 10px; border-radius: 6px;
+    font-size: .78em; font-weight: 600; line-height: 1.7; white-space: nowrap;
+  }
+  .tag-purple { background: #f3e8ff; color: #7c3aed; }
+  .tag-blue { background: #dbeafe; color: #2563eb; }
+  .tag-green { background: #dcfce7; color: #16a34a; }
+  .tag-amber { background: #fef3c7; color: #d97706; }
+  .tag-pink { background: #fce7f3; color: #db2777; }
+  .tag-red { background: #fee2e2; color: #dc2626; }
+  .tag-indigo { background: #e0e7ff; color: #4f46e5; }
+  .tag-gray { background: #f1f5f9; color: #475569; }
+  .tag-rose { background: #ffe4e6; color: #e11d48; }
+  .tag-cyan { background: #cffafe; color: #0891b2; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; margin-top: 12px; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: .9em; }
+  thead { position: sticky; top: 0; z-index: 2; }
+  th {
+    background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff;
+    padding: 12px 14px; text-align: left; font-weight: 600; font-size: .88em; white-space: nowrap;
+  }
+  td { padding: 10px 14px; border-top: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  tr:hover td { background: #eef2ff; }
+  td code, .mono {
+    font-family: var(--mono); font-size: .85em; background: #f1f5f9;
+    padding: 2px 6px; border-radius: 4px; color: #6366f1; word-break: break-all;
+  }
+
+  /* Nested cards / tree */
+  .sub-layer {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    border: 1px solid var(--border); background: #fafbff; transition: box-shadow .15s;
+  }
+  .sub-layer:hover { box-shadow: var(--shadow-md); }
+  .sub-layer .sl-badge {
+    width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: .8em; flex-shrink: 0; margin-top: 2px;
+  }
+  .sub-layer .sl-content { flex: 1; }
+  .sub-layer .sl-title { font-weight: 600; font-size: .95em; }
+  .sub-layer .sl-desc { font-size: .85em; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Flow items */
+  .flow-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+  .flow-node {
+    padding: 6px 14px; border-radius: 8px; font-size: .88em; font-weight: 500;
+    border: 1px solid var(--border); background: #fff;
+  }
+  .flow-arrow { color: var(--text-muted); font-size: 1.1em; }
+
+  /* Route cards */
+  .route-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 12px; }
+  .route-card {
+    padding: 14px 16px; border-radius: 10px; border: 1px solid var(--border);
+    background: #fff; transition: box-shadow .15s;
+  }
+  .route-card:hover { box-shadow: var(--shadow-md); }
+  .route-card .rc-title { font-weight: 600; font-size: .95em; margin-bottom: 4px; }
+  .route-card .rc-desc { font-size: .85em; color: var(--text-secondary); }
+
+  /* Parallel chains */
+  .chain-group { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
+  .chain-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 14px 16px; border-radius: 10px; border-left: 4px solid var(--primary);
+    background: #fafbff; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .chain-item .ci-num {
+    width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    background: var(--primary); color: #fff; font-weight: 700; font-size: .75em; flex-shrink: 0; margin-top: 2px;
+  }
+
+  /* Appendix grid */
+  .appendix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+  .appendix-card {
+    border-radius: 10px; border: 1px solid var(--border); background: #fff;
+    overflow: hidden; transition: box-shadow .15s, transform .15s;
+  }
+  .appendix-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+  .appendix-card .ac-top { height: 5px; }
+  .appendix-card .ac-body { padding: 14px 16px; }
+  .appendix-card .ac-badge {
+    width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: .9em; margin-bottom: 8px;
+  }
+  .appendix-card .ac-title { font-weight: 700; font-size: .95em; margin-bottom: 4px; }
+  .appendix-card .ac-desc { font-size: .82em; color: var(--text-secondary); line-height: 1.55; }
+  .appendix-card .ac-stats { margin-top: 8px; }
+
+  /* SVG diagram */
+  .svg-wrap { margin-top: 16px; text-align: center; }
+  .svg-wrap svg { width: 100%; max-width: 800px; height: auto; }
+
+  /* Details/Summary */
+  details { margin-top: 10px; }
+  details summary {
+    cursor: pointer; font-weight: 600; font-size: .95em; padding: 10px 14px;
+    border-radius: 8px; background: #f8fafc; border: 1px solid var(--border);
+    list-style: none; display: flex; align-items: center; gap: 8px; transition: background .15s;
+  }
+  details summary:hover { background: #eef2ff; }
+  details summary::before { content: '▶'; font-size: .7em; transition: transform .2s; }
+  details[open] summary::before { transform: rotate(90deg); }
+  details .details-body { padding: 14px 16px; border: 1px solid var(--border); border-top: 0; border-radius: 0 0 8px 8px; background: #fff; }
+
+  /* Footer */
+  .footer {
+    margin-top: 48px; padding: 28px 24px; text-align: center;
+    border-top: 1px solid var(--border); color: var(--text-muted); font-size: .85em;
+  }
+  .footer .footer-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 24px; margin-bottom: 12px; }
+  .footer .footer-item { display: flex; align-items: center; gap: 6px; }
+  .footer .footer-label { font-weight: 600; color: var(--text-secondary); }
+
+  /* Scene grid for Layer 6 */
+  .scene-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .scene-card {
+    padding: 16px; border-radius: 10px; border: 1px solid var(--border); background: #fff;
+  }
+  .scene-card .sc-title { font-weight: 700; font-size: .95em; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .scene-card .sc-list { font-size: .85em; color: var(--text-secondary); }
+  .scene-card .sc-list li { margin-bottom: 3px; }
+
+  /* Output row for Layer 7 */
+  .output-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px; }
+  .output-item {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    border-radius: 10px; border: 1px solid var(--border); background: #fafbff;
+  }
+  .output-item .oi-icon {
+    width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.2em; flex-shrink: 0;
+  }
+
+  /* Stats row */
+  .stats-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+  .stat-item {
+    padding: 8px 16px; border-radius: 8px; background: #f1f5f9; text-align: center; flex: 1; min-width: 100px;
+  }
+  .stat-item .stat-num { font-size: 1.3em; font-weight: 800; color: var(--primary); }
+  .stat-item .stat-label { font-size: .78em; color: var(--text-secondary); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 1.6em; }
+    .hero { padding: 36px 16px 32px; }
+    .appendix-grid { grid-template-columns: repeat(2, 1fr); }
+    .scene-grid { grid-template-columns: 1fr; }
+    .output-grid { grid-template-columns: 1fr; }
+    .card-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .card-header .desc { margin-left: 0; }
+    .container { padding: 0 12px 40px; }
+    table { font-size: .82em; }
+    th, td { padding: 8px 10px; }
+  }
+  @media (max-width: 480px) {
+    .appendix-grid { grid-template-columns: 1fr; }
+    .hero .badges { flex-direction: column; align-items: center; }
+    .route-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Highlight box */
+  .highlight-box {
+    padding: 14px 18px; border-radius: 10px; margin: 12px 0;
+    font-size: .9em;
+  }
+  .highlight-box.info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+  .highlight-box.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+  .highlight-box.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+
+  /* Signal list */
+  .signal-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-top: 10px; }
+  .signal-item {
+    padding: 10px 14px; border-radius: 8px; background: #fff; border: 1px solid var(--border);
+    font-size: .88em; display: flex; align-items: center; gap: 8px;
+  }
+  .signal-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Design matrix specifics */
+  .design-matrix td:first-child { font-weight: 600; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<!-- ===================== 1. HERO BANNER ===================== -->
+<div class="hero">
+  <h1>外客链路架构 · 完整版</h1>
+  <p class="subtitle">含工单通行证子链路 · AIDA 主画布 7 层架构</p>
+  <div class="badges">
+    <span class="badge">🏗️ 7 层主链路</span>
+    <span class="badge">📎 15 个附录（A~O）</span>
+    <span class="badge">🤖 20+ AIDA 子应用</span>
+    <span class="badge">🔀 46 路模型AB</span>
+  </div>
+  <p class="date-note">整合日期: 2026-07-02 ~ 2026-07-07 &nbsp;|&nbsp; 数据来源: AIDA 平台</p>
+</div>
+
+<div class="container">
+
+<!-- ===================== 2. 文档导读 ===================== -->
+<div class="anno-box">
+  <h3>📖 文档导读</h3>
+  <ul>
+    <li><strong>正文</strong>：7 层主链路（Layer 1 ~ 7）+ 15 个附录（A ~ O），全面覆盖外客智能客服完整处理流程</li>
+    <li><strong>已下钻附录</strong>：<span class="tag tag-green">A</span> <span class="tag tag-green">B</span> <span class="tag tag-green">C</span> <span class="tag tag-green">D</span> <span class="tag tag-green">E</span> <span class="tag tag-green">F</span> <span class="tag tag-green">G</span> <span class="tag tag-green">H</span> <span class="tag tag-green">I</span> <span class="tag tag-green">J</span> <span class="tag tag-green">K</span> <span class="tag tag-green">L</span> <span class="tag tag-green">M</span> <span class="tag tag-green">N</span> <span class="tag tag-green">O</span></li>
+    <li><strong>待下钻子链路</strong>：<span class="tag tag-amber">履约分流</span> <span class="tag tag-amber">售后实验</span> <span class="tag tag-amber">全场景实验</span> <span class="tag tag-amber">发票场景</span> <span class="tag tag-amber">修改订单信息</span></li>
+  </ul>
+</div>
+
+<!-- ===================== 3. 七层架构总览 SVG ===================== -->
+<h2 class="section-title">七层架构总览</h2>
+<p class="section-subtitle">AIDA 主画布 7 层 Pipeline · 从入口路由到输出后处理</p>
+
+<div class="card">
+  <div class="card-body">
+    <div class="svg-wrap">
+      <svg viewBox="0 0 800 740" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+          </marker>
+          <filter id="dshadow" x="-4%" y="-4%" width="108%" height="116%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity=".08"/>
+          </filter>
+          <!-- Layer gradients -->
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#60a5fa"/></linearGradient>
+          <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#818cf8"/></linearGradient>
+          <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#a78bfa"/></linearGradient>
+          <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#c084fc"/></linearGradient>
+          <linearGradient id="g5" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d946ef"/><stop offset="100%" stop-color="#e879f9"/></linearGradient>
+          <linearGradient id="g6" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#f472b6"/></linearGradient>
+          <linearGradient id="g7" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f43f5e"/><stop offset="100%" stop-color="#fb7185"/></linearGradient>
+        </defs>
+
+        <!-- Layer 1 -->
+        <g filter="url(#dshadow)">
+          <rect x="50" y="20" width="700" height="64" rx="14" fill="url(#g1)"/>
+          <rect x="58" y="28" width="36" height="36" rx="8" fill="rgba(255,255,255,.25)"/>
+          <text x="76" y="53" text-anchor="middle" fill="#fff" font-size="16" font-weight="800">1</text>
+          <text x="110" y="46" fill="#fff" font-size="16" font-weight="700">入口路由</text>
+          <text x="110" y="66" fill="rgba(255,255,255,.8)" font-size="12">开始 → 参数解析 → 工单通行证分流</text>
+        </g>
+        <!-- Arrow 1→2 -->
+        <line x1="400" y1="84" x2="400" y2="110" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- Layer 2 -->
+        <g filter="url(#dshadow)">
+          <rect x="50" y="116" width="700" height="64" rx="14" fill="url(#g2)"/>
+          <rect x="58" y="124" width="36" height="36" rx="8" fill="rgba(255,255,255,.25)"/>
+          <text x="76" y="149" text-anchor="middle" fill="#fff" font-size="16" font-weight="800">2</text>
+          <text x="110" y="142" fill="#fff" font-size="16" font-weight="700">首轮 / 对话分流</text>
+          <text x="110" y="162" fill="rgba(255,255,255,.8)" font-size="12">是否首轮 → 首轮推荐 / 对话阶段</text>
+        </g>
+        <line x1="400" y1="180" x2="400" y2="206" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- Layer 3 -->
+        <g filter="url(#dshadow)">
+          <rect x="50" y="212" width="700" height="64" rx="14" fill="url(#g3)"/>
+          <rect x="58" y="220" width="36" height="36" rx="8" fill="rgba(255,255,255,.25)"/>
+          <text x="76" y="245" text-anchor="middle" fill="#fff" font-size="16" font-weight="800">3</text>
+          <text x="110" y="238" fill="#fff" font-size="16" font-weight="700">业务类型路由</text>
+          <text x="110" y="258" fill="rgba(255,255,255,.8)" font-size="12">6 信号并发 → 外卖 / 拼好饭 / 闪购 / 医药分流</text>
+        </g>
+        <line x1="400" y1="276" x2="400" y2="302" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- Layer 4 -->
+        <g filter="url(#dshadow)">
+          <rect x="50" y="308" width="700" height="64" rx="14" fill="url(#g4)"/>
+          <rect x="58" y="316" width="36" height="36" rx="8" fill="rgba(255,255,255,.25)"/>
+          <text x="76" y="341" text-anchor="middle" fill="#fff" font-size="16" font-weight="800">4</text>
+          <text x="110" y="334" fill="#fff" font-size="16" font-weight="700">前置处理</text>
+          <text x="110" y="354" fill="rgba(255,255,255,.8)" font-size="12">对话历史获取 → 关键词干预 → 主动服务</text>
+        </g>
+        <line x1="400" y1="372" x2="400" y2="398" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- Layer 5 -->
+        <g filter="url(#dshadow)">
+          <rect x="50" y="404" width="700" height="64" rx="14" fill="url(#g5)"/>
+          <rect x="58" y="412" width="36" height="36" rx="8" fill="rgba(255,255,255,.25)"/>
+          <text x="76" y="437" text-anchor="middle" fill="#fff" font-size="16" font-weight="800">5</text>
+          <text x="110" y="430" fill="#fff" font-size="16" font-weight="700">厘清与分流</text>
+          <text x="110" y="450" fill="rgba(255,255,255,.8)" font-size="12">场景分类模型 → 高价值分流 → 动态转人工</text>
+        </g>
+        <line x1="400" y1="468" x2="400" y2="494" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- Layer 6 -->
+        <g filter="url(#dshadow)">
+          <rect x="50" y="500" width="700" height="64" rx="14" fill="url(#g6)"/>
+          <rect x="58" y="508" width="36" height="36" rx="8" fill="rgba(255,255,255,.25)"/>
+          <text x="76" y="533" text-anchor="middle" fill="#fff" font-size="16" font-weight="800">6</text>
+          <text x="110" y="526" fill="#fff" font-size="16" font-weight="700">场景分流与多模型执行</text>
+          <text x="110" y="546" fill="rgba(255,255,255,.8)" font-size="12">履约 / 售后 / 全场景 / 营销 / 发票 / 修改订单</text>
+        </g>
+        <line x1="400" y1="564" x2="400" y2="590" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+        <!-- Layer 7 -->
+        <g filter="url(#dshadow)">
+          <rect x="50" y="596" width="700" height="64" rx="14" fill="url(#g7)"/>
+          <rect x="58" y="604" width="36" height="36" rx="8" fill="rgba(255,255,255,.25)"/>
+          <text x="76" y="629" text-anchor="middle" fill="#fff" font-size="16" font-weight="800">7</text>
+          <text x="110" y="622" fill="#fff" font-size="16" font-weight="700">输出与后处理</text>
+          <text x="110" y="642" fill="rgba(255,255,255,.8)" font-size="12">转人工判断 → 分句 → 话术改写 → 异步回调</text>
+        </g>
+
+        <!-- End node -->
+        <line x1="400" y1="660" x2="400" y2="686" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+        <rect x="370" y="692" width="60" height="30" rx="15" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="400" y="712" text-anchor="middle" fill="#64748b" font-size="12" font-weight="600">结束</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 4. Layer 1 详解 ===================== -->
+<h2 class="section-title">Layer 1 详解：工单通行证</h2>
+<p class="section-subtitle">入口路由 · 嵌套 7 层子链路 · appId: 5cc64a58-...</p>
+
+<div class="card">
+  <div class="card-header">
+    <div class="layer-num" style="background:var(--l1);">L1</div>
+    <h2>工单通行证子链路</h2>
+    <span class="desc"><span class="tag tag-blue">嵌套7层</span></span>
+  </div>
+  <div class="card-body">
+    <div class="flow-row" style="margin-bottom:16px;">
+      <span class="flow-node" style="background:var(--l1);color:#fff;border-color:var(--l1);">开始</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node">参数解析</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node" style="background:#eef2ff;border-color:#c7d2fe;">工单通行证分流</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node">后续链路</span>
+    </div>
+
+    <p style="font-weight:600;margin-bottom:10px;font-size:.95em;">子链路 7 层结构：</p>
+
+    <div class="sub-layer">
+      <div class="sl-badge" style="background:#3b82f6;">1</div>
+      <div class="sl-content">
+        <div class="sl-title">入口与准入</div>
+        <div class="sl-desc">工单存在性校验 → 业务类型准入判断 → 不满足条件即返回"不准入"</div>
+      </div>
+    </div>
+    <div class="sub-layer">
+      <div class="sl-badge" style="background:#4f46e5;">2</div>
+      <div class="sl-content">
+        <div class="sl-title">信号加载 <span class="tag tag-blue">7 个 API 并发</span></div>
+        <div class="sl-desc">内含信号加载子模型（appId: 7151f848-...）。并发请求工单详情、用户信息、订单状态等 7 路信号数据</div>
+      </div>
+    </div>
+    <div class="sub-layer">
+      <div class="sl-badge" style="background:#6366f1;">3</div>
+      <div class="sl-content">
+        <div class="sl-title">AB 实验分流</div>
+        <div class="sl-desc">根据实验配置将请求分配到实验组 / 对照组，对照组直接返回"不准入"</div>
+      </div>
+    </div>
+    <div class="sub-layer">
+      <div class="sl-badge" style="background:#7c3aed;">4</div>
+      <div class="sl-content">
+        <div class="sl-title">轮次管理 <span class="tag tag-purple">对话历史 Agent</span></div>
+        <div class="sl-desc">内含对话历史 Agent（appId: 6c145a5e-...）。双路径架构：有历史 → 解析上文；无历史 → 初始化对话状态。轮次熔断：超过阈值则触发转人工</div>
+      </div>
+    </div>
+    <div class="sub-layer">
+      <div class="sl-badge" style="background:#8b5cf6;">5</div>
+      <div class="sl-content">
+        <div class="sl-title">首轮 / 非首轮分流</div>
+        <div class="sl-desc">首轮：返回固定欢迎话术，结束处理；非首轮：进入后续模型推理流程</div>
+      </div>
+    </div>
+    <div class="sub-layer">
+      <div class="sl-badge" style="background:#a855f7;">6</div>
+      <div class="sl-content">
+        <div class="sl-title">用户意图识别 + 未结案处理</div>
+        <div class="sl-desc">判断用户是否在咨询工单问题。未结案催促场景 → 发送催促卡片（空回复）。含对照组分流逻辑</div>
+      </div>
+    </div>
+    <div class="sub-layer">
+      <div class="sl-badge" style="background:#c026d3;">7</div>
+      <div class="sl-content">
+        <div class="sl-title">次轮模型推理 <span class="tag tag-purple">LLM</span></div>
+        <div class="sl-desc">模型：<code>deepseek-v4-flash-tencent</code> · 总结工单摘要（附录A Prompt）→ 模型推理生成回复 → 返回"准入处理"结果</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 5. Layer 2 详解 ===================== -->
+<h2 class="section-title">Layer 2 详解：首轮推荐</h2>
+<p class="section-subtitle">首轮/对话分流 · 5 并行 LLM 信号收集 · 26 节点 25 边 4 层</p>
+
+<div class="card">
+  <div class="card-header">
+    <div class="layer-num" style="background:var(--l2);">L2</div>
+    <h2>首轮推荐（带重复进线）</h2>
+    <span class="desc"><span class="tag tag-indigo">26 节点</span> <span class="tag tag-gray">25 边</span> <span class="tag tag-blue">4 层</span></span>
+  </div>
+  <div class="card-body">
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-num">26</div><div class="stat-label">节点数</div></div>
+      <div class="stat-item"><div class="stat-num">25</div><div class="stat-label">边数</div></div>
+      <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">并行信号</div></div>
+      <div class="stat-item"><div class="stat-num">57+</div><div class="stat-label">API 调用</div></div>
+    </div>
+
+    <p style="font-weight:600;margin:14px 0 8px;font-size:.95em;">5 并行 LLM 信号收集：</p>
+    <div class="signal-list">
+      <div class="signal-item"><div class="signal-dot" style="background:#3b82f6;"></div><strong>订单信息</strong>&nbsp;<span class="tag tag-blue">38 个 API 并发</span></div>
+      <div class="signal-item"><div class="signal-dot" style="background:#6366f1;"></div><strong>用户信息</strong>&nbsp;<span class="tag tag-blue">12 个 API 并发</span></div>
+      <div class="signal-item"><div class="signal-dot" style="background:#8b5cf6;"></div><strong>外呼信息</strong></div>
+      <div class="signal-item"><div class="signal-dot" style="background:#a855f7;"></div><strong>商家信息</strong>&nbsp;<span class="tag tag-blue">7 个 API 并发</span></div>
+      <div class="signal-item"><div class="signal-dot" style="background:#d946ef;"></div><strong>用户券包信息</strong></div>
+    </div>
+
+    <details style="margin-top:16px;">
+      <summary>两路 Prompt 差异对比</summary>
+      <div class="details-body">
+        <div class="route-grid">
+          <div class="route-card" style="border-top:3px solid #6366f1;">
+            <div class="rc-title">原首轮推荐 Prompt <span class="tag tag-purple">附录 B</span></div>
+            <div class="rc-desc">
+              模型：<code>longcat_18b_zhichu_notool</code><br>
+              完整 Prompt 含角色设定 + 输入变量 + 结构化输出格式<br>
+              适用场景：用户首次进线，无历史对话
+            </div>
+          </div>
+          <div class="route-card" style="border-top:3px solid #8b5cf6;">
+            <div class="rc-title">重复进线首轮推荐 Prompt <span class="tag tag-purple">附录 C</span></div>
+            <div class="rc-desc">
+              模型：<code>deepseek-v4-flash-baidu</code><br>
+              5 步骤核心任务 + 差异化变量注入<br>
+              适用场景：用户重复进线，需结合历史信息
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ===================== 6. Layer 3 详解 ===================== -->
+<h2 class="section-title">Layer 3 详解：业务类型路由</h2>
+<p class="section-subtitle">6 信号并发查询 · 6 分支路由决策</p>
+
+<div class="card">
+  <div class="card-header">
+    <div class="layer-num" style="background:var(--l3);">L3</div>
+    <h2>业务类型路由</h2>
+    <span class="desc"><span class="tag tag-purple">6 路分流</span></span>
+  </div>
+  <div class="card-body">
+    <div class="highlight-box info">
+      <strong>⚡ 6 信号并发查询</strong>：同时请求订单类型、拼好饭标记、闪购标记、医药标记、到店自取标记、非外卖标记，并行获取分流所需全部信号。
+    </div>
+
+    <p style="font-weight:600;margin:14px 0 8px;font-size:.95em;">6 分支路由：</p>
+    <div class="route-grid">
+      <div class="route-card" style="border-left:4px solid #3b82f6;">
+        <div class="rc-title">🍜 外卖订单</div>
+        <div class="rc-desc">→ 进入 <strong>Layer 4</strong> 前置处理，主流程继续</div>
+      </div>
+      <div class="route-card" style="border-left:4px solid #ef4444;">
+        <div class="rc-title">🚫 非外卖订单</div>
+        <div class="rc-desc">→ 直接 <span class="tag tag-red">转人工</span>，FUSE 指令处理</div>
+      </div>
+      <div class="route-card" style="border-left:4px solid #f59e0b;">
+        <div class="rc-title">🍱 拼好饭订单</div>
+        <div class="rc-desc">→ <span class="tag tag-amber">门户直出</span> 子链路（appId: 0503e7ab-...）</div>
+      </div>
+      <div class="route-card" style="border-left:4px solid #10b981;">
+        <div class="rc-title">🏪 到店自取订单</div>
+        <div class="rc-desc">→ 独立分支处理逻辑</div>
+      </div>
+      <div class="route-card" style="border-left:4px solid #8b5cf6;">
+        <div class="rc-title">⚡ 闪购订单</div>
+        <div class="rc-desc">→ <span class="tag tag-purple">门户直出</span> 子链路</div>
+      </div>
+      <div class="route-card" style="border-left:4px solid #ec4899;">
+        <div class="rc-title">💊 医药订单</div>
+        <div class="rc-desc">→ 医药专属处理分支</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. Layer 4 详解 ===================== -->
+<h2 class="section-title">Layer 4 详解：前置处理</h2>
+<p class="section-subtitle">三路并行链路 · 正则干预 + 风控拦截 + 模型判断 → 主动服务</p>
+
+<div class="card">
+  <div class="card-header">
+    <div class="layer-num" style="background:var(--l4);">L4</div>
+    <h2>前置处理</h2>
+    <span class="desc"><span class="tag tag-amber">三路并行</span></span>
+  </div>
+  <div class="card-body">
+    <p style="font-weight:600;margin-bottom:10px;font-size:.95em;">三路并行处理链路：</p>
+    <div class="chain-group">
+      <div class="chain-item" style="border-left-color:#3b82f6;">
+        <div class="ci-num" style="background:#3b82f6;">1</div>
+        <div>
+          <div style="font-weight:600;font-size:.95em;">正则干预 <span class="tag tag-amber">RAG</span> <span class="tag tag-green">Code</span></div>
+          <div style="font-size:.85em;color:var(--text-secondary);margin-top:4px;">
+            RAG 知识库（987 词 · 6 块）→ 正则匹配关键词（附录 D）→ 推送消息（附录 E）<br>
+            营销规则风控 Agent（appId: 724adbca-...）
+          </div>
+        </div>
+      </div>
+      <div class="chain-item" style="border-left-color:#8b5cf6;">
+        <div class="ci-num" style="background:#8b5cf6;">2</div>
+        <div>
+          <div style="font-weight:600;font-size:.95em;">风控拦截准入 <span class="tag tag-green">Code</span></div>
+          <div style="font-size:.85em;color:var(--text-secondary);margin-top:4px;">
+            正则准入判断，拦截异常请求和高风险用户
+          </div>
+        </div>
+      </div>
+      <div class="chain-item" style="border-left-color:#d946ef;">
+        <div class="ci-num" style="background:#d946ef;">3</div>
+        <div>
+          <div style="font-weight:600;font-size:.95em;">模型判断 + 风控回复 <span class="tag tag-purple">LLM</span></div>
+          <div style="font-size:.85em;color:var(--text-secondary);margin-top:4px;">
+            模型：<code>LongCat-Flash-Chat</code> · LLM 进行意图理解与风控判定
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box success" style="margin-top:16px;">
+      <strong>▶ 后续流程</strong>：主动服务判断 → 主模型-召回 2 次（<strong>104 节点</strong>，三段式架构，附录 F）<br>
+      子链路：履约 SFT 模型 AB 实验 V8（appId: 9c8c54cd-...），含 15 种动作执行
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 8. Layer 5 详解 ===================== -->
+<h2 class="section-title">Layer 5 详解：厘清与分流</h2>
+<p class="section-subtitle">场景分类模型 12B · 高价值实验 62 节点 · 三级分流架构</p>
+
+<div class="card">
+  <div class="card-header">
+    <div class="layer-num" style="background:var(--l5);">L5</div>
+    <h2>厘清与分流</h2>
+    <span class="desc"><span class="tag tag-pink">62 节点</span> <span class="tag tag-purple">12B 模型</span></span>
+  </div>
+  <div class="card-body">
+    <div class="route-grid">
+      <div class="route-card" style="border-top:3px solid #d946ef;">
+        <div class="rc-title">🧠 场景分类模型</div>
+        <div class="rc-desc" style="margin-top:8px;">
+          模型：<code>scene_routing_longcat12b</code><br>
+          <span class="tag tag-purple">12B 专用模型</span><br>
+          <strong>10 类</strong>场景分类<br>
+          <code>temp=0.2, max_tokens=50</code><br>
+          appId: 4bf07439-...
+        </div>
+      </div>
+      <div class="route-card" style="border-top:3px solid #ec4899;">
+        <div class="rc-title">🎯 高价值实验</div>
+        <div class="rc-desc" style="margin-top:8px;">
+          <strong>62 节点</strong>，三级分流架构<br>
+          appId: ab81d3d2-...<br>
+          <strong>9 个终态出口</strong>
+        </div>
+      </div>
+    </div>
+
+    <details style="margin-top:14px;">
+      <summary>高价值实验三级分流详情</summary>
+      <div class="details-body">
+        <div class="chain-group">
+          <div class="chain-item" style="border-left-color:#d946ef;">
+            <div class="ci-num" style="background:#d946ef;">A</div>
+            <div>
+              <div style="font-weight:600;font-size:.95em;">数据驱动实验组 <span class="tag tag-pink">expA/B/C</span></div>
+              <div style="font-size:.85em;color:var(--text-secondary);margin-top:4px;">7-8 类场景准入，根据场景分类结果进入不同实验分支</div>
+            </div>
+          </div>
+          <div class="chain-item" style="border-left-color:#ec4899;">
+            <div class="ci-num" style="background:#ec4899;">B</div>
+            <div>
+              <div style="font-weight:600;font-size:.95em;">通用模型实验组 <span class="tag tag-blue">异步非阻塞</span></div>
+              <div style="font-size:.85em;color:var(--text-secondary);margin-top:4px;">高价值场景-通用模型（appId: 88d021ba-...），23 个子节点，异步执行不阻塞主链路</div>
+            </div>
+          </div>
+          <div class="chain-item" style="border-left-color:#f43f5e;">
+            <div class="ci-num" style="background:#f43f5e;">C</div>
+            <div>
+              <div style="font-weight:600;font-size:.95em;">对照组</div>
+              <div style="font-size:.85em;color:var(--text-secondary);margin-top:4px;">基线对照，不进行额外模型调用，直接走默认链路</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ===================== 9. Layer 6 详解 ===================== -->
+<h2 class="section-title">Layer 6 详解：多模型执行</h2>
+<p class="section-subtitle">6 大场景分流 · 场景级多模型路由与 AB 实验</p>
+
+<div class="card">
+  <div class="card-header">
+    <div class="layer-num" style="background:var(--l6);">L6</div>
+    <h2>场景分流与多模型执行</h2>
+    <span class="desc"><span class="tag tag-pink">6 场景</span> <span class="tag tag-purple">46 路模型</span></span>
+  </div>
+  <div class="card-body">
+    <div class="scene-grid">
+      <div class="scene-card" style="border-top:3px solid #3b82f6;">
+        <div class="sc-title"><span style="font-size:1.1em;">📦</span> 履约</div>
+        <ul class="sc-list">
+          <li>主模型-召回 2 次</li>
+          <li>RFT 实验</li>
+          <li>退款实验</li>
+          <li>ReAct</li>
+          <li>Sota + Skill 融合</li>
+          <li>ReAct 自进化</li>
+        </ul>
+      </div>
+      <div class="scene-card" style="border-top:3px solid #8b5cf6;">
+        <div class="sc-title"><span style="font-size:1.1em;">🔧</span> 售后</div>
+        <ul class="sc-list">
+          <li>Sota + Skill 融合</li>
+          <li>对照组</li>
+        </ul>
+      </div>
+      <div class="scene-card" style="border-top:3px solid #d946ef;">
+        <div class="sc-title"><span style="font-size:1.1em;">🌐</span> 全场景</div>
+        <ul class="sc-list">
+          <li>主模型-召回 2 次</li>
+          <li>退款实验</li>
+        </ul>
+      </div>
+      <div class="scene-card" style="border-top:3px solid #f59e0b;">
+        <div class="sc-title"><span style="font-size:1.1em;">📢</span> 营销</div>
+        <ul class="sc-list">
+          <li>营销场景实验 <span class="tag tag-amber">附录 O</span></li>
+          <li>appId: baf0120e-...</li>
+        </ul>
+      </div>
+      <div class="scene-card" style="border-top:3px solid #10b981;">
+        <div class="sc-title"><span style="font-size:1.1em;">🧾</span> 发票</div>
+        <ul class="sc-list">
+          <li>信号收集 → 订单状态判断</li>
+          <li>→ 发票模型推理</li>
+        </ul>
+      </div>
+      <div class="scene-card" style="border-top:3px solid #ec4899;">
+        <div class="sc-title"><span style="font-size:1.1em;">✏️</span> 修改订单信息</div>
+        <ul class="sc-list">
+          <li>独立链路</li>
+          <li>独立信号收集 + 模型推理</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box info" style="margin-top:16px;">
+      <strong>🔀 模型路由器</strong>：模型调用 Agent（appId: bfa5eb87-...）管理 <strong>46 个模型分支</strong>（附录 H），通过基座 Agent（附录 G）统一调度推理、解析、后处理。熔断环节 Agent（附录 I）提供双轨并行熔断保障。
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. Layer 7 详解 ===================== -->
+<h2 class="section-title">Layer 7 详解：输出与后处理</h2>
+<p class="section-subtitle">转人工判断 · 分句输出 · 话术改写 · 异步回调</p>
+
+<div class="card">
+  <div class="card-header">
+    <div class="layer-num" style="background:var(--l7);">L7</div>
+    <h2>输出与后处理</h2>
+    <span class="desc"><span class="tag tag-rose">终态输出</span></span>
+  </div>
+  <div class="card-body">
+    <div class="output-grid">
+      <div class="output-item">
+        <div class="oi-icon" style="background:#fee2e2;color:#dc2626;">🚨</div>
+        <div>
+          <div style="font-weight:600;font-size:.95em;">转人工</div>
+          <div style="font-size:.85em;color:var(--text-secondary);">→ FUSE 转人工指令，携带场景标签和对话上下文</div>
+        </div>
+      </div>
+      <div class="output-item">
+        <div class="oi-icon" style="background:#dbeafe;color:#2563eb;">💬</div>
+        <div>
+          <div style="font-weight:600;font-size:.95em;">分句输出</div>
+          <div style="font-size:.85em;color:var(--text-secondary);">→ 分句回复格式处理，支持流式分段展示</div>
+        </div>
+      </div>
+      <div class="output-item">
+        <div class="oi-icon" style="background:#f3e8ff;color:#7c3aed;">✍️</div>
+        <div>
+          <div style="font-weight:600;font-size:.95em;">话术改写工具</div>
+          <div style="font-size:.85em;color:var(--text-secondary);">→ 改写话术 / 保留原话术，根据场景配置选择</div>
+        </div>
+      </div>
+      <div class="output-item">
+        <div class="oi-icon" style="background:#dcfce7;color:#16a34a;">🔄</div>
+        <div>
+          <div style="font-weight:600;font-size:.95em;">异步模式</div>
+          <div style="font-size:.85em;color:var(--text-secondary);">→ 异步回调处理，非阻塞结果返回</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. 工单通行证终态映射表 ===================== -->
+<h2 class="section-title">工单通行证终态映射表</h2>
+<p class="section-subtitle">8 种终态节点 · 触发条件 → 映射结果 → 后续行为</p>
+
+<div class="card">
+  <div class="card-body" style="padding:0;">
+    <div class="table-wrap" style="border:0;border-radius:0;">
+      <table>
+        <thead>
+          <tr>
+            <th>终态节点</th>
+            <th>触发条件</th>
+            <th>映射主链路结果</th>
+            <th>后续行为</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-gray">回复-不准入</span></td>
+            <td>无工单 / 准入失败</td>
+            <td><span class="tag tag-blue">不准入</span></td>
+            <td>继续后续链路</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-gray">回复-不准入</span></td>
+            <td>信号加载异常</td>
+            <td><span class="tag tag-blue">不准入</span></td>
+            <td>继续后续链路</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-gray">回复-不准入</span></td>
+            <td>AB 实验对照组</td>
+            <td><span class="tag tag-blue">不准入</span></td>
+            <td>继续后续链路</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-red">回复-熔断转人工</span></td>
+            <td>轮次熔断触发</td>
+            <td><span class="tag tag-red">熔断</span></td>
+            <td><strong>转人工</strong></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">首轮回复</span></td>
+            <td>首轮固定话术</td>
+            <td><span class="tag tag-green">对话</span></td>
+            <td>继续后续链路</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-gray">回复-不准入-非工单场景</span></td>
+            <td>用户非咨询工单 / 未结案对照组</td>
+            <td><span class="tag tag-blue">不准入</span></td>
+            <td>继续后续链路</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-amber">空回复-发送卡片</span></td>
+            <td>未结案催促卡片</td>
+            <td><span class="tag tag-amber">空回复</span></td>
+            <td>前端处理</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-indigo">回复-准入处理</span></td>
+            <td>次轮模型推理完成</td>
+            <td><span class="tag tag-green">对话</span></td>
+            <td>继续后续链路</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 12. 关键设计特征矩阵 ===================== -->
+<h2 class="section-title">关键设计特征矩阵</h2>
+<p class="section-subtitle">主流程 vs 工单通行证子链路 · 20 项设计维度对比</p>
+
+<div class="card">
+  <div class="card-body" style="padding:0;">
+    <div class="table-wrap design-matrix" style="border:0;border-radius:0;">
+      <table>
+        <thead>
+          <tr>
+            <th style="min-width:120px;">特征</th>
+            <th>主流程</th>
+            <th>工单通行证子链路</th>
+            <th style="min-width:140px;">说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>总节点数</td>
+            <td>~200+</td>
+            <td>~50+</td>
+            <td>含嵌套子应用节点</td>
+          </tr>
+          <tr>
+            <td>链路层数</td>
+            <td><span class="tag tag-indigo">7 层</span></td>
+            <td><span class="tag tag-blue">7 层（嵌套）</span></td>
+            <td>主链路内嵌套完整子链路</td>
+          </tr>
+          <tr>
+            <td>LLM 调用</td>
+            <td><span class="tag tag-purple">多模型 46 路 AB</span></td>
+            <td><span class="tag tag-purple">deepseek-v4-flash</span></td>
+            <td>子链路使用单一推理模型</td>
+          </tr>
+          <tr>
+            <td>API 并发</td>
+            <td><span class="tag tag-blue">38+12+7 并发</span></td>
+            <td><span class="tag tag-blue">7 并发</span></td>
+            <td>信号收集阶段并发请求</td>
+          </tr>
+          <tr>
+            <td>AB 实验</td>
+            <td>多层实验嵌套</td>
+            <td>单层 AB 分流</td>
+            <td>实验组 / 对照组分流</td>
+          </tr>
+          <tr>
+            <td>熔断机制</td>
+            <td><span class="tag tag-red">双轨并行熔断</span></td>
+            <td><span class="tag tag-red">轮次熔断</span></td>
+            <td>超阈值触发转人工</td>
+          </tr>
+          <tr>
+            <td>RAG 知识库</td>
+            <td><span class="tag tag-amber">987 词 · 6 块</span></td>
+            <td>无</td>
+            <td>正则干预关键词匹配</td>
+          </tr>
+          <tr>
+            <td>场景分类</td>
+            <td><span class="tag tag-purple">12B 专用模型</span></td>
+            <td>无</td>
+            <td>10 类场景路由</td>
+          </tr>
+          <tr>
+            <td>模型温度</td>
+            <td>temp=0.2 ~ 0.7</td>
+            <td>默认配置</td>
+            <td>分类模型低温，生成模型高温</td>
+          </tr>
+          <tr>
+            <td>转人工通道</td>
+            <td><span class="tag tag-red">FUSE 指令</span></td>
+            <td><span class="tag tag-red">熔断转人工</span></td>
+            <td>多维度转人工决策</td>
+          </tr>
+          <tr>
+            <td>异步处理</td>
+            <td><span class="tag tag-green">异步回调</span></td>
+            <td>同步阻塞</td>
+            <td>部分实验组使用异步非阻塞</td>
+          </tr>
+          <tr>
+            <td>对话历史</td>
+            <td>全量获取</td>
+            <td><span class="tag tag-blue">双路径 Agent</span></td>
+            <td>有/无历史差异化处理</td>
+          </tr>
+          <tr>
+            <td>Prompt 管理</td>
+            <td>多版本差异化</td>
+            <td>工单摘要专用</td>
+            <td>按场景定制 Prompt 模板</td>
+          </tr>
+          <tr>
+            <td>首轮策略</td>
+            <td>推荐+重复进线</td>
+            <td>固定话术</td>
+            <td>首轮差异化处理</td>
+          </tr>
+          <tr>
+            <td>子应用嵌套</td>
+            <td><span class="tag tag-indigo">20+ 子应用</span></td>
+            <td>3 个子应用</td>
+            <td>多层嵌套调用架构</td>
+          </tr>
+          <tr>
+            <td>分句输出</td>
+            <td><span class="tag tag-green">支持</span></td>
+            <td>不支持</td>
+            <td>流式分段展示能力</td>
+          </tr>
+          <tr>
+            <td>话术改写</td>
+            <td><span class="tag tag-purple">工具调用</span></td>
+            <td>不涉及</td>
+            <td>后处理阶段改写</td>
+          </tr>
+          <tr>
+            <td>风控拦截</td>
+            <td>正则 + 模型</td>
+            <td>准入判断</td>
+            <td>双重风控机制</td>
+          </tr>
+          <tr>
+            <td>实验终态</td>
+            <td>多分支终态</td>
+            <td><span class="tag tag-amber">8 种终态</span></td>
+            <td>终态映射到主链路结果</td>
+          </tr>
+          <tr>
+            <td>记忆组件</td>
+            <td><span class="tag tag-cyan">15 字段记忆</span></td>
+            <td>对话状态</td>
+            <td>跨轮次状态持久化</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 13. 附录索引 ===================== -->
+<h2 class="section-title">附录索引</h2>
+<p class="section-subtitle">15 个附录（A ~ O）· 覆盖 Prompt / 子链路 / 模型 / 组件</p>
+
+<div class="appendix-grid">
+  <!-- A -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#3b82f6;">A</div>
+      <div class="ac-title">总结工单摘要 Prompt</div>
+      <div class="ac-desc">角色设定 + 核心任务 + 输入变量 + 输出格式。用于工单通行证子链路的摘要生成。</div>
+      <div class="ac-stats"><span class="tag tag-purple">LLM Prompt</span></div>
+    </div>
+  </div>
+  <!-- B -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#6366f1,#818cf8);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#6366f1;">B</div>
+      <div class="ac-title">原首轮推荐 Prompt</div>
+      <div class="ac-desc">模型：<code>longcat_18b_zhichu_notool</code>，完整 Prompt + 输入变量，用于首次进线用户。</div>
+      <div class="ac-stats"><span class="tag tag-purple">LLM Prompt</span></div>
+    </div>
+  </div>
+  <!-- C -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#8b5cf6;">C</div>
+      <div class="ac-title">重复进线首轮推荐 Prompt</div>
+      <div class="ac-desc">模型：<code>deepseek-v4-flash-baidu</code>，5 步骤核心任务，处理重复进线场景。</div>
+      <div class="ac-stats"><span class="tag tag-purple">LLM Prompt</span></div>
+    </div>
+  </div>
+  <!-- D -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#a855f7,#c084fc);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#a855f7;">D</div>
+      <div class="ac-title">正则干预关键词库</div>
+      <div class="ac-desc">免单活动类 10 条 + 小耳朵/饮品类 9 条，共 19 条正则匹配规则。</div>
+      <div class="ac-stats"><span class="tag tag-amber">RAG</span> <span class="tag tag-green">Code</span></div>
+    </div>
+  </div>
+  <!-- E -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#d946ef,#e879f9);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#d946ef;">E</div>
+      <div class="ac-title">推送消息-正则干预</div>
+      <div class="ac-desc">统一消息推送子应用，全局配置 + 链路结构，处理正则命中后的消息推送。</div>
+      <div class="ac-stats"><span class="tag tag-blue">API</span> <span class="tag tag-green">Code</span></div>
+    </div>
+  </div>
+  <!-- F -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#ec4899,#f472b6);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#ec4899;">F</div>
+      <div class="ac-title">主动服务子链路</div>
+      <div class="ac-desc">104 节点，三段式架构，15 种动作执行。完整的主动服务判断与执行流程。</div>
+      <div class="ac-stats"><span class="tag tag-pink">104 节点</span> <span class="tag tag-blue">15 动作</span></div>
+    </div>
+  </div>
+  <!-- G -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#f43f5e,#fb7185);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#f43f5e;">G</div>
+      <div class="ac-title">基座 Agent 子链路</div>
+      <div class="ac-desc">Prompt 模板 + 代码节点 + 反思模型 + RAG，统一的基座推理框架。</div>
+      <div class="ac-stats"><span class="tag tag-purple">LLM</span> <span class="tag tag-amber">RAG</span> <span class="tag tag-green">Code</span></div>
+    </div>
+  </div>
+  <!-- H -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#f97316,#fb923c);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#f97316;">H</div>
+      <div class="ac-title">直出-模型调用 Agent</div>
+      <div class="ac-desc">46 个模型分支，解析代码 + 后处理。核心模型路由器组件。</div>
+      <div class="ac-stats"><span class="tag tag-pink">46 分支</span> <span class="tag tag-green">Code</span></div>
+    </div>
+  </div>
+  <!-- I -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#eab308,#facc15);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#eab308;">I</div>
+      <div class="ac-title">熔断环节 Agent</div>
+      <div class="ac-desc">双轨并行熔断，优先级合并，四分支输出。安全保障核心组件。</div>
+      <div class="ac-stats"><span class="tag tag-red">熔断</span> <span class="tag tag-amber">4 分支</span></div>
+    </div>
+  </div>
+  <!-- J -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#22c55e,#4ade80);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#22c55e;">J</div>
+      <div class="ac-title">外客业务熔断</div>
+      <div class="ac-desc">标准熔断组件，15 字段记忆组件，跨轮次状态持久化。</div>
+      <div class="ac-stats"><span class="tag tag-red">熔断</span> <span class="tag tag-cyan">15 字段</span></div>
+    </div>
+  </div>
+  <!-- K -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#14b8a6,#2dd4bf);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#14b8a6;">K</div>
+      <div class="ac-title">全业务突发事件熔断</div>
+      <div class="ac-desc">知识增强型熔断器，RAG + 枚举翻译，处理突发事件场景。</div>
+      <div class="ac-stats"><span class="tag tag-amber">RAG</span> <span class="tag tag-red">熔断</span></div>
+    </div>
+  </div>
+  <!-- L -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#0ea5e9,#38bdf8);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#0ea5e9;">L</div>
+      <div class="ac-title">履约判责结果处理</div>
+      <div class="ac-desc">约策模块，方案合并 / 冲突检测，处理履约场景的判责逻辑。</div>
+      <div class="ac-stats"><span class="tag tag-blue">API</span> <span class="tag tag-green">Code</span></div>
+    </div>
+  </div>
+  <!-- M -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#6366f1,#818cf8);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#6366f1;">M</div>
+      <div class="ac-title">高价值场景-通用模型</div>
+      <div class="ac-desc">23 个子节点，信号收集 + 召回 + 模型调用，通用模型实验组核心。</div>
+      <div class="ac-stats"><span class="tag tag-indigo">23 节点</span> <span class="tag tag-purple">LLM</span></div>
+    </div>
+  </div>
+  <!-- N -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#8b5cf6;">N</div>
+      <div class="ac-title">基座模型调用</div>
+      <div class="ac-desc">高价值通用模型核心推理，Prompt 召回 + 熔断 + 重试 + 场景切换。</div>
+      <div class="ac-stats"><span class="tag tag-purple">LLM</span> <span class="tag tag-red">熔断</span></div>
+    </div>
+  </div>
+  <!-- O -->
+  <div class="appendix-card">
+    <div class="ac-top" style="background:linear-gradient(90deg,#ec4899,#f472b6);"></div>
+    <div class="ac-body">
+      <div class="ac-badge" style="background:#ec4899;">O</div>
+      <div class="ac-title">营销场景实验</div>
+      <div class="ac-desc">关键节点详情 + 终态汇总 + 设计特征，营销场景专属实验链路。</div>
+      <div class="ac-stats"><span class="tag tag-pink">实验</span> <span class="tag tag-amber">营销</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 14. 核心子应用清单 ===================== -->
+<h2 class="section-title">核心子应用清单</h2>
+<p class="section-subtitle">18 个 AIDA 子应用 · appId 索引与功能说明</p>
+
+<div class="card">
+  <div class="card-body" style="padding:0;">
+    <div class="table-wrap" style="border:0;border-radius:0;">
+      <table>
+        <thead>
+          <tr>
+            <th>子应用名称</th>
+            <th>appId</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>工单通行证</strong></td>
+            <td><code>5cc64a58-...</code></td>
+            <td><span class="tag tag-blue">Layer 1</span> 子链路</td>
+          </tr>
+          <tr>
+            <td><strong>工单通行证-信号阻截</strong></td>
+            <td><code>7151f848-...</code></td>
+            <td>信号加载子模型</td>
+          </tr>
+          <tr>
+            <td><strong>对话历史 Agent</strong></td>
+            <td><code>6c145a5e-...</code></td>
+            <td>对话历史获取</td>
+          </tr>
+          <tr>
+            <td><strong>营销规则风控 Agent</strong></td>
+            <td><code>724adbca-...</code></td>
+            <td>关键词干预</td>
+          </tr>
+          <tr>
+            <td><strong>履约 SFT 模型 AB 实验 V8</strong></td>
+            <td><code>9c8c54cd-...</code></td>
+            <td>主动服务</td>
+          </tr>
+          <tr>
+            <td><strong>基座 Agent</strong></td>
+            <td><code>e2d0697a-...</code></td>
+            <td><span class="tag tag-purple">核心</span> 基座 Agent</td>
+          </tr>
+          <tr>
+            <td><strong>模型调用 Agent</strong></td>
+            <td><code>bfa5eb87-...</code></td>
+            <td>模型路由器（<span class="tag tag-pink">46 路</span>）</td>
+          </tr>
+          <tr>
+            <td><strong>熔断环节 Agent</strong></td>
+            <td><code>33f17d5a-...</code></td>
+            <td><span class="tag tag-red">双轨</span> 并行熔断</td>
+          </tr>
+          <tr>
+            <td><strong>外客业务熔断</strong></td>
+            <td><code>ab25e954-...</code></td>
+            <td>标准熔断组件</td>
+          </tr>
+          <tr>
+            <td><strong>全业务突发事件熔断</strong></td>
+            <td><code>51c395d9-...</code></td>
+            <td>知识增强型熔断器</td>
+          </tr>
+          <tr>
+            <td><strong>判责结果处理</strong></td>
+            <td><code>5067ea0b-...</code></td>
+            <td>约策模块</td>
+          </tr>
+          <tr>
+            <td><strong>场景分类模型</strong></td>
+            <td><code>4bf07439-...</code></td>
+            <td><span class="tag tag-purple">12B</span> 10 类场景分类</td>
+          </tr>
+          <tr>
+            <td><strong>高价值实验</strong></td>
+            <td><code>ab81d3d2-...</code></td>
+            <td>三级分流</td>
+          </tr>
+          <tr>
+            <td><strong>高价值场景-通用模型</strong></td>
+            <td><code>88d021ba-...</code></td>
+            <td>通用模型实验</td>
+          </tr>
+          <tr>
+            <td><strong>基座模型调用</strong></td>
+            <td><code>10124961-...</code></td>
+            <td>高价值核心推理</td>
+          </tr>
+          <tr>
+            <td><strong>营销场景实验</strong></td>
+            <td><code>baf0120e-...</code></td>
+            <td><span class="tag tag-amber">营销</span> 实验</td>
+          </tr>
+          <tr>
+            <td><strong>首轮推荐（带重复进线）</strong></td>
+            <td><code>0da71e45-...</code></td>
+            <td>首轮推荐</td>
+          </tr>
+          <tr>
+            <td><strong>拼好饭门户直出</strong></td>
+            <td><code>0503e7ab-...</code></td>
+            <td>拼好饭子链路</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 15. Footer ===================== -->
+<div class="footer">
+  <div class="footer-grid">
+    <div class="footer-item">
+      <span class="footer-label">数据来源</span>
+      <span>AIDA 平台</span>
+    </div>
+    <div class="footer-item">
+      <span class="footer-label">整合日期</span>
+      <span>2026-07-02 ~ 2026-07-07</span>
+    </div>
+    <div class="footer-item">
+      <span class="footer-label">文档 KM ID</span>
+      <span><code style="font-family:var(--mono);font-size:.9em;">2773682651</code></span>
+    </div>
+    <div class="footer-item">
+      <span class="footer-label">所有者</span>
+      <span>刘念</span>
+    </div>
+  </div>
+  <div style="color:var(--text-muted);font-size:.8em;">
+    外客链路架构 · 完整版 &nbsp;|&nbsp; 美团客服 AI · AIDA Pipeline
+  </div>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
