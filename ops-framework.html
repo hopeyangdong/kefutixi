@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大模型智能客服日常运营工作框架</title>
+<style>
+:root {
+  --primary: #6366f1;
+  --primary-light: #a5b4fc;
+  --green: #10b981;
+  --green-bg: #ecfdf5;
+  --red: #ef4444;
+  --red-bg: #fef2f2;
+  --amber: #f59e0b;
+  --amber-bg: #fffbeb;
+  --blue: #3b82f6;
+  --blue-bg: #eff6ff;
+  --purple: #8b5cf6;
+  --purple-bg: #f5f3ff;
+  --pink: #ec4899;
+  --pink-bg: #fdf2f8;
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --text: #1e293b;
+  --text-sec: #64748b;
+  --border: #e2e8f0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4338ca 60%, #6366f1 100%);
+  padding: 56px 24px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(167,139,250,0.2) 0%, transparent 70%);
+}
+.hero-inner { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+.hero h1 { font-size: 2rem; color: #fff; font-weight: 700; margin-bottom: 12px; }
+.hero .subtitle { color: rgba(255,255,255,0.8); font-size: 1.05rem; margin-bottom: 20px; }
+.hero .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.badge-purple { background: rgba(139,92,246,0.3); color: #e0e7ff; }
+.badge-blue   { background: rgba(59,130,246,0.3);  color: #bfdbfe; }
+.badge-green  { background: rgba(16,185,129,0.3);  color: #a7f3d0; }
+.badge-amber  { background: rgba(245,158,11,0.3);  color: #fde68a; }
+.badge-pink   { background: rgba(236,72,153,0.3);  color: #fbcfe8; }
+
+/* Container */
+.container { max-width: 960px; margin: 0 auto; padding: 32px 16px 60px; }
+
+/* Section */
+.section { margin-bottom: 28px; }
+.section-title {
+  font-size: 1.25rem; font-weight: 700; color: var(--text);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+}
+.section-title .icon {
+  width: 32px; height: 32px; border-radius: 8px; display: flex;
+  align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;
+}
+
+/* Card */
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 1.05rem; font-weight: 700; margin-bottom: 14px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+
+/* Flywheel Diagram */
+.flywheel-container { padding: 32px 20px; }
+.flywheel-label {
+  text-align: center; font-size: 0.82rem; color: var(--text-sec);
+  margin-bottom: 8px; font-weight: 500;
+}
+/* Three layers */
+.flywheel-layers { position: relative; }
+
+/* Layer 1: Core Loop */
+.flywheel-loop {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 8px; position: relative; padding: 0 20px;
+}
+.fw-node {
+  padding: 14px 20px; border-radius: 12px; font-weight: 700;
+  font-size: 0.92rem; text-align: center; white-space: nowrap;
+  position: relative; z-index: 2;
+}
+.fw-node.blue-node {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border: 2px solid var(--blue); color: #1e40af;
+}
+.fw-arrow {
+  font-size: 1.3rem; color: #f97316; font-weight: 700; padding: 0 6px;
+  z-index: 2;
+}
+.loop-return {
+  position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+  width: 80%; height: 36px;
+  border: 2px dashed var(--blue); border-bottom: none;
+  border-radius: 18px 18px 0 0;
+}
+.loop-label {
+  position: absolute; top: -46px; left: 50%; transform: translateX(-50%);
+  font-size: 0.78rem; color: var(--blue); font-weight: 600;
+  background: var(--card); padding: 2px 10px; border-radius: 10px;
+  border: 1px solid var(--blue);
+}
+.layer-label-left {
+  position: absolute; left: -8px; top: 50%; transform: translateY(-50%) rotate(-90deg);
+  font-size: 0.72rem; color: #f97316; font-weight: 600;
+  white-space: nowrap; letter-spacing: 1px;
+}
+
+/* Layer 2: Work Domains */
+.flywheel-domains {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin: 12px 0; position: relative;
+}
+.fw-domain {
+  padding: 12px 10px; border-radius: 10px; text-align: center;
+  font-size: 0.82rem; font-weight: 600; border: 2px solid;
+  position: relative;
+}
+.fw-domain.d1 { border-color: #f97316; background: #fff7ed; color: #c2410c; }
+.fw-domain.d2 { border-color: #f97316; background: #fff7ed; color: #c2410c; }
+.fw-domain.d3 { border-color: #f97316; background: #fff7ed; color: #c2410c; }
+.fw-domain.d4 { border-color: #22c55e; background: #f0fdf4; color: #15803d; }
+.fw-domain-sub { font-size: 0.7rem; color: var(--text-sec); font-weight: 400; margin-top: 4px; }
+
+/* Connectors between layers */
+.connectors {
+  display: flex; justify-content: space-around; padding: 0 40px; margin: 4px 0;
+}
+.conn-line {
+  width: 2px; height: 20px; background: #fdba74; position: relative;
+}
+.conn-line::after {
+  content: '▼'; position: absolute; bottom: -10px; left: 50%;
+  transform: translateX(-50%); color: #f97316; font-size: 0.6rem;
+}
+.conn-note {
+  font-size: 0.65rem; color: var(--text-sec); text-align: center;
+  margin-top: -2px;
+}
+
+/* Layer 3: Support */
+.flywheel-support {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;
+}
+.fw-support {
+  padding: 12px 14px; border-radius: 10px; text-align: center;
+  font-size: 0.82rem; font-weight: 600;
+}
+.fw-support.s1 { background: linear-gradient(135deg, #ecfdf5, #d1fae5); color: #065f46; border: 1px solid #a7f3d0; }
+.fw-support.s2 { background: linear-gradient(135deg, #f5f3ff, #ede9fe); color: #5b21b6; border: 1px solid #c4b5fd; }
+.support-label {
+  text-align: center; font-size: 0.72rem; color: var(--text-sec);
+  margin-top: 8px; font-style: italic;
+}
+
+/* Table */
+table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+th {
+  background: #f8fafc; font-weight: 600; text-align: left;
+  padding: 10px 14px; border-bottom: 2px solid var(--border);
+  color: var(--text-sec); font-size: 0.8rem; text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover { background: #f8fafc; }
+
+/* Tags */
+.tag {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+}
+.tag-green  { background: var(--green-bg); color: #065f46; }
+.tag-red    { background: var(--red-bg);   color: #991b1b; }
+.tag-amber  { background: var(--amber-bg); color: #92400e; }
+.tag-blue   { background: var(--blue-bg);  color: #1e40af; }
+.tag-purple { background: var(--purple-bg); color: #5b21b6; }
+
+/* Status icons */
+.status-ok    { color: var(--green); }
+.status-warn  { color: var(--amber); }
+.status-miss  { color: var(--red); }
+
+/* Six Domain Cards Grid */
+.domain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.domain-card {
+  background: var(--card); border-radius: 14px; padding: 20px;
+  border-top: 4px solid; position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.domain-card .num {
+  position: absolute; top: 14px; right: 16px; font-size: 2rem;
+  font-weight: 800; opacity: 0.08;
+}
+.domain-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+.domain-card .goal { font-size: 0.82rem; color: var(--text-sec); margin-bottom: 10px; }
+.domain-card .freq {
+  display: inline-block; padding: 3px 10px; border-radius: 10px;
+  font-size: 0.72rem; font-weight: 600;
+}
+.dc1 { border-color: #f97316; }
+.dc1 .freq { background: #fff7ed; color: #c2410c; }
+.dc2 { border-color: var(--blue); }
+.dc2 .freq { background: var(--blue-bg); color: #1e40af; }
+.dc3 { border-color: var(--purple); }
+.dc3 .freq { background: var(--purple-bg); color: #5b21b6; }
+.dc4 { border-color: var(--green); }
+.dc4 .freq { background: var(--green-bg); color: #065f46; }
+.dc5 { border-color: var(--red); }
+.dc5 .freq { background: var(--red-bg); color: #991b1b; }
+.dc6 { border-color: var(--pink); }
+.dc6 .freq { background: var(--pink-bg); color: #9d174d; }
+
+/* Step Flow */
+.step-flow {
+  display: flex; align-items: stretch; gap: 0; flex-wrap: nowrap;
+  overflow-x: auto; padding: 4px 0;
+}
+.step-item {
+  flex: 1; min-width: 140px; padding: 14px; background: #f8fafc;
+  border-radius: 12px; position: relative; border: 1px solid var(--border);
+}
+.step-item .step-num {
+  font-size: 0.72rem; font-weight: 700; color: var(--primary);
+  margin-bottom: 6px;
+}
+.step-item .step-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; }
+.step-item .step-desc { font-size: 0.78rem; color: var(--text-sec); }
+.step-arrow {
+  display: flex; align-items: center; font-size: 1.2rem; color: var(--primary);
+  padding: 0 6px; flex-shrink: 0;
+}
+
+/* Annotation Box */
+.anno {
+  padding: 14px 18px; border-radius: 10px; margin: 14px 0;
+  border-left: 4px solid; font-size: 0.88rem;
+}
+.anno-purple { background: var(--purple-bg); border-color: var(--purple); }
+.anno-amber  { background: var(--amber-bg);  border-color: var(--amber); }
+.anno-green  { background: var(--green-bg);  border-color: var(--green); }
+.anno-blue   { background: var(--blue-bg);   border-color: var(--blue); }
+
+/* Maturity Bar */
+.maturity-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+}
+.maturity-label { width: 80px; font-size: 0.82rem; font-weight: 600; flex-shrink: 0; }
+.maturity-bar-wrap {
+  flex: 1; height: 26px; background: #f1f5f9; border-radius: 13px;
+  overflow: hidden; position: relative;
+}
+.maturity-bar {
+  height: 100%; border-radius: 13px; display: flex; align-items: center;
+  padding-left: 12px; font-size: 0.75rem; font-weight: 700; color: #fff;
+  transition: width 0.5s;
+}
+.maturity-gap { font-size: 0.75rem; color: var(--text-sec); width: 200px; flex-shrink: 0; }
+
+/* Priority list */
+.priority-list { list-style: none; }
+.priority-list li {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.priority-list li:last-child { border-bottom: none; }
+.p-badge {
+  padding: 4px 12px; border-radius: 8px; font-size: 0.78rem;
+  font-weight: 700; flex-shrink: 0; min-width: 38px; text-align: center;
+}
+.p0 { background: #fef2f2; color: #dc2626; }
+.p1 { background: #fffbeb; color: #d97706; }
+.p2 { background: #eff6ff; color: #2563eb; }
+.p-text { font-size: 0.9rem; }
+
+/* Relation text block */
+.relation-block {
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 0.8rem; line-height: 1.6; background: #1e293b; color: #e2e8f0;
+  padding: 20px 24px; border-radius: 12px; overflow-x: auto; white-space: pre;
+}
+
+/* Subsection */
+.sub-title {
+  font-size: 0.95rem; font-weight: 700; color: var(--text);
+  margin: 18px 0 10px; display: flex; align-items: center; gap: 6px;
+}
+
+/* Tool capability table custom */
+.tool-table td:nth-child(1) { font-weight: 600; white-space: nowrap; }
+.tool-table td:nth-child(4) { font-weight: 600; }
+
+/* Risk layers */
+.risk-layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.risk-layer {
+  padding: 18px; border-radius: 12px; text-align: center;
+}
+.risk-layer .r-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 6px; }
+.risk-layer .r-goal  { font-size: 0.82rem; margin-bottom: 8px; }
+.risk-layer .r-means { font-size: 0.78rem; color: var(--text-sec); }
+.rl1 { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+.rl2 { background: linear-gradient(135deg, #fed7aa, #fdba74); }
+.rl3 { background: linear-gradient(135deg, #fecaca, #fca5a5); }
+
+/* Attribution table */
+.attr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.attr-card {
+  padding: 18px; border-radius: 12px; border: 1px solid var(--border);
+}
+.attr-card h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.attr-card .detail-row { font-size: 0.82rem; color: var(--text-sec); margin-bottom: 4px; }
+.attr-card .detail-row strong { color: var(--text); }
+
+/* Responsive */
+@media (max-width:768px) {
+  .hero h1 { font-size: 1.4rem; }
+  .domain-grid { grid-template-columns: 1fr; }
+  .flywheel-loop { flex-wrap: wrap; gap: 4px; }
+  .flywheel-domains { grid-template-columns: repeat(2, 1fr); }
+  .flywheel-support { grid-template-columns: 1fr; }
+  .risk-layers { grid-template-columns: 1fr; }
+  .attr-grid { grid-template-columns: 1fr; }
+  .step-flow { flex-direction: column; }
+  .step-arrow { transform: rotate(90deg); justify-content: center; }
+  .maturity-gap { width: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1>🎯 大模型智能客服日常运营工作框架</h1>
+    <div class="subtitle">围绕核心飞轮「问题发现 → 流程产出 → 模型承接 → 效果观测」构建持续迭代闭环</div>
+    <div class="badges">
+      <span class="badge badge-purple">📊 指标监控</span>
+      <span class="badge badge-blue">🔍 Case 分析</span>
+      <span class="badge badge-amber">⚙️ 策略迭代</span>
+      <span class="badge badge-green">🧪 实验管理</span>
+      <span class="badge badge-pink">🛡️ 风控合规</span>
+      <span class="badge badge-purple">📢 协同汇报</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 1. 总览 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--purple-bg);color:var(--purple);">🌀</span>
+    一、总览 — 核心飞轮
+  </div>
+
+  <div class="card flywheel-container">
+    <div class="flywheel-layers">
+
+      <!-- Layer Label -->
+      <div class="flywheel-label" style="color:#f97316;font-weight:700;">
+        ⬡ 飞轮 — 一次优化的逻辑链路
+      </div>
+
+      <!-- Layer 1: Core Loop -->
+      <div style="position:relative; padding-top:44px; margin-bottom:24px;">
+        <div class="loop-return"></div>
+        <div class="loop-label">🔄 循环驱动</div>
+        <div class="flywheel-loop">
+          <div class="fw-node blue-node">💡 问题发现</div>
+          <div class="fw-arrow">→</div>
+          <div class="fw-node blue-node">📝 流程产出</div>
+          <div class="fw-arrow">→</div>
+          <div class="fw-node blue-node">🤖 模型承接</div>
+          <div class="fw-arrow">→</div>
+          <div class="fw-node blue-node">📈 效果观测</div>
+        </div>
+      </div>
+
+      <!-- Connectors -->
+      <div style="display:flex; justify-content:space-around; padding:0 30px; margin-bottom:4px;">
+        <div style="text-align:center;">
+          <div style="width:2px;height:16px;background:#fdba74;margin:0 auto;"></div>
+          <div style="color:#f97316;font-size:0.6rem;">▼</div>
+        </div>
+        <div style="text-align:center; position:relative;">
+          <div style="width:2px;height:16px;background:#fdba74;margin:0 auto;"></div>
+          <div style="color:#f97316;font-size:0.6rem;">▼</div>
+          <div style="position:absolute;top:2px;left:20px;font-size:0.65rem;color:var(--text-sec);white-space:nowrap;">(痛点定义+方案)</div>
+        </div>
+        <div style="text-align:center; position:relative;">
+          <div style="width:2px;height:16px;background:#fdba74;margin:0 auto;"></div>
+          <div style="color:#f97316;font-size:0.6rem;">▼</div>
+          <div style="position:absolute;top:2px;left:20px;font-size:0.65rem;color:var(--text-sec);white-space:nowrap;">(Skill落地+上线)</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:2px;height:16px;background:#22c55e;margin:0 auto;"></div>
+          <div style="color:#22c55e;font-size:0.6rem;">▼</div>
+        </div>
+      </div>
+
+      <!-- Layer 2: Work Domains -->
+      <div class="flywheel-label" style="color:#f97316;font-weight:700;">
+        ⬡ 工作域 — 日常运营动作
+      </div>
+      <div class="flywheel-domains">
+        <div class="fw-domain d1">
+          指标监控与异常响应
+          <div class="fw-domain-sub">Case 分析与问题发现</div>
+        </div>
+        <div class="fw-domain d2" style="grid-column: span 2;">
+          策略迭代与模型优化
+          <div class="fw-domain-sub">同时接收「流程产出」和「模型承接」</div>
+        </div>
+        <div class="fw-domain d4">
+          实验管理与效果评估
+        </div>
+      </div>
+
+      <!-- Layer 3: Support -->
+      <div style="margin-top:16px;">
+        <div class="flywheel-support">
+          <div class="fw-support s1">🛡️ 风险防控与合规巡检</div>
+          <div class="fw-support s2">📢 协同拉齐与汇报沟通</div>
+        </div>
+        <div class="support-label">保障层 — 贯穿飞轮全程，不属于特定环节</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 六大工作域 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--blue-bg);color:var(--blue);">📋</span>
+    六大工作域总览
+  </div>
+  <div class="domain-grid">
+    <div class="domain-card dc1">
+      <div class="num">01</div>
+      <h3>📊 指标监控与异常响应</h3>
+      <div class="goal">第一时间发现问题、定位根因、决定下一步找谁</div>
+      <span class="freq">⏰ 每日</span>
+    </div>
+    <div class="domain-card dc2">
+      <div class="num">02</div>
+      <h3>🔍 Case 分析与问题发现</h3>
+      <div class="goal">从个案中发现系统性优化机会</div>
+      <span class="freq">⏰ 每日/每周</span>
+    </div>
+    <div class="domain-card dc3">
+      <div class="num">03</div>
+      <h3>⚙️ 策略迭代与模型优化</h3>
+      <div class="goal">把发现的问题转化为可执行的改善动作</div>
+      <span class="freq">⏰ 每周</span>
+    </div>
+    <div class="domain-card dc4">
+      <div class="num">04</div>
+      <h3>🧪 实验管理与效果评估</h3>
+      <div class="goal">确保每次变更有据可依、可量化回溯</div>
+      <span class="freq">⏰ 按上线节奏</span>
+    </div>
+    <div class="domain-card dc5">
+      <div class="num">05</div>
+      <h3>🛡️ 风险防控与合规巡检</h3>
+      <div class="goal">守住底线，防止大模型「犯大错」</div>
+      <span class="freq">⏰ 每日</span>
+    </div>
+    <div class="domain-card dc6">
+      <div class="num">06</div>
+      <h3>📢 协同拉齐与汇报沟通</h3>
+      <div class="goal">让战队、产研、上级同频</div>
+      <span class="freq">⏰ 每周</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2.1 指标监控 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:#fff7ed;color:#f97316;">📊</span>
+    2.1 指标监控与异常响应
+  </div>
+
+  <!-- 核心指标体系 -->
+  <div class="card">
+    <div class="card-title">📐 核心指标体系</div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>层级</th><th>指标</th><th>关注维度</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tag tag-red">结果指标</span></td><td>智能解决率（剔除问卷口径）</td><td>日环比、周同比、基线偏离</td></tr>
+          <tr><td><span class="tag tag-red">结果指标</span></td><td>综合退款率 / 单订单退款金额</td><td>日环比、实验维度拆分</td></tr>
+          <tr><td><span class="tag tag-red">结果指标</span></td><td>综合赔付率</td><td>日环比、智能/大模型贡献拆分</td></tr>
+          <tr><td><span class="tag tag-amber">过程指标</span></td><td>转人工发起率 / 召回率 / 入队率</td><td>趋势、场景拆分</td></tr>
+          <tr><td><span class="tag tag-amber">过程指标</span></td><td>虚拟客服闭环率</td><td>直出/非直出拆分</td></tr>
+          <tr><td><span class="tag tag-amber">过程指标</span></td><td>方案给出率 / 适配率 / 共识率</td><td>场景拆分</td></tr>
+          <tr><td><span class="tag tag-blue">成本指标</span></td><td>被动人工服务占比</td><td>目标线 ≤17%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 异常判定与归因流程 -->
+  <div class="card">
+    <div class="card-title">🔎 异常判定与归因流程</div>
+
+    <!-- Step Flow -->
+    <div class="step-flow">
+      <div class="step-item">
+        <div class="step-num">STEP 1</div>
+        <div class="step-title">判定是否异常</div>
+        <div class="step-desc">
+          • 日环比波动超阈值（解决率 ±0.5pp、退款率 ±0.3pp）<br>
+          • 偏离月度基线（7个月滑动窗口）<br>
+          • 连续 2 日同向漂移
+        </div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">
+        <div class="step-num">STEP 2</div>
+        <div class="step-title">内外部因素归因</div>
+        <div class="step-desc">
+          目标：决定「找谁、做什么」
+        </div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">
+        <div class="step-num">STEP 3</div>
+        <div class="step-title">下钻定位</div>
+        <div class="step-desc">
+          • 外部：L1→L2→L3→L4→Case<br>
+          • 内部：实验层级一→...六→对比组
+        </div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item">
+        <div class="step-num">STEP 4</div>
+        <div class="step-title">响应闭环</div>
+        <div class="step-desc">
+          回滚/记录/Case抽查/风控巡检
+        </div>
+      </div>
+    </div>
+
+    <!-- 归因方向 -->
+    <div class="sub-title" style="margin-top:20px;">📍 Step 2 — 内外部归因详解</div>
+    <div class="attr-grid">
+      <div class="attr-card" style="border-left:4px solid #f97316;">
+        <h4>🌍 外部因素（场景/结构侧）</h4>
+        <div class="detail-row"><strong>判定信号：</strong>Laspeyres 分解中结构贡献为主；场景占比显著漂移</div>
+        <div class="detail-row"><strong>典型原因：</strong>低解决率场景流量暴涨；季节性/活动导致问题类型变化；新业务接入</div>
+        <div class="detail-row"><strong>下一步：</strong>L1→L4 场景下钻，判断暂时波动 vs 持续趋势</div>
+      </div>
+      <div class="attr-card" style="border-left:4px solid var(--purple);">
+        <h4>🔬 内部因素（模型/实验侧）</h4>
+        <div class="detail-row"><strong>判定信号：</strong>Laspeyres 分解中趋势贡献为主；特定实验层级指向异常</div>
+        <div class="detail-row"><strong>典型原因：</strong>实验上线导致退化；Skill/Prompt 变更引发回退；模型版本切换</div>
+        <div class="detail-row"><strong>下一步：</strong>沿实验层级下钻，决定回滚/修正/接受</div>
+      </div>
+    </div>
+
+    <!-- 响应闭环 -->
+    <div class="sub-title">🔄 Step 4 — 响应动作矩阵</div>
+    <table>
+      <thead><tr><th>定位结果</th><th>响应动作</th></tr></thead>
+      <tbody>
+        <tr><td>某实验导致解决率下降 &gt;1pp</td><td>评估回滚，通知实验负责人</td></tr>
+        <tr><td>某场景流量暴涨但解决率正常</td><td>记录结构变化，无需干预</td></tr>
+        <tr><td>某场景解决率持续恶化</td><td>发起 Case 抽查，进入「问题发现」环节</td></tr>
+        <tr><td>退赔异常（疑似骗赔/误退）</td><td>触发风控巡检，通知退赔超限备份人</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 工具要求 -->
+  <div class="card">
+    <div class="card-title">🛠️ 对工具的要求</div>
+    <div style="overflow-x:auto;">
+      <table class="tool-table">
+        <thead><tr><th>能力</th><th>理想状态</th><th>当前现状</th><th>差距</th></tr></thead>
+        <tbody>
+          <tr><td>自动推送</td><td>每天定时推结论</td><td><span class="status-ok">✅</span> 4条自动日报</td><td>—</td></tr>
+          <tr><td>异常自动判定</td><td>推「是否异常」+ 严重等级</td><td><span class="status-warn">⚠️</span> 桥图有分解，缺自动阈值判定</td><td><span class="tag tag-amber">中</span></td></tr>
+          <tr><td>一键归因</td><td>异常时自动跑 L4 下钻</td><td><span class="status-ok">✅</span> kefu-attribution 已实现</td><td>—</td></tr>
+          <tr><td>实验关联</td><td>自动判断波动是否与实验相关</td><td><span class="status-miss">❌</span> 需手动查看板</td><td><span class="tag tag-red">高</span></td></tr>
+          <tr><td>历史对比</td><td>和上周/月度基线自动比较</td><td><span class="status-warn">⚠️</span> Laspeyres有，缺月度驾驶舱</td><td><span class="tag tag-amber">中</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2.2 Case分析 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--blue-bg);color:var(--blue);">🔍</span>
+    2.2 Case 分析与问题发现
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 工作内容</div>
+    <table>
+      <thead><tr><th>动作</th><th>频率</th><th>具体内容</th></tr></thead>
+      <tbody>
+        <tr><td>日常抽检</td><td><span class="tag tag-blue">每日</span></td><td>从未解 Case 池按场景/高价值/转人工原因抽样</td></tr>
+        <tr><td>听音/读对话</td><td><span class="tag tag-blue">每日</span></td><td>分析模型的判断力、方案给出、情绪安抚表现</td></tr>
+        <tr><td>问题归因</td><td><span class="tag tag-blue">每条 Case</span></td><td>六大类：权限不足、对话能力不足、流程僵化、执行力缺失、判断力缺失、情绪安抚不足</td></tr>
+        <tr><td>聚类提炼</td><td><span class="tag tag-purple">每周</span></td><td>多条 Case 聚合，发现高频共性问题</td></tr>
+        <tr><td>分发跟进</td><td><span class="tag tag-amber">按需</span></td><td>按责任人分发，追踪改善进展</td></tr>
+        <tr><td>标准沉淀</td><td><span class="tag tag-green">持续</span></td><td>好/坏 Case 入库，更新学城</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 两个核心方向</div>
+    <div class="attr-grid">
+      <div class="attr-card" style="border-top:3px solid var(--red);">
+        <h4>📉 降低原因识别</h4>
+        <div class="detail-row">通过对比智能与人工解决效果，找到模型当前做不好的环节</div>
+      </div>
+      <div class="attr-card" style="border-top:3px solid var(--green);">
+        <h4>📈 新机会发现</h4>
+        <div class="detail-row">识别模型尚未覆盖但有能力处理的场景，扩大智能覆盖面</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🛠️ 对工具的要求</div>
+    <table class="tool-table">
+      <thead><tr><th>能力</th><th>理想状态</th><th>当前现状</th><th>差距</th></tr></thead>
+      <tbody>
+        <tr><td>自动拉取对话</td><td>输入工单ID自动获取全量上下文</td><td><span class="status-ok">✅</span> pacific-hearing-assistant</td><td>—</td></tr>
+        <tr><td>AI 预分析</td><td>模型初筛归因，人做二次确认</td><td><span class="status-ok">✅</span> unresolved-case-analysis</td><td>—</td></tr>
+        <tr><td>聚类能力</td><td>跨 Case 自动识别共性</td><td><span class="status-warn">⚠️</span> kefu-case-manager 待深化</td><td><span class="tag tag-amber">中</span></td></tr>
+        <tr><td>分发追踪</td><td>分析完自动发给责任人</td><td><span class="status-warn">⚠️</span> 大象私信有，追踪待建</td><td><span class="tag tag-amber">中</span></td></tr>
+        <tr><td>数据累积</td><td>结构化入库，支持趋势观察</td><td><span class="status-miss">❌</span> 缺结构化数据库</td><td><span class="tag tag-red">高</span></td></tr>
+        <tr><td>闭环率统计</td><td>Case→归因→Ticket→验证</td><td><span class="status-miss">❌</span> 链路未打通</td><td><span class="tag tag-red">高</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== 2.3 策略迭代 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--purple-bg);color:var(--purple);">⚙️</span>
+    2.3 策略迭代与模型优化
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔗 运营闭环中的位置</div>
+    <div class="step-flow">
+      <div class="step-item" style="border-color:var(--blue);">
+        <div class="step-num" style="color:var(--blue);">输入</div>
+        <div class="step-title">问题发现</div>
+        <div class="step-desc">2.1/2.2 的输出</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item" style="border-color:var(--purple);">
+        <div class="step-num" style="color:var(--purple);">核心</div>
+        <div class="step-title">痛点定义</div>
+        <div class="step-desc">从 Case 聚类 + 指标归因中提炼「该优化什么」</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item" style="border-color:var(--purple);">
+        <div class="step-num" style="color:var(--purple);">产出</div>
+        <div class="step-title">流程产出</div>
+        <div class="step-desc">Skill / Prompt / Flow 的具体修改方案</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item" style="border-color:#f97316;">
+        <div class="step-num" style="color:#f97316;">落地</div>
+        <div class="step-title">模型承接</div>
+        <div class="step-desc">Skill 编写、Prompt 优化、FQ 规则配置</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item" style="border-color:var(--green);">
+        <div class="step-num" style="color:var(--green);">验证</div>
+        <div class="step-title">灰度 → 效果观测</div>
+        <div class="step-desc">进入 2.4 实验管理</div>
+      </div>
+    </div>
+
+    <div class="anno anno-purple" style="margin-top:16px;">
+      💡 <strong>关键认知：</strong>痛点定义因需物理世界上下文，是最难被 AI 替代的环节（人类经验的核心价值）；流程产出和模型承接希望实现纯自动化。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🛠️ 对工具的要求</div>
+    <table class="tool-table">
+      <thead><tr><th>能力</th><th>理想状态</th><th>当前现状</th><th>差距</th></tr></thead>
+      <tbody>
+        <tr><td>痛点优先级排序</td><td>按影响面（服务量×解决率差距）自动排序</td><td><span class="status-miss">❌</span> 人工判断</td><td><span class="tag tag-red">高</span></td></tr>
+        <tr><td>Skill 写作辅助</td><td>AI 辅助生成初稿、校验格式</td><td><span class="status-ok">✅</span> 客服Skill写作完全指南 v3.1</td><td>—</td></tr>
+        <tr><td>效果追踪</td><td>每个优化动作有独立效果看板</td><td><span class="status-warn">⚠️</span> 依赖实验平台，缺统一视图</td><td><span class="tag tag-amber">中</span></td></tr>
+        <tr><td>知识沉淀</td><td>做过的优化、验证过的结论可复用</td><td><span class="status-warn">⚠️</span> 学城有文档，缺结构化索引</td><td><span class="tag tag-amber">中</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== 2.4 实验管理 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--green-bg);color:var(--green);">🧪</span>
+    2.4 实验管理与效果评估
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 工作内容</div>
+    <table>
+      <thead><tr><th>动作</th><th>频率</th><th>具体内容</th></tr></thead>
+      <tbody>
+        <tr><td>实验台账维护</td><td><span class="tag tag-green">持续</span></td><td>记录在跑实验的名称、灰度比例、预期效果、负责人</td></tr>
+        <tr><td>上线效果追踪</td><td><span class="tag tag-blue">D1/D3/D7</span></td><td>新实验上线后对比实验组 vs 对照组核心指标</td></tr>
+        <tr><td>冲突检测</td><td><span class="tag tag-amber">上线前</span></td><td>多实验并行时，判断是否互相干扰</td></tr>
+        <tr><td>结项归档</td><td><span class="tag tag-purple">实验结束</span></td><td>结论沉淀，全量/回滚的决策依据</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="anno anno-blue">
+    🔗 <strong>与指标监控的关系：</strong>实验管理是指标监控中「内部因素归因」的源头 — 指标异常时需关联「近 3 天内有哪些实验上线了」
+  </div>
+
+  <div class="card">
+    <div class="card-title">🛠️ 对工具的要求</div>
+    <table class="tool-table">
+      <thead><tr><th>能力</th><th>理想状态</th><th>当前现状</th><th>差距</th></tr></thead>
+      <tbody>
+        <tr><td>实验全景视图</td><td>一页看清所有在跑实验</td><td><span class="status-miss">❌</span> 分散在各系统</td><td><span class="tag tag-red">高</span></td></tr>
+        <tr><td>自动 D1/D3/D7 报告</td><td>上线后自动推送效果</td><td><span class="status-miss">❌</span> 需手动查看板</td><td><span class="tag tag-red">高</span></td></tr>
+        <tr><td>异常→实验自动关联</td><td>指标异常自动匹配近期实验</td><td><span class="status-miss">❌</span> 最需要补的自动化</td><td><span class="tag tag-red">高</span></td></tr>
+        <tr><td>实验日历</td><td>可视化排期，避免冲突</td><td><span class="status-miss">❌</span></td><td><span class="tag tag-amber">中</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== 2.5 风控 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--red-bg);color:var(--red);">🛡️</span>
+    2.5 风险防控与合规巡检
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏗️ 三层防控体系</div>
+    <div class="risk-layers">
+      <div class="risk-layer rl1">
+        <div class="r-title">🔍 事前评测</div>
+        <div class="r-goal">上线前确保模型不犯已知错误</div>
+        <div class="r-means">定期跑评测集，benchmark 对比</div>
+      </div>
+      <div class="risk-layer rl2">
+        <div class="r-title">⚡ 事中识别</div>
+        <div class="r-goal">运行中实时拦截高风险行为</div>
+        <div class="r-means">底线风险实时监控、退赔异常检测</div>
+      </div>
+      <div class="risk-layer rl3">
+        <div class="r-title">📝 事后巡检</div>
+        <div class="r-goal">事后复盘、发现遗漏</div>
+        <div class="r-means">Case 抽检、退赔超限复核</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚠️ 重点关注</div>
+    <div style="padding:4px 0;">
+      <div class="anno anno-amber" style="margin:8px 0;">🎯 6大风险域、27个风险类型的覆盖率</div>
+      <div class="anno anno-amber" style="margin:8px 0;">📉 底线风险透出率（目标：同比降10%）</div>
+      <div class="anno anno-amber" style="margin:8px 0;">⏱️ 退赔超限配置的响应时效（含备份人机制）</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🛠️ 对工具的要求</div>
+    <table class="tool-table">
+      <thead><tr><th>能力</th><th>理想状态</th><th>当前现状</th><th>差距</th></tr></thead>
+      <tbody>
+        <tr><td>实时风险识别</td><td>高风险对话实时预警推送</td><td><span class="status-warn">⚠️</span> 事中识别有，推送链路未全自动</td><td><span class="tag tag-amber">中</span></td></tr>
+        <tr><td>退赔异常检测</td><td>单场景退赔突增自动告警</td><td><span class="status-warn">⚠️</span> 日报能看到，不够实时</td><td><span class="tag tag-amber">中</span></td></tr>
+        <tr><td>合规评测自动化</td><td>定期跑 benchmark，自动对比</td><td><span class="status-warn">⚠️</span> 框架完整，执行频率待确认</td><td><span class="tag tag-green">低</span></td></tr>
+        <tr><td>应急响应 SOP</td><td>超限时自动通知备份人</td><td><span class="status-warn">⚠️</span> 有机制，曾出现联系不上</td><td><span class="tag tag-green">低</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== 2.6 协同 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--pink-bg);color:var(--pink);">📢</span>
+    2.6 协同拉齐与汇报沟通
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 工作内容</div>
+    <table>
+      <thead><tr><th>对象</th><th>频率</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td><strong>战队</strong></td><td><span class="tag tag-purple">每周</span></td><td>同步解决率/退款率变化、归因结论、下周动作</td></tr>
+        <tr><td><strong>上级</strong></td><td><span class="tag tag-purple">每周/月</span></td><td>业务数据解读、策略进展、风险预警</td></tr>
+        <tr><td><strong>产研</strong></td><td><span class="tag tag-amber">按需</span></td><td>优化需求排优先级、实验效果确认</td></tr>
+        <tr><td><strong>团队内部</strong></td><td><span class="tag tag-purple">每周</span></td><td>方法论分享、Case 洞察传播</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🛠️ 对工具的要求</div>
+    <table class="tool-table">
+      <thead><tr><th>能力</th><th>理想状态</th><th>当前现状</th><th>差距</th></tr></thead>
+      <tbody>
+        <tr><td>周报自动聚合</td><td>基于日报自动生成周度结论</td><td><span class="status-miss">❌</span> 人工编写</td><td><span class="tag tag-red">高</span></td></tr>
+        <tr><td>汇报素材一键出</td><td>指标+归因+Case 三合一</td><td><span class="status-warn">⚠️</span> 各块分散，缺整合</td><td><span class="tag tag-amber">中</span></td></tr>
+        <tr><td>战队视角翻译</td><td>运营动作→体验改善点</td><td><span class="status-miss">❌</span> 人工做</td><td><span class="tag tag-amber">中</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== 三、六域关系 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--blue-bg);color:var(--blue);">🔗</span>
+    三、六域之间的关系
+  </div>
+  <div class="card">
+    <div class="relation-block">指标监控（每日）
+  │
+  ├─ 正常 → 记录，继续观察
+  │
+  └─ 异常 → 内外部归因
+                │
+                ├─ 外部（场景） → Case 分析 → 发现痛点
+                │                                  │
+                └─ 内部（实验） → 实验效果评估      │
+                                    │              │
+                                    └──────────────┘
+                                           │
+                                    策略迭代与模型优化
+                                           │
+                                    实验上线 → 效果观测
+                                           │
+                                    回到 指标监控
+
+风险防控 ──── 贯穿全程（事前/事中/事后）
+协同汇报 ──── 每周输出（消化上述所有产出）</div>
+  </div>
+</div>
+
+<!-- ==================== 四、工具体系评估 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--amber-bg);color:var(--amber);">📊</span>
+    四、工具体系整体评估
+  </div>
+  <div class="card">
+    <div class="maturity-row">
+      <div class="maturity-label">监控层</div>
+      <div class="maturity-bar-wrap">
+        <div class="maturity-bar" style="width:80%;background:linear-gradient(90deg,#10b981,#34d399);">★★★★☆</div>
+      </div>
+      <div class="maturity-gap">缺阈值自动判定 + 实验关联</div>
+    </div>
+    <div class="maturity-row">
+      <div class="maturity-label">分析层</div>
+      <div class="maturity-bar-wrap">
+        <div class="maturity-bar" style="width:80%;background:linear-gradient(90deg,#3b82f6,#60a5fa);">★★★★☆</div>
+      </div>
+      <div class="maturity-gap">缺跨 Case 聚合 + 闭环追踪</div>
+    </div>
+    <div class="maturity-row">
+      <div class="maturity-label">执行层</div>
+      <div class="maturity-bar-wrap">
+        <div class="maturity-bar" style="width:60%;background:linear-gradient(90deg,#f59e0b,#fbbf24);">★★★☆☆</div>
+      </div>
+      <div class="maturity-gap">痛点→Skill 链路未自动化</div>
+    </div>
+    <div class="maturity-row">
+      <div class="maturity-label">实验层</div>
+      <div class="maturity-bar-wrap">
+        <div class="maturity-bar" style="width:40%;background:linear-gradient(90deg,#ef4444,#f87171);">★★☆☆☆</div>
+      </div>
+      <div class="maturity-gap">⚠️ 最薄弱：缺自动效果追踪和上线关联</div>
+    </div>
+    <div class="maturity-row">
+      <div class="maturity-label">风控层</div>
+      <div class="maturity-bar-wrap">
+        <div class="maturity-bar" style="width:60%;background:linear-gradient(90deg,#8b5cf6,#a78bfa);">★★★☆☆</div>
+      </div>
+      <div class="maturity-gap">框架完整，执行自动化待提升</div>
+    </div>
+    <div class="maturity-row">
+      <div class="maturity-label">汇报层</div>
+      <div class="maturity-bar-wrap">
+        <div class="maturity-bar" style="width:40%;background:linear-gradient(90deg,#ec4899,#f472b6);">★★☆☆☆</div>
+      </div>
+      <div class="maturity-gap">素材分散，缺周报/月报自动聚合</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 五、优先级建议 ==================== -->
+<div class="section">
+  <div class="section-title">
+    <span class="icon" style="background:var(--green-bg);color:var(--green);">🚀</span>
+    五、优先级建议
+  </div>
+  <div class="card">
+    <ul class="priority-list">
+      <li>
+        <span class="p-badge p0">P0</span>
+        <span class="p-text"><strong>实验上线 → 自动 D1/D3/D7 效果报告</strong>（解决实验管理最大盲区）</span>
+      </li>
+      <li>
+        <span class="p-badge p0">P0</span>
+        <span class="p-text"><strong>异常日报 → 自动关联近期实验变更</strong>（打通监控→实验链路）</span>
+      </li>
+      <li>
+        <span class="p-badge p1">P1</span>
+        <span class="p-text"><strong>Case 分析 → 优化 Ticket → 闭环追踪</strong>（让分析产出真正闭环）</span>
+      </li>
+      <li>
+        <span class="p-badge p1">P1</span>
+        <span class="p-text"><strong>周报自动聚合</strong>（减少汇报时间消耗）</span>
+      </li>
+      <li>
+        <span class="p-badge p2">P2</span>
+        <span class="p-text"><strong>痛点自动排序</strong>（基于服务量×解决率差距计算影响面）</span>
+      </li>
+      <li>
+        <span class="p-badge p2">P2</span>
+        <span class="p-text"><strong>Case 分析结果结构化入库</strong>（支持趋势性观察）</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="text-align:center; padding:20px 0 40px; color:var(--text-sec); font-size:0.78rem;">
+  大模型智能客服日常运营工作框架 · 仅供内部使用 · 基于 km/2768109278 生成
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
