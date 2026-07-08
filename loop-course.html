@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>从零到Loop — 大模型应用进阶课程</title>
+<style>
+  :root {
+    --c1: #6C5CE7; --c1l: #A29BFE; --c1d: #4834D4;
+    --c2: #00B894; --c2l: #55EFC4; --c2d: #00897B;
+    --c3: #E17055; --c3l: #FAB1A0; --c3d: #D63031;
+    --c4: #0984E3; --c4l: #74B9FF; --c4d: #0652DD;
+    --c5: #FDCB6E; --c5l: #FFEAA7; --c5d: #E67E22;
+    --c6: #E84393; --c6l: #FD79A8; --c6d: #B71540;
+    --bg: #0F0F1A; --card: #1A1A2E; --card2: #16213E;
+    --txt: #E8E8F0; --txt2: #A0A0B8; --border: #2A2A4A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--txt); line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ======= HERO ======= */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    align-items: center; text-align: center; padding: 40px 20px;
+    background: linear-gradient(135deg, #0F0F1A 0%, #1A1A3E 30%, #2D1B69 60%, #0F0F1A 100%);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 600px 400px at 50% 50%, rgba(108,92,231,0.12) 0%, transparent 70%);
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(108,92,231,0.15); border: 1px solid rgba(108,92,231,0.3);
+    padding: 6px 18px; border-radius: 20px; font-size: 13px; color: var(--c1l);
+    margin-bottom: 24px; position: relative;
+  }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 64px); font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #A29BFE 50%, #74B9FF 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 16px; position: relative;
+  }
+  .hero .subtitle {
+    font-size: clamp(16px, 2.5vw, 22px); color: var(--txt2);
+    max-width: 640px; margin-bottom: 32px; position: relative;
+  }
+  .hero .meta-row {
+    display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
+    font-size: 14px; color: var(--txt2); position: relative;
+  }
+  .meta-row span { display: flex; align-items: center; gap: 6px; }
+
+  /* ======= TOC ======= */
+  .toc-section {
+    max-width: 960px; margin: 0 auto; padding: 60px 20px 40px;
+  }
+  .toc-title {
+    font-size: 24px; font-weight: 700; margin-bottom: 28px; text-align: center;
+    color: var(--c1l);
+  }
+  .toc-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;
+  }
+  .toc-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; cursor: pointer; transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .toc-card:hover { transform: translateY(-3px); border-color: var(--c1); }
+  .toc-card .toc-num {
+    font-size: 32px; font-weight: 900; opacity: 0.12; position: absolute;
+    top: 10px; right: 16px;
+  }
+  .toc-card h3 { font-size: 16px; margin-bottom: 6px; }
+  .toc-card p { font-size: 13px; color: var(--txt2); }
+
+  /* ======= CHAPTER ======= */
+  .chapter {
+    max-width: 960px; margin: 0 auto; padding: 60px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .ch-header {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 32px;
+  }
+  .ch-num {
+    min-width: 48px; height: 48px; border-radius: 12px; display: flex;
+    align-items: center; justify-content: center; font-size: 20px; font-weight: 900;
+    color: #fff; flex-shrink: 0;
+  }
+  .ch-header h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 700; }
+  .ch-header .ch-tag {
+    font-size: 12px; padding: 2px 10px; border-radius: 10px; margin-left: 8px;
+    font-weight: 600;
+  }
+
+  /* content blocks */
+  .content-block {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 28px; margin-bottom: 24px;
+  }
+  .content-block h3 {
+    font-size: 17px; font-weight: 700; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .content-block p, .content-block li {
+    font-size: 15px; color: var(--txt2); margin-bottom: 10px;
+  }
+  .content-block ul { padding-left: 20px; }
+  .content-block li::marker { color: var(--c1l); }
+  .content-block strong { color: var(--txt); }
+
+  /* highlight box */
+  .highlight-box {
+    border-left: 4px solid; padding: 16px 20px; border-radius: 0 10px 10px 0;
+    margin: 16px 0; font-size: 14px;
+  }
+  .hl-purple { border-color: var(--c1); background: rgba(108,92,231,0.08); }
+  .hl-green { border-color: var(--c2); background: rgba(0,184,148,0.08); }
+  .hl-orange { border-color: var(--c3); background: rgba(225,112,85,0.08); }
+  .hl-blue { border-color: var(--c4); background: rgba(9,132,227,0.08); }
+  .hl-yellow { border-color: var(--c5); background: rgba(253,203,110,0.08); }
+  .hl-pink { border-color: var(--c6); background: rgba(232,67,147,0.08); }
+
+  /* code block */
+  .code-block {
+    background: #0D0D18; border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 20px; font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px; line-height: 1.6; overflow-x: auto; margin: 14px 0;
+    color: #B8C0E0;
+  }
+  .code-block .comment { color: #636E88; }
+  .code-block .keyword { color: var(--c1l); }
+  .code-block .string { color: var(--c2l); }
+  .code-block .func { color: var(--c5); }
+
+  /* comparison table */
+  .cmp-table {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+    border-radius: 10px; overflow: hidden; margin: 16px 0;
+  }
+  .cmp-table th {
+    background: rgba(108,92,231,0.15); padding: 12px 16px; font-size: 13px;
+    text-align: left; font-weight: 600; color: var(--c1l);
+  }
+  .cmp-table td {
+    padding: 12px 16px; font-size: 14px; border-top: 1px solid var(--border);
+    color: var(--txt2);
+  }
+  .cmp-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* SVG diagrams wrapper */
+  .diagram-wrap {
+    display: flex; justify-content: center; margin: 24px 0;
+    overflow-x: auto;
+  }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+
+  /* quiz */
+  .quiz-box {
+    background: linear-gradient(135deg, rgba(108,92,231,0.08), rgba(9,132,227,0.08));
+    border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin: 20px 0;
+  }
+  .quiz-box h4 { font-size: 15px; margin-bottom: 12px; color: var(--c5); }
+  .quiz-opt {
+    display: block; padding: 10px 16px; margin: 6px 0; border-radius: 8px;
+    border: 1px solid var(--border); cursor: pointer; font-size: 14px;
+    transition: all 0.2s; background: rgba(0,0,0,0.2);
+  }
+  .quiz-opt:hover { border-color: var(--c1); background: rgba(108,92,231,0.1); }
+  .quiz-opt.correct { border-color: var(--c2); background: rgba(0,184,148,0.15); color: var(--c2l); }
+  .quiz-opt.wrong { border-color: var(--c3); background: rgba(225,112,85,0.1); opacity: 0.6; }
+  .quiz-answer { display: none; margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+    background: rgba(0,184,148,0.08); font-size: 13px; color: var(--c2l); }
+
+  /* progress bar */
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 999;
+    background: linear-gradient(90deg, var(--c1), var(--c4), var(--c6));
+    transition: width 0.3s; width: 0%;
+  }
+
+  /* timeline */
+  .timeline { position: relative; padding-left: 40px; margin: 20px 0; }
+  .timeline::before {
+    content: ''; position: absolute; left: 14px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, var(--c1), var(--c4), var(--c6));
+  }
+  .tl-item { position: relative; margin-bottom: 24px; }
+  .tl-dot {
+    position: absolute; left: -33px; top: 4px; width: 14px; height: 14px;
+    border-radius: 50%; border: 3px solid; background: var(--bg);
+  }
+  .tl-item h4 { font-size: 15px; margin-bottom: 4px; }
+  .tl-item p { font-size: 13px; color: var(--txt2); }
+
+  /* analogy card */
+  .analogy {
+    display: flex; gap: 16px; align-items: flex-start; padding: 16px;
+    background: rgba(253,203,110,0.05); border: 1px dashed var(--c5d);
+    border-radius: 10px; margin: 16px 0;
+  }
+  .analogy-icon { font-size: 32px; flex-shrink: 0; }
+  .analogy-text { font-size: 14px; color: var(--txt2); }
+  .analogy-text strong { color: var(--c5); }
+
+  /* step cards */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 16px 0; }
+  .step-card {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; text-align: center;
+  }
+  .step-card .step-icon { font-size: 28px; margin-bottom: 8px; }
+  .step-card h5 { font-size: 14px; margin-bottom: 4px; }
+  .step-card p { font-size: 12px; color: var(--txt2); }
+
+  /* footer */
+  .footer {
+    text-align: center; padding: 40px 20px; color: var(--txt2); font-size: 13px;
+    border-top: 1px solid var(--border); margin-top: 40px;
+  }
+
+  /* responsive */
+  @media (max-width: 640px) {
+    .chapter { padding: 40px 16px; }
+    .content-block { padding: 20px; }
+    .cmp-table { font-size: 12px; }
+    .cmp-table th, .cmp-table td { padding: 8px 10px; }
+  }
+
+  /* scroll animation */
+  .fade-in { opacity: 0; transform: translateY(24px); transition: all 0.6s ease-out; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="hero-badge">🎓 小白友好 · 零基础可学</div>
+  <h1>从零到 Loop</h1>
+  <p class="subtitle">大模型应用的六个进阶阶段<br>从「手动打字」到「AI 自己闭环」的完整演进路径</p>
+  <div class="meta-row">
+    <span>📖 6 大章节</span>
+    <span>⏱️ 预计 25 分钟</span>
+    <span>🧩 含互动练习</span>
+    <span>📊 配合 Claude 四种 Loop 实战</span>
+  </div>
+</section>
+
+<!-- ==================== TOC ==================== -->
+<section class="toc-section">
+  <div class="toc-title">📋 课程大纲</div>
+  <div class="toc-grid">
+    <div class="toc-card" onclick="document.getElementById('ch0').scrollIntoView({behavior:'smooth'})">
+      <span class="toc-num" style="color:var(--txt2)">00</span>
+      <h3>🌅 前言：你和 AI 的关系正在变</h3>
+      <p>为什么「会打字」≠「会用 AI」？一张图看懂人类角色的六次迁移</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch1').scrollIntoView({behavior:'smooth'})">
+      <span class="toc-num" style="color:var(--c1l)">01</span>
+      <h3>💬 Prompt 工程</h3>
+      <p>一句话的艺术：如何把需求讲清楚</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch2').scrollIntoView({behavior:'smooth'})">
+      <span class="toc-num" style="color:var(--c2l)">02</span>
+      <h3>📚 上下文工程</h3>
+      <p>给 AI 配教材：CoT 思维链 + RAG 知识检索</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch3').scrollIntoView({behavior:'smooth'})">
+      <span class="toc-num" style="color:var(--c3l)">03</span>
+      <h3>🤖 Agent 智能体</h3>
+      <p>让 AI 动手干活：Function Calling + 工具调用</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch4').scrollIntoView({behavior:'smooth'})">
+      <span class="toc-num" style="color:var(--c4l)">04</span>
+      <h3>🧩 Skill 技能封装</h3>
+      <p>把经验固化成可复用模块</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch5').scrollIntoView({behavior:'smooth'})">
+      <span class="toc-num" style="color:var(--c5l)">05</span>
+      <h3>🦾 Harness 运行外骨骼</h3>
+      <p>给 AI 穿上铠甲：质检、容错、调度</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch6').scrollIntoView({behavior:'smooth'})">
+      <span class="toc-num" style="color:var(--c6l)">06</span>
+      <h3>🔄 Loop 自主循环</h3>
+      <p>终极形态：AI 自己跑、自己判、自己交付</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 0: 前言 ==================== -->
+<section class="chapter fade-in" id="ch0">
+  <div class="ch-header">
+    <div class="ch-num" style="background: linear-gradient(135deg, #636E88, #4A5568);">00</div>
+    <div>
+      <h2>前言：你和 AI 的关系正在变</h2>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🤔 先问一个问题</h3>
+    <p>你现在是怎么用 AI 的？</p>
+    <p>大多数人的答案是：<strong>打开 ChatGPT / Claude / 豆包 → 打字提问 → 看回答 → 关掉</strong>。</p>
+    <p>这相当于你买了一辆特斯拉，但只用它听收音机。</p>
+    <div class="analogy">
+      <div class="analogy-icon">🚗</div>
+      <div class="analogy-text">
+        <strong>汽车的演进类比：</strong><br>
+        手摇启动(Prompt) → 加油站+GPS(上下文工程) → 自动挡+倒车雷达(Agent) → 定速巡航(Skill) → L2 辅助驾驶(Harness) → L4 自动驾驶(Loop)
+      </div>
+    </div>
+    <p>这门课会带你走完 <strong>六个台阶</strong>，每一层都建立在前一层之上。不跳级，不炫技，一层一层搭。</p>
+  </div>
+
+  <div class="content-block">
+    <h3>📐 六阶段全景图</h3>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" style="max-width: 780px;">
+        <!-- 阶梯 -->
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6C5CE7"/><stop offset="100%" stop-color="#A29BFE"/></linearGradient>
+          <linearGradient id="g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00B894"/><stop offset="100%" stop-color="#55EFC4"/></linearGradient>
+          <linearGradient id="g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E17055"/><stop offset="100%" stop-color="#FAB1A0"/></linearGradient>
+          <linearGradient id="g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0984E3"/><stop offset="100%" stop-color="#74B9FF"/></linearGradient>
+          <linearGradient id="g5" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E67E22"/><stop offset="100%" stop-color="#FDCB6E"/></linearGradient>
+          <linearGradient id="g6" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E84393"/><stop offset="100%" stop-color="#FD79A8"/></linearGradient>
+        </defs>
+        <!-- step blocks -->
+        <rect x="10" y="340" width="110" height="60" rx="8" fill="url(#g1)" opacity="0.9"/>
+        <text x="65" y="366" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">① Prompt</text>
+        <text x="65" y="384" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">单轮提问</text>
+
+        <rect x="140" y="280" width="110" height="60" rx="8" fill="url(#g2)" opacity="0.9"/>
+        <text x="195" y="306" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">② 上下文工程</text>
+        <text x="195" y="324" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">CoT + RAG</text>
+
+        <rect x="270" y="220" width="110" height="60" rx="8" fill="url(#g3)" opacity="0.9"/>
+        <text x="325" y="246" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">③ Agent</text>
+        <text x="325" y="264" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">工具调用</text>
+
+        <rect x="400" y="160" width="110" height="60" rx="8" fill="url(#g4)" opacity="0.9"/>
+        <text x="455" y="186" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">④ Skill</text>
+        <text x="455" y="204" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">模块化封装</text>
+
+        <rect x="530" y="100" width="110" height="60" rx="8" fill="url(#g5)" opacity="0.9"/>
+        <text x="585" y="126" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">⑤ Harness</text>
+        <text x="585" y="144" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">运行外骨骼</text>
+
+        <rect x="660" y="40" width="120" height="60" rx="8" fill="url(#g6)" opacity="0.9"/>
+        <text x="720" y="66" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">⑥ Loop</text>
+        <text x="720" y="84" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">自主循环</text>
+
+        <!-- arrows -->
+        <path d="M120 340 L140 340 L140 310" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none" marker-end="url(#arrowW)"/>
+        <path d="M250 280 L270 280 L270 250" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+        <path d="M380 220 L400 220 L400 190" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+        <path d="M510 160 L530 160 L530 130" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+        <path d="M640 100 L660 100 L660 70" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+
+        <!-- 人类角色标注 -->
+        <text x="65" y="416" text-anchor="middle" fill="#A29BFE" font-size="10">🧑 操作员</text>
+        <text x="195" y="356" text-anchor="middle" fill="#55EFC4" font-size="10">🧑 策展人</text>
+        <text x="325" y="296" text-anchor="middle" fill="#FAB1A0" font-size="10">🧑 指挥官</text>
+        <text x="455" y="236" text-anchor="middle" fill="#74B9FF" font-size="10">🧑 架构师</text>
+        <text x="585" y="176" text-anchor="middle" fill="#FDCB6E" font-size="10">🧑 督察</text>
+        <text x="720" y="116" text-anchor="middle" fill="#FD79A8" font-size="10">🧑 决策者</text>
+      </svg>
+    </div>
+    <div class="highlight-box hl-purple">
+      <strong>📌 核心规律：</strong>每升一层，<strong>人类的角色</strong>就发生一次迁移 —— 从亲手干活的操作员，逐步退到只看结果的决策者。AI 承担的范围越来越大，但你给它的<strong>约束和标准</strong>也必须越来越精确。
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 1: Prompt ==================== -->
+<section class="chapter fade-in" id="ch1">
+  <div class="ch-header">
+    <div class="ch-num" style="background: linear-gradient(135deg, var(--c1d), var(--c1));">01</div>
+    <div>
+      <h2>Prompt 工程 <span class="ch-tag" style="background:rgba(108,92,231,0.15);color:var(--c1l);">2022末—2024上</span></h2>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>💡 一句话理解</h3>
+    <p><strong>Prompt 工程 = 你说一句，AI 答一句。</strong>这是所有人接触大模型的第一步。你的整个输入（提示词）就是 AI 唯一的「世界」。</p>
+    <div class="analogy">
+      <div class="analogy-icon">📱</div>
+      <div class="analogy-text">
+        <strong>类比：发短信。</strong><br>
+        你发一条短信给一个很聪明的朋友。他只看到这条短信，不知道你之前跟别人聊了什么，不知道你手上有什么资料。他的回答质量，100% 取决于你这条短信写得有多清楚。
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🔑 核心技巧</h3>
+    <table class="cmp-table">
+      <thead><tr><th>技巧</th><th>原理</th><th>示例</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>角色设定</strong></td>
+          <td>给 AI 一个身份，激活对应的知识</td>
+          <td>「你是一个有 10 年经验的客服培训师…」</td>
+        </tr>
+        <tr>
+          <td><strong>明确格式</strong></td>
+          <td>减少 AI 猜你要什么输出形式</td>
+          <td>「用表格对比 A 和 B，列出优劣」</td>
+        </tr>
+        <tr>
+          <td><strong>给示例</strong></td>
+          <td>Few-Shot，用例子定义标准</td>
+          <td>「好的回复像这样：…，差的像这样：…」</td>
+        </tr>
+        <tr>
+          <td><strong>拆分步骤</strong></td>
+          <td>避免一口吃成胖子</td>
+          <td>「第一步分析原因，第二步给方案，第三步写话术」</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-block">
+    <h3>⚠️ 天花板在哪？</h3>
+    <ul>
+      <li><strong>无记忆</strong>：每次对话都是全新开始，昨天教它的今天全忘</li>
+      <li><strong>无数据</strong>：不知道你公司的文档、流程、规则</li>
+      <li><strong>无行动</strong>：只能回答文字，不能操作任何系统</li>
+      <li><strong>输入长度有限</strong>：早期 GPT-3.5 只有 4K token ≈ 3000 字</li>
+    </ul>
+    <div class="highlight-box hl-purple">
+      <strong>🎯 天花板公式：</strong>Prompt 的上限 = 你描述能力的上限 × 模型知识的上限。当你发现「怎么写都差点意思」的时候，就该往第二层走了。
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <h4>🧪 小测验</h4>
+    <p style="font-size:14px;margin-bottom:12px;">你想让 AI 帮你分析一份 100 页的客服手册，Prompt 工程能搞定吗？</p>
+    <div class="quiz-opt" onclick="revealAnswer(this, false, 'q1')">A. 能，把 100 页全粘贴进去就行</div>
+    <div class="quiz-opt" onclick="revealAnswer(this, false, 'q1')">B. 能，分 10 次粘贴，每次 10 页</div>
+    <div class="quiz-opt" onclick="revealAnswer(this, true, 'q1')">C. 不太行，需要上下文工程（RAG）来解决</div>
+    <div class="quiz-answer" id="q1">✅ 正确！100 页超出了 token 限制，分批又会丢失上下文。这正是<strong>上下文工程</strong>要解决的问题 —— 让 AI 动态检索你需要的段落，而不是全塞进去。</div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 2: 上下文工程 ==================== -->
+<section class="chapter fade-in" id="ch2">
+  <div class="ch-header">
+    <div class="ch-num" style="background: linear-gradient(135deg, var(--c2d), var(--c2));">02</div>
+    <div>
+      <h2>上下文工程 <span class="ch-tag" style="background:rgba(0,184,148,0.15);color:var(--c2l);">2023—2024</span></h2>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>💡 一句话理解</h3>
+    <p><strong>上下文工程 = 在 AI 回答之前，先帮它把「教材」准备好。</strong></p>
+    <p>Prompt 解决的是「怎么问」，上下文工程解决的是「拿什么来答」。它包含两大核心技术：</p>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-icon">🧠</div>
+        <h5>CoT 思维链</h5>
+        <p>教 AI <strong>怎么想</strong><br>「先分析原因→再给方案→最后总结」</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">🔍</div>
+        <h5>RAG 检索增强</h5>
+        <p>给 AI <strong>看什么</strong><br>从知识库里捞出相关段落塞进去</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>📖 RAG 是什么？给小白画张图</h3>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg" style="max-width:680px;">
+        <!-- User -->
+        <rect x="10" y="90" width="120" height="50" rx="10" fill="rgba(0,184,148,0.15)" stroke="#00B894" stroke-width="1.5"/>
+        <text x="70" y="112" text-anchor="middle" fill="#55EFC4" font-size="12" font-weight="600">👤 用户提问</text>
+        <text x="70" y="128" text-anchor="middle" fill="#A0A0B8" font-size="10">「退款流程是什么」</text>
+        <!-- Arrow 1 -->
+        <line x1="130" y1="115" x2="175" y2="115" stroke="#55EFC4" stroke-width="1.5" marker-end="url(#arrowG)"/>
+        <defs><marker id="arrowG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#55EFC4"/></marker></defs>
+        <!-- Search -->
+        <rect x="180" y="70" width="140" height="80" rx="10" fill="rgba(0,184,148,0.1)" stroke="#00B894" stroke-width="1.5"/>
+        <text x="250" y="98" text-anchor="middle" fill="#55EFC4" font-size="12" font-weight="600">🔍 向量检索</text>
+        <text x="250" y="116" text-anchor="middle" fill="#A0A0B8" font-size="10">在知识库里搜索</text>
+        <text x="250" y="132" text-anchor="middle" fill="#A0A0B8" font-size="10">最相关的 3-5 段</text>
+        <!-- Arrow 2 -->
+        <line x1="320" y1="110" x2="365" y2="110" stroke="#55EFC4" stroke-width="1.5" marker-end="url(#arrowG)"/>
+        <!-- Combine -->
+        <rect x="370" y="60" width="140" height="100" rx="10" fill="rgba(108,92,231,0.1)" stroke="#6C5CE7" stroke-width="1.5"/>
+        <text x="440" y="88" text-anchor="middle" fill="#A29BFE" font-size="12" font-weight="600">📋 拼装 Prompt</text>
+        <text x="440" y="106" text-anchor="middle" fill="#A0A0B8" font-size="10">原始问题</text>
+        <text x="440" y="120" text-anchor="middle" fill="#A0A0B8" font-size="10">+ 检索到的段落</text>
+        <text x="440" y="134" text-anchor="middle" fill="#A0A0B8" font-size="10">+ 回答指令</text>
+        <!-- Arrow 3 -->
+        <line x1="510" y1="110" x2="555" y2="110" stroke="#A29BFE" stroke-width="1.5" marker-end="url(#arrowP)"/>
+        <defs><marker id="arrowP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#A29BFE"/></marker></defs>
+        <!-- LLM -->
+        <rect x="560" y="80" width="120" height="55" rx="10" fill="rgba(108,92,231,0.15)" stroke="#6C5CE7" stroke-width="1.5"/>
+        <text x="620" y="105" text-anchor="middle" fill="#A29BFE" font-size="12" font-weight="600">🤖 大模型</text>
+        <text x="620" y="122" text-anchor="middle" fill="#A0A0B8" font-size="10">生成精准回答</text>
+        <!-- Knowledge base -->
+        <rect x="200" y="175" width="100" height="45" rx="8" fill="rgba(253,203,110,0.1)" stroke="#FDCB6E" stroke-width="1"/>
+        <text x="250" y="198" text-anchor="middle" fill="#FDCB6E" font-size="10" font-weight="600">📁 客服手册</text>
+        <text x="250" y="212" text-anchor="middle" fill="#A0A0B8" font-size="9">100页 → 切片索引</text>
+        <line x1="250" y1="175" x2="250" y2="150" stroke="#FDCB6E" stroke-width="1" stroke-dasharray="4,3"/>
+      </svg>
+    </div>
+    <div class="highlight-box hl-green">
+      <strong>💡 一句话总结 RAG：</strong>不是把 100 页全塞给 AI，而是<strong>只给它最相关的几段</strong>。就像你不会把整个图书馆搬给朋友，而是帮他找好那几页。
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🆚 Prompt vs 上下文工程</h3>
+    <table class="cmp-table">
+      <thead><tr><th>对比维度</th><th>Prompt 工程</th><th>上下文工程</th></tr></thead>
+      <tbody>
+        <tr><td>知识来源</td><td>AI 自己的训练数据</td><td><strong>你的文档、数据库</strong></td></tr>
+        <tr><td>能处理多大材料</td><td>几千字</td><td><strong>无上限</strong>（检索后只取片段）</td></tr>
+        <tr><td>回答是否可溯源</td><td>不能，可能瞎编</td><td><strong>可以</strong>，能标注出处</td></tr>
+        <tr><td>实时性</td><td>截止到训练日期</td><td><strong>知识库实时更新</strong></td></tr>
+        <tr><td>部署难度</td><td>零（直接聊天）</td><td>中等（需建索引）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-block">
+    <h3>🎯 适用场景举例</h3>
+    <ul>
+      <li>客服知识库问答（100+ 页客服手册 → RAG 检索 → AI 精准回答）</li>
+      <li>企业内部搜索（在 10 万篇学城文档中找答案）</li>
+      <li>代码库理解（给 AI 喂相关代码片段，而不是整个仓库）</li>
+      <li>复杂推理（CoT：先拆解问题 → 逐步推导 → 综合结论）</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 3: Agent ==================== -->
+<section class="chapter fade-in" id="ch3">
+  <div class="ch-header">
+    <div class="ch-num" style="background: linear-gradient(135deg, var(--c3d), var(--c3));">03</div>
+    <div>
+      <h2>Agent 智能体 <span class="ch-tag" style="background:rgba(225,112,85,0.15);color:var(--c3l);">2023中—2024</span></h2>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>💡 一句话理解</h3>
+    <p><strong>Agent = AI 不只回答问题，还能动手干活了。</strong></p>
+    <div class="analogy">
+      <div class="analogy-icon">🏨</div>
+      <div class="analogy-text">
+        <strong>类比：从前台客服到管家。</strong><br>
+        Prompt 阶段，AI 是酒店前台 —— 你问什么答什么。Agent 阶段，AI 变成管家 —— 你说「帮我订明天的机票」，他会自己去查航班、比价、下单，而不是回你一句「您可以打这个电话」。
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🔧 关键技术：Function Calling</h3>
+    <p>大模型本身只会「说话」。但通过 <strong>Function Calling</strong>（函数调用），AI 可以指挥外部工具：</p>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-icon">🔍</div>
+        <h5>搜索引擎</h5>
+        <p>去网上查最新信息</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">💻</div>
+        <h5>写代码并运行</h5>
+        <p>写 Python 脚本分析数据</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">📊</div>
+        <h5>查数据库</h5>
+        <p>执行 SQL 查询看板数据</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">📤</div>
+        <h5>发消息</h5>
+        <p>把结果发到群聊/邮件</p>
+      </div>
+    </div>
+    <div class="code-block">
+<span class="comment">// AI 的内心独白（简化示意）</span>
+<br><br>
+<span class="comment">// 用户说："查一下昨天解决率多少"</span>
+<br>
+<span class="keyword">思考</span>: 用户要查解决率，我需要调用 BI 查询工具
+<br>
+<span class="keyword">调用</span>: <span class="func">query_bi</span>(<span class="string">"SELECT solve_rate FROM dashboard WHERE date = yesterday"</span>)
+<br>
+<span class="keyword">结果</span>: 87.3%
+<br>
+<span class="keyword">回答</span>: 昨天解决率 87.3%，环比上升 0.5pp ✅
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>⚠️ Agent 阶段的痛点</h3>
+    <p>Agent 能干活了，但有三个明显的毛病：</p>
+    <ul>
+      <li>❌ <strong>不可复用</strong>：你教了它一次怎么查解决率，下次换个人问，还得重新教</li>
+      <li>❌ <strong>不够稳定</strong>：同一个任务，跑 10 次可能有 3 次走弯路</li>
+      <li>❌ <strong>无法自检</strong>：做错了不知道错了，把错误结果自信满满地交给你</li>
+    </ul>
+    <div class="highlight-box hl-orange">
+      <strong>🎯 问题本质：</strong>Agent 像一个很聪明但没有经验的实习生 —— 什么都能干一点，但缺少<strong>标准化的操作手册</strong>（Skill）和<strong>质量控制体系</strong>（Harness）。
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 4: Skill ==================== -->
+<section class="chapter fade-in" id="ch4">
+  <div class="ch-header">
+    <div class="ch-num" style="background: linear-gradient(135deg, var(--c4d), var(--c4));">04</div>
+    <div>
+      <h2>Skill 技能封装 <span class="ch-tag" style="background:rgba(9,132,227,0.15);color:var(--c4l);">2024下半年</span></h2>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>💡 一句话理解</h3>
+    <p><strong>Skill = 把成功经验固化成可复用的「操作手册」。</strong></p>
+    <div class="analogy">
+      <div class="analogy-icon">📖</div>
+      <div class="analogy-text">
+        <strong>类比：从「口口相传」到「SOP 手册」。</strong><br>
+        Agent 阶段靠个人悟性，Skill 阶段把最佳实践写成标准文档。新人来了翻手册就行，不用老师傅一对一带。
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🧩 Skill 的本质结构</h3>
+    <p>一个 Skill 通常包含这四部分：</p>
+    <div class="steps">
+      <div class="step-card" style="border-color: var(--c4);">
+        <div class="step-icon">🎯</div>
+        <h5>触发条件</h5>
+        <p>什么时候该用这个技能</p>
+      </div>
+      <div class="step-card" style="border-color: var(--c4);">
+        <div class="step-icon">📝</div>
+        <h5>操作步骤</h5>
+        <p>1-2-3 怎么做</p>
+      </div>
+      <div class="step-card" style="border-color: var(--c4);">
+        <div class="step-icon">⚠️</div>
+        <h5>避坑指南</h5>
+        <p>常见错误和陷阱</p>
+      </div>
+      <div class="step-card" style="border-color: var(--c4);">
+        <div class="step-icon">✅</div>
+        <h5>验收标准</h5>
+        <p>怎么判断做对了</p>
+      </div>
+    </div>
+    <div class="code-block">
+<span class="comment"># 示例：一个客服解决率日报 Skill</span>
+<br><br>
+<span class="keyword">触发条件</span>: 每天早上 9:00 自动触发
+<br>
+<span class="keyword">步骤 1</span>: 调用 BI 接口查昨天 vs 前天解决率
+<br>
+<span class="keyword">步骤 2</span>: 计算各 L1 场景的变化贡献
+<br>
+<span class="keyword">步骤 3</span>: 找出跌幅 Top3 场景并下钻到 L4
+<br>
+<span class="keyword">步骤 4</span>: 生成桥图 + 文字摘要
+<br>
+<span class="keyword">步骤 5</span>: 推送到大象群
+<br><br>
+<span class="keyword">避坑</span>: 周一不跟周日比，要跟上周一比
+<br>
+<span class="keyword">验收</span>: 数字与看板一致，偏差 &lt; 0.1pp
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🆚 Agent vs Skill</h3>
+    <table class="cmp-table">
+      <thead><tr><th>对比维度</th><th>裸 Agent</th><th>Agent + Skill</th></tr></thead>
+      <tbody>
+        <tr><td>做同一件事</td><td>每次临场发挥</td><td><strong>按手册执行</strong></td></tr>
+        <tr><td>稳定性</td><td>60-70%（看状态）</td><td><strong>90%+</strong></td></tr>
+        <tr><td>可复用</td><td>换人要重新教</td><td><strong>任何人直接用</strong></td></tr>
+        <tr><td>可迭代</td><td>经验在人脑里</td><td><strong>Skill 越用越准</strong></td></tr>
+        <tr><td>知识传承</td><td>❌ 老师傅走了就没了</td><td>✅ <strong>写进 Skill 永远在</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box hl-blue">
+      <strong>💡 关键洞察：</strong>Skill 不是「限制」AI，而是让 AI <strong>站在巨人肩膀上</strong>。你的最佳实践被打包，AI 每次都从 90 分起步，而不是从 0 开始摸索。
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 5: Harness ==================== -->
+<section class="chapter fade-in" id="ch5">
+  <div class="ch-header">
+    <div class="ch-num" style="background: linear-gradient(135deg, var(--c5d), var(--c5));">05</div>
+    <div>
+      <h2>Harness 运行外骨骼 <span class="ch-tag" style="background:rgba(253,203,110,0.15);color:var(--c5);">2024末—2025</span></h2>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>💡 一句话理解</h3>
+    <p><strong>Harness = 给 AI 穿上一套铠甲——不是增强能力，而是防止翻车。</strong></p>
+    <div class="analogy">
+      <div class="analogy-icon">🏗️</div>
+      <div class="analogy-text">
+        <strong>类比：建筑工地的安全体系。</strong><br>
+        工人（Agent）有了施工手册（Skill），但工地还需要<strong>安全帽、防护网、监理、验收流程</strong>。Harness 就是这套安全体系 —— 让 AI 在「可控范围内」自由发挥。
+      </div>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🛡️ Harness 的四大组件</h3>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="max-width:680px;">
+        <!-- Center: Agent -->
+        <circle cx="350" cy="150" r="50" fill="rgba(225,112,85,0.15)" stroke="#E17055" stroke-width="2"/>
+        <text x="350" y="145" text-anchor="middle" fill="#FAB1A0" font-size="14" font-weight="700">🤖 Agent</text>
+        <text x="350" y="162" text-anchor="middle" fill="#A0A0B8" font-size="10">+ Skill</text>
+
+        <!-- Guard rails -->
+        <rect x="60" y="40" width="140" height="70" rx="10" fill="rgba(253,203,110,0.1)" stroke="#FDCB6E" stroke-width="1.5"/>
+        <text x="130" y="68" text-anchor="middle" fill="#FDCB6E" font-size="13" font-weight="600">🚧 护栏 Guardrail</text>
+        <text x="130" y="86" text-anchor="middle" fill="#A0A0B8" font-size="10">限制可操作的范围</text>
+        <text x="130" y="100" text-anchor="middle" fill="#A0A0B8" font-size="10">禁止越权/危险操作</text>
+        <line x1="200" y1="80" x2="300" y2="130" stroke="#FDCB6E" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- Quality check -->
+        <rect x="500" y="40" width="140" height="70" rx="10" fill="rgba(0,184,148,0.1)" stroke="#00B894" stroke-width="1.5"/>
+        <text x="570" y="68" text-anchor="middle" fill="#55EFC4" font-size="13" font-weight="600">✅ 质检 Validator</text>
+        <text x="570" y="86" text-anchor="middle" fill="#A0A0B8" font-size="10">输出交付前自动检查</text>
+        <text x="570" y="100" text-anchor="middle" fill="#A0A0B8" font-size="10">不达标自动打回</text>
+        <line x1="500" y1="80" x2="400" y2="130" stroke="#55EFC4" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- Error handling -->
+        <rect x="60" y="200" width="140" height="70" rx="10" fill="rgba(9,132,227,0.1)" stroke="#0984E3" stroke-width="1.5"/>
+        <text x="130" y="228" text-anchor="middle" fill="#74B9FF" font-size="13" font-weight="600">🔄 容错 Retry</text>
+        <text x="130" y="246" text-anchor="middle" fill="#A0A0B8" font-size="10">失败自动重试</text>
+        <text x="130" y="260" text-anchor="middle" fill="#A0A0B8" font-size="10">超时自动降级</text>
+        <line x1="200" y1="230" x2="300" y2="170" stroke="#74B9FF" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- Observability -->
+        <rect x="500" y="200" width="140" height="70" rx="10" fill="rgba(232,67,147,0.1)" stroke="#E84393" stroke-width="1.5"/>
+        <text x="570" y="228" text-anchor="middle" fill="#FD79A8" font-size="13" font-weight="600">📊 监控 Monitor</text>
+        <text x="570" y="246" text-anchor="middle" fill="#A0A0B8" font-size="10">运行日志/耗时/成功率</text>
+        <text x="570" y="260" text-anchor="middle" fill="#A0A0B8" font-size="10">异常自动告警</text>
+        <line x1="500" y1="230" x2="400" y2="170" stroke="#FD79A8" stroke-width="1" stroke-dasharray="4,3"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🎯 为什么 Harness 不可跳过？</h3>
+    <p>很多团队犯的错是：有了 Agent + Skill 就直接上 Loop。结果：</p>
+    <ul>
+      <li>🔥 AI 半夜跑出 bug，没人发现，错误数据发了一整天</li>
+      <li>🔥 AI 执行了不该执行的操作（没有护栏）</li>
+      <li>🔥 一个环节失败，整条链路崩溃（没有容错）</li>
+      <li>🔥 出了问题不知道哪一步错了（没有监控）</li>
+    </ul>
+    <div class="highlight-box hl-yellow">
+      <strong>⚡ 一句话：</strong>没有 Harness 的 Loop = 一辆没有刹车的自动驾驶汽车。速度越快，翻车越惨。
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <h4>🧪 小测验</h4>
+    <p style="font-size:14px;margin-bottom:12px;">你部署了一个 AI 每天自动生成解决率日报。某天数据源异常返回 0，AI 把「解决率 0%」推到了群里。这属于缺少哪个 Harness 组件？</p>
+    <div class="quiz-opt" onclick="revealAnswer(this, false, 'q2')">A. 护栏 Guardrail</div>
+    <div class="quiz-opt" onclick="revealAnswer(this, true, 'q2')">B. 质检 Validator</div>
+    <div class="quiz-opt" onclick="revealAnswer(this, false, 'q2')">C. 容错 Retry</div>
+    <div class="quiz-opt" onclick="revealAnswer(this, false, 'q2')">D. 监控 Monitor</div>
+    <div class="quiz-answer" id="q2">✅ 正确！应该有一个 <strong>Validator</strong>：「如果解决率突然变化超过 ±10pp，暂停推送，标记人工复核」。护栏管的是「能不能做」，质检管的是「做对没有」。</div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 6: Loop ==================== -->
+<section class="chapter fade-in" id="ch6">
+  <div class="ch-header">
+    <div class="ch-num" style="background: linear-gradient(135deg, var(--c6d), var(--c6));">06</div>
+    <div>
+      <h2>Loop 自主循环 <span class="ch-tag" style="background:rgba(232,67,147,0.15);color:var(--c6l);">2025末至今</span></h2>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>💡 一句话理解</h3>
+    <p><strong>Loop = AI 不再等你指令，而是自己跑起来、自己判断、自己交付，你只管看结果。</strong></p>
+    <div class="analogy">
+      <div class="analogy-icon">🏭</div>
+      <div class="analogy-text">
+        <strong>类比：从手工作坊到自动化工厂。</strong><br>
+        前五层是在「教一个人怎么干活」。Loop 是把整条生产线自动化 —— 原料进去、产品出来，你只在异常告警时才介入。
+      </div>
+    </div>
+    <div class="highlight-box hl-pink">
+      <strong>💡 核心转变：</strong>从「你盯着 AI 干」→「AI 自己干完给你结果」
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🔄 Claude 定义的四种 Loop 类型</h3>
+    <p>这四种不是「选一个」，而是<strong>自动化程度从低到高</strong>的四个档位：</p>
+
+    <!-- Loop 1 -->
+    <div style="background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.2);border-radius:12px;padding:20px;margin:16px 0;">
+      <h4 style="color:var(--c1l);font-size:16px;margin-bottom:8px;">01 回合制循环 — 半自动</h4>
+      <p style="font-size:14px;color:var(--txt2);">你提一个需求，AI 自己<strong>迭代多轮</strong>直到搞定。</p>
+      <div class="steps" style="margin-top:12px;">
+        <div class="step-card"><div class="step-icon">🔍</div><h5>读代码</h5></div>
+        <div class="step-card"><div class="step-icon">✏️</div><h5>改代码</h5></div>
+        <div class="step-card"><div class="step-icon">🔄</div><h5>跑测试</h5></div>
+        <div class="step-card"><div class="step-icon">✅</div><h5>检查结果</h5></div>
+      </div>
+      <p style="font-size:13px;color:var(--c2l);margin-top:10px;">🔑 关键机制：写 SKILL.md 设验收标准，Claude 自己验证自己</p>
+      <p style="font-size:13px;color:var(--txt2);margin-top:6px;"><strong>你的角色：</strong>提需求 → 等结果 → 验收。中间过程不用管。</p>
+    </div>
+
+    <!-- Loop 2 -->
+    <div style="background:rgba(0,184,148,0.06);border:1px solid rgba(0,184,148,0.2);border-radius:12px;padding:20px;margin:16px 0;">
+      <h4 style="color:var(--c2l);font-size:16px;margin-bottom:8px;">02 目标循环 — 准自动</h4>
+      <p style="font-size:14px;color:var(--txt2);">设定<strong>量化目标</strong>，AI 自动评估是否达标，没达标就继续优化。</p>
+      <div class="code-block" style="margin:12px 0;">
+<span class="keyword">/goal</span> 测试覆盖率 ≥ 80%
+<br><br>
+<span class="comment">// AI 内心：当前 62% → 写测试 → 71% → 继续 → 83% ✅ 达标！</span>
+      </div>
+      <p style="font-size:13px;color:var(--c2l);">🔑 关键机制：有标准、有评估，自动收敛</p>
+      <p style="font-size:13px;color:var(--txt2);margin-top:6px;"><strong>你的角色：</strong>只定义「成功是什么样」，不管「怎么到达」。</p>
+    </div>
+
+    <!-- Loop 3 -->
+    <div style="background:rgba(253,203,110,0.06);border:1px solid rgba(253,203,110,0.2);border-radius:12px;padding:20px;margin:16px 0;">
+      <h4 style="color:var(--c5);font-size:16px;margin-bottom:8px;">03 定时循环 — 自动</h4>
+      <p style="font-size:14px;color:var(--txt2);">设定时间表，AI <strong>定时自动执行</strong>任务，无需任何触发。</p>
+      <div class="code-block" style="margin:12px 0;">
+<span class="keyword">/schedule</span> 每天 09:00 总结 Slack 消息
+<br><br>
+<span class="comment">// 每天早上你打开手机，AI 已经把昨天的重要消息整理好了</span>
+      </div>
+      <p style="font-size:13px;color:var(--c5);">🔑 关键机制：/loop 或 /schedule，周期执行，省心省力</p>
+      <p style="font-size:13px;color:var(--txt2);margin-top:6px;"><strong>你的角色：</strong>设置一次，之后只看结果。</p>
+    </div>
+
+    <!-- Loop 4 -->
+    <div style="background:rgba(232,67,147,0.06);border:1px solid rgba(232,67,147,0.2);border-radius:12px;padding:20px;margin:16px 0;">
+      <h4 style="color:var(--c6l);font-size:16px;margin-bottom:8px;">04 主动循环 — 全自动</h4>
+      <p style="font-size:14px;color:var(--txt2);"><strong>AI 自己发现问题 → 提出多个方案 → 自动对比择优 → 交付最优解</strong>。</p>
+      <div class="steps" style="margin-top:12px;">
+        <div class="step-card"><div class="step-icon">🔍</div><h5>搜查 Bug</h5></div>
+        <div class="step-card"><div class="step-icon">📊</div><h5>分类分析</h5></div>
+        <div class="step-card"><div class="step-icon">🔄</div><h5>自动修复</h5></div>
+        <div class="step-card"><div class="step-icon">✅</div><h5>回归验证</h5></div>
+      </div>
+      <p style="font-size:13px;color:var(--c6l);margin-top:10px;">🔑 关键机制：方案 A / B / C 并行探索 + AI 裁判 → 最优方案自动交付 🏆</p>
+      <p style="font-size:13px;color:var(--txt2);margin-top:6px;"><strong>你的角色：</strong>只管看最终结果。AI 是选手，也是裁判。</p>
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🆚 四种 Loop 对比一览</h3>
+    <table class="cmp-table">
+      <thead><tr><th>Loop 类型</th><th>自动化程度</th><th>人类参与</th><th>适用场景</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--c1l);">① 回合制</td>
+          <td>半自动 🟡</td>
+          <td>提需求 + 验收</td>
+          <td>写代码、写文档、修 Bug</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c2l);">② 目标循环</td>
+          <td>准自动 🟢</td>
+          <td>定目标</td>
+          <td>性能优化、指标达标</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c5);">③ 定时循环</td>
+          <td>自动 🔵</td>
+          <td>设置一次</td>
+          <td>日报、监控、定期巡检</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c6l);">④ 主动循环</td>
+          <td>全自动 🟣</td>
+          <td>只看结果</td>
+          <td>自动修复、方案择优</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight-box hl-pink">
+      <strong>⚠️ 重要提醒：重点不是循环越多越好！</strong><br>
+      Loop 不是目的，是手段。选哪种 Loop 取决于你的场景需要多少自动化。一个精准的回合制循环，可能比一个失控的全自动循环好 10 倍。
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <h4>🧪 小测验</h4>
+    <p style="font-size:14px;margin-bottom:12px;">你想让 AI 每天早上自动分析昨天的客服解决率，生成日报推送到群里。应该用哪种 Loop？</p>
+    <div class="quiz-opt" onclick="revealAnswer(this, false, 'q3')">A. 回合制循环 —— 每天手动跟 AI 说「帮我看看」</div>
+    <div class="quiz-opt" onclick="revealAnswer(this, false, 'q3')">B. 目标循环 —— 设定「解决率 ≥ 85%」为目标</div>
+    <div class="quiz-opt" onclick="revealAnswer(this, true, 'q3')">C. 定时循环 —— 设置 /schedule 每天 09:00 自动执行</div>
+    <div class="quiz-opt" onclick="revealAnswer(this, false, 'q3')">D. 主动循环 —— 让 AI 自己决定什么时候生成</div>
+    <div class="quiz-answer" id="q3">✅ 正确！这是一个<strong>固定时间 + 固定流程</strong>的任务，定时循环最合适。目标循环适合「优化到某个值」的场景，而日报是「按时交付」的场景。</div>
+  </div>
+</section>
+
+<!-- ==================== CHAPTER 7: 总结 ==================== -->
+<section class="chapter fade-in" id="summary">
+  <div class="ch-header">
+    <div class="ch-num" style="background: linear-gradient(135deg, #2D3436, #636E72);">🎯</div>
+    <div><h2>课程总结：六层台阶 + 一个心法</h2></div>
+  </div>
+
+  <div class="content-block">
+    <h3>📊 六阶段演进对照表</h3>
+    <table class="cmp-table">
+      <thead><tr><th>阶段</th><th>核心能力</th><th>你的角色</th><th>AI 能做</th><th>AI 不能做</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--c1l);">① Prompt</td>
+          <td>表达清楚需求</td>
+          <td>操作员</td>
+          <td>回答问题</td>
+          <td>记忆、查资料、动手</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c2l);">② 上下文工程</td>
+          <td>给 AI 配知识</td>
+          <td>策展人</td>
+          <td>基于你的数据回答</td>
+          <td>执行操作、自我检查</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c3l);">③ Agent</td>
+          <td>调用工具干活</td>
+          <td>指挥官</td>
+          <td>查数据、写代码、发消息</td>
+          <td>稳定复用、自我质检</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c4l);">④ Skill</td>
+          <td>固化最佳实践</td>
+          <td>架构师</td>
+          <td>按标准流程执行</td>
+          <td>异常恢复、自动决策</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c5);">⑤ Harness</td>
+          <td>质控 + 容错</td>
+          <td>督察</td>
+          <td>自检、重试、告警</td>
+          <td>无人值守运行</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c6l);">⑥ Loop</td>
+          <td>自主闭环</td>
+          <td>决策者</td>
+          <td>自动运行 + 自动交付</td>
+          <td>（取决于前五层的建设）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="content-block">
+    <h3>🧠 一个心法</h3>
+    <div style="text-align:center;padding:24px 0;">
+      <p style="font-size:20px;font-weight:700;color:var(--c5);margin-bottom:12px;">「控制权上移，标准下沉」</p>
+      <p style="font-size:14px;color:var(--txt2);max-width:560px;margin:0 auto;">
+        每升一层，你交出去的是<strong>执行权</strong>（AI 替你干）<br>
+        每升一层，你必须写下更精确的<strong>标准</strong>（AI 按你的规矩干）
+      </p>
+    </div>
+    <div class="highlight-box hl-yellow">
+      <strong>🎯 最终结论：</strong>Loop 的前提不是技术多牛，而是你在前五层——Prompt、上下文、Agent、Skill、Harness——每一层都<strong>建设扎实</strong>了。地基不牢，自动化程度越高，翻车越猛。
+    </div>
+  </div>
+
+  <div class="content-block">
+    <h3>🗺️ 自测：你在哪一层？</h3>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color: var(--c1);"></div>
+        <h4 style="color:var(--c1l);">你还在手动打字问 AI？</h4>
+        <p>→ 你在第 1 层。先学好 Prompt 四要素：角色、格式、示例、步骤。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color: var(--c2);"></div>
+        <h4 style="color:var(--c2l);">你开始给 AI 喂自己的文档了？</h4>
+        <p>→ 你在第 2 层。试试用 RAG 让 AI 检索你的知识库。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color: var(--c3);"></div>
+        <h4 style="color:var(--c3l);">你让 AI 查数据库、调接口了？</h4>
+        <p>→ 你在第 3 层。把重复的任务固化成 Skill。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color: var(--c4);"></div>
+        <h4 style="color:var(--c4l);">你写了标准操作手册给 AI？</h4>
+        <p>→ 你在第 4 层。加上质检、护栏、监控，搭建 Harness。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color: var(--c5);"></div>
+        <h4 style="color:var(--c5);">你的 AI 有自检和告警了？</h4>
+        <p>→ 你在第 5 层。可以开始跑 Loop 了！</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color: var(--c6);"></div>
+        <h4 style="color:var(--c6l);">你只看结果，AI 全自动闭环？</h4>
+        <p>→ 恭喜，你到顶了。持续优化 Skill 和 Harness 即可 🏆</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="footer">
+  <p>📖 从零到 Loop — 大模型应用进阶课程</p>
+  <p style="margin-top:6px;">六阶段框架：Prompt → 上下文工程 → Agent → Skill → Harness → Loop</p>
+  <p style="margin-top:6px;color:var(--txt2);">2025 · Based on Claude Loop Patterns & 六阶段演进理论</p>
+</div>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+// Fade-in observer
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+// Quiz
+function revealAnswer(el, isCorrect, qId) {
+  const parent = el.closest('.quiz-box');
+  const opts = parent.querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.style.pointerEvents = 'none';
+    if (o === el) o.classList.add(isCorrect ? 'correct' : 'wrong');
+    else if (isCorrect) {} else {
+      // find and highlight correct
+    }
+  });
+  if (isCorrect) {
+    document.getElementById(qId).style.display = 'block';
+  } else {
+    // show hint
+    const hint = document.createElement('div');
+    hint.style.cssText = 'margin-top:8px;padding:8px 12px;border-radius:6px;background:rgba(225,112,85,0.1);font-size:13px;color:#FAB1A0;';
+    hint.textContent = '❌ 不对哦，再想想？';
+    el.after(hint);
+    // re-enable others
+    setTimeout(() => {
+      opts.forEach(o => { if (o !== el) o.style.pointerEvents = 'auto'; });
+    }, 800);
+  }
+}
+</script>
+
+</body>
+</html>
