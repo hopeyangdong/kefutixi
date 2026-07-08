@@ -1273,7 +1273,127 @@ AI输出 → { "tool": "query_order", "parameters": { "order_id": "20250601001" 
   </div>
 
   <div class="blk">
-    <h3>4.4 ReAct 范式完整示例：一次退款审批</h3>
+    <h3>4.4 ReAct 范式：Agent 到底是怎么「想」的？</h3>
+
+    <h4>📎 权威出处</h4>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>ReAct 论文</strong>：Yao et al.《ReAct: Synergizing Reasoning and Acting in Language Models》<br>2022年10月 · Princeton & Google Research<br><a href="https://arxiv.org/abs/2210.03629" target="_blank">arxiv.org/abs/2210.03629</a><br>首次提出 <strong>Reasoning + Acting</strong> 协同框架：LLM 交替生成「思考（Thought）」和「行动（Action）」，通过观察（Observation）反馈来修正推理。</div>
+    </div>
+
+    <h4>🧠 为什么叫 ReAct？</h4>
+    <p>ReAct = <strong>Re</strong>asoning（推理） + <strong>Act</strong>ing（行动）。</p>
+    <p>这个名字不是随便取的。论文作者发现：让 LLM <strong>一边思考、一边行动、一边观察结果</strong>，比单纯让模型「闷头想」（Chain-of-Thought）或者「直接干」（Tool Use）效果好得多。</p>
+
+    <div class="hl hl-b">
+      <strong>ReAct 的核心认知科学原理</strong><br><br>
+      人类解决问题时也是这样：你不会在脑子里把整件事从头到尾想一遍再动手，而是<strong>想一步、做一步、看到结果、再决定下一步</strong>。ReAct 模仿的就是这种认知过程。<br><br>
+      为什么比「一次性想完」更好？因为<strong>行动的结果（Observation）会反馈给思考</strong>——你可能发现之前想错了，然后修正。如果一次性想完，就没有修正的机会。
+    </div>
+
+    <h4>🔄 ReAct 的状态机：三要素循环</h4>
+    <p>ReAct 每一轮严格遵循 <strong>Thought → Action → Observation</strong>，然后基于 Observation 开始下一轮 Thought。</p>
+
+    <div class="dia">
+      <svg viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg" style="max-width:580px;">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#74B9FF"/></marker>
+        </defs>
+        <!-- Thought -->
+        <rect x="30" y="40" width="140" height="80" rx="12" fill="rgba(9,132,227,.1)" stroke="#0984E3" stroke-width="2"/>
+        <text x="100" y="70" text-anchor="middle" fill="#74B9FF" font-size="14" font-weight="700">💭 Thought</text>
+        <text x="100" y="90" text-anchor="middle" fill="#9898B8" font-size="10">分析现状</text>
+        <text x="100" y="105" text-anchor="middle" fill="#9898B8" font-size="10">决定下一步</text>
+        <!-- Arrow -->
+        <line x1="170" y1="80" x2="230" y2="80" stroke="#74B9FF" stroke-width="2" marker-end="url(#arr)"/>
+        <!-- Action -->
+        <rect x="240" y="40" width="140" height="80" rx="12" fill="rgba(225,112,85,.1)" stroke="#E17055" stroke-width="2"/>
+        <text x="310" y="70" text-anchor="middle" fill="#FAB1A0" font-size="14" font-weight="700">🔧 Action</text>
+        <text x="310" y="90" text-anchor="middle" fill="#9898B8" font-size="10">调用工具</text>
+        <text x="310" y="105" text-anchor="middle" fill="#9898B8" font-size="10">执行操作</text>
+        <!-- Arrow -->
+        <line x1="380" y1="80" x2="440" y2="80" stroke="#FAB1A0" stroke-width="2" marker-end="url(#arr)"/>
+        <!-- Observation -->
+        <rect x="450" y="40" width="140" height="80" rx="12" fill="rgba(0,184,148,.1)" stroke="#00B894" stroke-width="2"/>
+        <text x="520" y="70" text-anchor="middle" fill="#55EFC4" font-size="14" font-weight="700">👁 Observation</text>
+        <text x="520" y="90" text-anchor="middle" fill="#9898B8" font-size="10">获取结果</text>
+        <text x="520" y="105" text-anchor="middle" fill="#9898B8" font-size="10">反馈给思考</text>
+        <!-- Loop back -->
+        <path d="M520 120 Q520 180 100 180 Q100 180 100 120" stroke="#00B894" stroke-width="1.5" fill="none" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+        <text x="310" y="195" text-anchor="middle" fill="#9898B8" font-size="10">基于 Observation，开始下一轮 Thought</text>
+      </svg>
+    </div>
+
+    <h4>🆚 ReAct vs CoT vs Workflow：同一场景，三种做法</h4>
+    <p>我们用一个客服场景来对比三种范式的差异：</p>
+    <p><strong>场景：</strong>用户投诉「外卖少了一个菜，还多收了我 5 块钱配送费」</p>
+
+    <table class="tb">
+      <thead><tr><th style="width:100px">范式</th><th>处理过程</th><th>结果</th><th>问题</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>CoT<br>(纯思考)</strong></td>
+          <td>AI 在脑子里推理：「少了一个菜应该退差价，多收配送费也应该退……」</td>
+          <td>给出结论：退 33 元</td>
+          <td>❌ 没有查实际订单，可能算错金额；没有查配送费规则，可能退错</td>
+        </tr>
+        <tr>
+          <td><strong>Workflow<br>(预定义)</strong></td>
+          <td>按固定流程：查订单 → 算退款 → 生成话术</td>
+          <td>退 28 元</td>
+          <td>❌ 流程没覆盖「多收配送费」的情况，直接漏掉了第二个问题</td>
+        </tr>
+        <tr>
+          <td><strong>ReAct<br>(思考+行动)</strong></td>
+          <td>Thought: 用户有两个问题<br>Action: 查订单<br>Observation: 确实少了一个菜（28元）<br>Thought: 还有配送费问题<br>Action: 查配送费规则<br>Observation: 满35元免配送费，用户订单68元，不应收配送费<br>Thought: 两个问题都确认了，该退 28+5=33 元</td>
+          <td>退 33 元</td>
+          <td>✅ 两个都查到、两个都解决，没有遗漏</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="hl hl-g">
+      <strong>关键洞察</strong><br><br>
+      CoT 能「想」但不会「查」，可能想错；Workflow 能「查」但不会「临场应变」，可能漏查；<strong>ReAct 既能想、又能查、还能根据查到的结果调整下一步</strong>——这是 Agent 的核心优势。
+    </div>
+
+    <h4>⚠️ ReAct 的失败模式：什么时候会「翻车」？</h4>
+    <p>ReAct 不是万能的。论文里记录了几种典型的失败模式：</p>
+
+    <table class="tb">
+      <thead><tr><th>失败模式</th><th>表现</th><th>客服场景举例</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>🌀 死循环</strong></td>
+          <td>Thought → Action → Observation → Thought → 重复同样的 Action</td>
+          <td>查订单发现异常 → 查骑手轨迹 → 发现轨迹也异常 → 又回去查订单 → 循环往复</td>
+        </tr>
+        <tr>
+          <td><strong>🎯 过早终止</strong></td>
+          <td>看到第一个 Observation 就匆忙下结论，不再继续查</td>
+          <td>查到订单状态是「已完成」就认定用户撒谎，不查骑手轨迹，错失送错楼的真相</td>
+        </tr>
+        <tr>
+          <td><strong>🔀 行动漂移</strong></td>
+          <td>Thought 和 Action 不匹配，说的是 A 做的是 B</td>
+          <td>Thought 说「要查用户历史退款记录」，Action 却调用了查询商家评分的接口</td>
+        </tr>
+        <tr>
+          <td><strong>📉 推理退化</strong></td>
+          <td>多轮后 Thought 质量下降，开始重复或跑题</td>
+          <td>第 1-3 轮分析很清晰，第 5 轮开始说废话，第 8 轮完全偏离主题</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="hl hl-o">
+      <strong>💡 如何应对？</strong><br><br>
+      1. <strong>设最大轮次</strong>：限制 ReAct 最多循环 10 轮，防止死循环烧光 token<br>
+      2. <strong>强制检查清单</strong>：要求每轮 Thought 先回顾已查到什么、还差什么<br>
+      3. <strong>人类兜底</strong>：复杂案件（金额 > 200 元或涉及投诉）自动转人工
+    </div>
+
+    <h4>🎬 完整实战：Agent 处理一次退款审批（5 轮 ReAct）</h4>
     <p>现在我们来完整走一遍 Agent 的思考过程。这是理解 Agent 最重要的环节——看看 AI 到底是怎么「想」的。</p>
 
     <p><strong>场景：</strong>用户王先生来电，说他点了一份 68 元的套餐，等了 2 小时没送到，最后自己去便利店买了吃的。他要求全额退款。</p>
