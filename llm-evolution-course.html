@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大模型应用演进六阶段 — 从 Prompt 到 Loop 权威教学课程</title>
+<style>
+:root {
+  --c1:#6C5CE7;--c1l:#A29BFE;--c1d:#4834D4;
+  --c2:#00B894;--c2l:#55EFC4;--c2d:#00897B;
+  --c3:#E17055;--c3l:#FAB1A0;--c3d:#D63031;
+  --c4:#0984E3;--c4l:#74B9FF;--c4d:#0652DD;
+  --c5:#F39C12;--c5l:#FDCB6E;--c5d:#E67E22;
+  --c6:#E84393;--c6l:#FD79A8;--c6d:#B71540;
+  --bg:#0B0B15;--card:#151528;--card2:#1A1A35;
+  --txt:#EAEAF4;--txt2:#9898B8;--border:#2A2A50;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--txt);line-height:1.75;overflow-x:hidden;}
+
+/* ===== progress ===== */
+.progress{position:fixed;top:0;left:0;height:3px;z-index:999;background:linear-gradient(90deg,var(--c1),var(--c4),var(--c6));width:0%;transition:width .3s;}
+
+/* ===== hero ===== */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:48px 24px;background:linear-gradient(135deg,#0B0B15 0%,#16163A 35%,#2D1B69 65%,#0B0B15 100%);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 500px 350px at 50% 45%,rgba(108,92,231,.14) 0%,transparent 70%);}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(108,92,231,.12);border:1px solid rgba(108,92,231,.28);padding:6px 18px;border-radius:20px;font-size:13px;color:var(--c1l);margin-bottom:20px;position:relative;}
+.hero h1{font-size:clamp(34px,6vw,60px);font-weight:800;background:linear-gradient(135deg,#fff 0%,#A29BFE 55%,#74B9FF 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:14px;position:relative;}
+.hero .sub{font-size:clamp(15px,2.2vw,20px);color:var(--txt2);max-width:620px;margin-bottom:28px;position:relative;}
+.hero .meta{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;font-size:13px;color:var(--txt2);position:relative;}
+
+/* ===== toc ===== */
+.toc{max-width:980px;margin:0 auto;padding:56px 20px 40px;}
+.toc-title{font-size:22px;font-weight:700;margin-bottom:24px;text-align:center;color:var(--c1l);}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
+.toc-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.toc-card:hover{transform:translateY(-2px);border-color:var(--c1);}
+.toc-card .n{font-size:28px;font-weight:900;opacity:.1;position:absolute;top:8px;right:14px;}
+.toc-card h3{font-size:15px;margin-bottom:5px;}
+.toc-card p{font-size:12px;color:var(--txt2);}
+
+/* ===== chapter ===== */
+.ch{max-width:980px;margin:0 auto;padding:56px 20px;border-top:1px solid var(--border);}
+.ch-hd{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.ch-n{min-width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:900;color:#fff;flex-shrink:0;}
+.ch-hd h2{font-size:clamp(20px,3vw,26px);font-weight:700;}
+.ch-tag{font-size:11px;padding:2px 10px;border-radius:10px;margin-left:6px;font-weight:600;}
+
+/* ===== blocks ===== */
+.blk{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px;margin-bottom:22px;}
+.blk h3{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.blk p,.blk li{font-size:14px;color:var(--txt2);margin-bottom:9px;}
+.blk ul{padding-left:18px;}
+.blk li::marker{color:var(--c1l);}
+.blk strong{color:var(--txt);}
+
+/* source cite */
+.cite{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.18);border-radius:10px;margin:14px 0;font-size:12.5px;color:var(--txt2);}
+.cite-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.cite a{color:var(--c4l);text-decoration:none;}
+.cite a:hover{text-decoration:underline;}
+.cite strong{color:var(--txt);}
+
+/* highlight */
+.hl{border-left:4px solid;padding:14px 18px;border-radius:0 10px 10px 0;margin:14px 0;font-size:13px;}
+.hl-p{border-color:var(--c1);background:rgba(108,92,231,.07);}
+.hl-g{border-color:var(--c2);background:rgba(0,184,148,.07);}
+.hl-o{border-color:var(--c3);background:rgba(225,112,85,.07);}
+.hl-b{border-color:var(--c4);background:rgba(9,132,227,.07);}
+.hl-y{border-color:var(--c5);background:rgba(243,156,18,.07);}
+.hl-k{border-color:var(--c6);background:rgba(232,67,147,.07);}
+
+/* code */
+.code{background:#09091A;border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12.5px;line-height:1.6;overflow-x:auto;margin:12px 0;color:#B8C0E0;}
+.code .cm{color:#636E88;} .code .kw{color:var(--c1l);} .code .st{color:var(--c2l);} .code .fn{color:var(--c5l);}
+
+/* table */
+.tb{width:100%;border-collapse:separate;border-spacing:0;border-radius:10px;overflow:hidden;margin:14px 0;}
+.tb th{background:rgba(108,92,231,.12);padding:10px 14px;font-size:12px;text-align:left;font-weight:600;color:var(--c1l);}
+.tb td{padding:10px 14px;font-size:13px;border-top:1px solid var(--border);color:var(--txt2);}
+.tb tr:nth-child(even) td{background:rgba(255,255,255,.015);}
+
+/* analogy */
+.ana{display:flex;gap:14px;align-items:flex-start;padding:14px;background:rgba(253,203,110,.04);border:1px dashed rgba(243,156,18,.35);border-radius:10px;margin:14px 0;}
+.ana-i{font-size:28px;flex-shrink:0;}
+.ana-t{font-size:13px;color:var(--txt2);}
+.ana-t strong{color:var(--c5l);}
+
+/* step cards */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0;}
+.stp{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+.stp .si{font-size:26px;margin-bottom:6px;}
+.stp h5{font-size:13px;margin-bottom:3px;}
+.stp p{font-size:11px;color:var(--txt2);}
+
+/* diagram */
+.dia{display:flex;justify-content:center;margin:20px 0;overflow-x:auto;}
+.dia svg{max-width:100%;height:auto;}
+
+/* quiz */
+.quiz{background:linear-gradient(135deg,rgba(108,92,231,.06),rgba(9,132,227,.06));border:1px solid var(--border);border-radius:14px;padding:22px;margin:18px 0;}
+.quiz h4{font-size:14px;margin-bottom:10px;color:var(--c5l);}
+.qo{display:block;padding:9px 14px;margin:5px 0;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:13px;transition:all .2s;background:rgba(0,0,0,.2);}
+.qo:hover{border-color:var(--c1);background:rgba(108,92,231,.08);}
+.qo.ok{border-color:var(--c2);background:rgba(0,184,148,.12);color:var(--c2l);}
+.qo.no{border-color:var(--c3);background:rgba(225,112,85,.08);opacity:.55;}
+.qa{display:none;margin-top:10px;padding:10px 14px;border-radius:8px;background:rgba(0,184,148,.07);font-size:12px;color:var(--c2l);}
+
+/* timeline */
+.tl{position:relative;padding-left:36px;margin:18px 0;}
+.tl::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--c1),var(--c4),var(--c6));}
+.tl-i{position:relative;margin-bottom:22px;}
+.tl-d{position:absolute;left:-30px;top:3px;width:12px;height:12px;border-radius:50%;border:3px solid;background:var(--bg);}
+.tl-i h4{font-size:14px;margin-bottom:3px;}
+.tl-i p{font-size:12px;color:var(--txt2);}
+
+/* footer */
+.ft{text-align:center;padding:36px 20px;color:var(--txt2);font-size:12px;border-top:1px solid var(--border);margin-top:36px;}
+
+/* fade */
+.fi{opacity:0;transform:translateY(20px);transition:all .5s ease-out;}
+.fi.vis{opacity:1;transform:translateY(0);}
+
+@media(max-width:640px){.ch{padding:36px 14px;}.blk{padding:18px;}.tb{font-size:11px;}.tb th,.tb td{padding:7px 9px;}}
+</style>
+</head>
+<body>
+<div class="progress" id="pb"></div>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="hero-badge">📖 权威来源 · 每条有出处</div>
+  <h1>从 Prompt 到 Loop</h1>
+  <p class="sub">大模型应用演进六阶段 · 权威教学课程<br>基于 Anthropic / OpenAI / Andrew Ng / Lilian Weng 等一手文献</p>
+  <div class="meta">
+    <span>📖 6 大阶段 + 总结</span>
+    <span>📎 17 篇权威引用</span>
+    <span>⏱️ 约 30 分钟</span>
+    <span>🧩 含互动测验</span>
+  </div>
+</section>
+
+<!-- ========== TOC ========== -->
+<section class="toc">
+  <div class="toc-title">📋 课程大纲</div>
+  <div class="toc-grid">
+    <div class="toc-card" onclick="document.getElementById('ch1').scrollIntoView({behavior:'smooth'})">
+      <span class="n" style="color:var(--c1l)">01</span>
+      <h3>💬 Prompt 工程</h3>
+      <p>2020-2023 · GPT-3 / CoT · 一句话的艺术</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch2').scrollIntoView({behavior:'smooth'})">
+      <span class="n" style="color:var(--c2l)">02</span>
+      <h3>📚 上下文工程</h3>
+      <p>2023-2025 · RAG + CoT · 给 AI 配教材</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch3').scrollIntoView({behavior:'smooth'})">
+      <span class="n" style="color:var(--c3l)">03</span>
+      <h3>⚙️ Workflow 工作流</h3>
+      <p>2024 · 预定义编排 · 链式/路由/并行</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch4').scrollIntoView({behavior:'smooth'})">
+      <span class="n" style="color:var(--c4l)">04</span>
+      <h3>🤖 Agent 智能体</h3>
+      <p>2023-2024 · 自主决策 · 工具调用+规划</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch5').scrollIntoView({behavior:'smooth'})">
+      <span class="n" style="color:var(--c5l)">05</span>
+      <h3>🦾 Harness 运行外骨骼</h3>
+      <p>2025-2026 · 跨窗口持续工作 · 质控+容错</p>
+    </div>
+    <div class="toc-card" onclick="document.getElementById('ch6').scrollIntoView({behavior:'smooth'})">
+      <span class="n" style="color:var(--c6l)">06</span>
+      <h3>🔄 Loop 自主循环</h3>
+      <p>2026 · 四种循环模式 · AI 全闭环</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CH1: PROMPT ==================== -->
+<section class="ch fi" id="ch1">
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,var(--c1d),var(--c1));">01</div>
+    <div><h2>Prompt 工程 <span class="ch-tag" style="background:rgba(108,92,231,.12);color:var(--c1l);">2020—2023</span></h2></div>
+  </div>
+
+  <div class="blk">
+    <h3>💡 定义</h3>
+    <p><strong>Prompt 工程 = 通过精心设计输入文本（提示词），引导大模型生成高质量输出。</strong></p>
+    <p>这是人类与大模型交互的第一种范式。你的全部输入就是 AI 唯一的信息来源——它不知道你有什么文档，不记得昨天聊了什么，也不能去查任何系统。</p>
+    <div class="ana">
+      <div class="ana-i">📱</div>
+      <div class="ana-t"><strong>类比：给陌生人发短信。</strong><br>收信人很聪明，但只看到这一条短信。回答质量 100% 取决于你写得有多清楚。</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📎 权威出处</h3>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>GPT-3 论文</strong>：Brown et al.《Language Models are Few-Shot Learners》<br>2020年5月 · OpenAI · 31位作者<br><a href="https://arxiv.org/abs/2005.14165" target="_blank">arxiv.org/abs/2005.14165</a><br>首次系统展示 Few-Shot Prompting：在提示词中给几个示例，模型就能学会新任务，无需微调。</div>
+    </div>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Chain-of-Thought 论文</strong>：Wei et al.《Chain-of-Thought Prompting Elicits Reasoning in Large Language Models》<br>2022年1月 · Google Research · NeurIPS 2022<br><a href="https://arxiv.org/abs/2201.11903" target="_blank">arxiv.org/abs/2201.11903</a><br>发现在提示词中加入推理步骤，可以显著提升模型的推理能力。</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>🔑 核心技巧</h3>
+    <table class="tb">
+      <thead><tr><th>技巧</th><th>原理</th><th>示例</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Zero-Shot</strong></td><td>不给示例，直接问</td><td>「把这段翻译成英文」</td></tr>
+        <tr><td><strong>Few-Shot</strong></td><td>给几个示例定义标准</td><td>「好的回复像这样：…，差的像这样：…」</td></tr>
+        <tr><td><strong>Chain-of-Thought</strong></td><td>要求分步推理</td><td>「请一步一步思考」</td></tr>
+        <tr><td><strong>角色设定</strong></td><td>激活对应领域知识</td><td>「你是一个有 10 年经验的客服培训师」</td></tr>
+        <tr><td><strong>格式约束</strong></td><td>减少猜测输出形式</td><td>「用 JSON 格式回答，包含 reason 和 score 两个字段」</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="blk">
+    <h3>⚠️ 天花板</h3>
+    <ul>
+      <li><strong>无记忆</strong>：每次对话全新开始，之前教的全忘</li>
+      <li><strong>无外部数据</strong>：不知道你公司的文档、流程、规则</li>
+      <li><strong>无行动能力</strong>：只能回答文字，不能操作任何系统</li>
+      <li><strong>上下文窗口有限</strong>：早期 GPT-3.5 仅 4K token ≈ 3000 字</li>
+    </ul>
+    <div class="hl hl-p">
+      <strong>🎯 天花板公式：</strong>Prompt 上限 = 你的表达能力 × 模型自身知识。当你发现「怎么写提示词都差点意思」的时候，就该进入第二阶段了。
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📊 Andrew Ng 的实测数据</h3>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Andrew Ng</strong>《Agentic Design Patterns Part 1》· 2024年3月20日<br><a href="https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/" target="_blank">deeplearning.ai</a></div>
+    </div>
+    <p>Ng 用 HumanEval 编码基准做了对比：</p>
+    <table class="tb">
+      <thead><tr><th>方式</th><th>准确率</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>GPT-3.5 Zero-Shot（纯 Prompt）</td><td><strong>48.1%</strong></td><td>一次生成，不迭代</td></tr>
+        <tr><td>GPT-4 Zero-Shot（纯 Prompt）</td><td><strong>67.0%</strong></td><td>更强模型，但仍是一次生成</td></tr>
+        <tr><td>GPT-3.5 + Agent 循环</td><td><strong>95.1%</strong></td><td>弱模型 + 迭代验证，碾压强模型的一次性输出</td></tr>
+      </tbody>
+    </table>
+    <div class="hl hl-p"><strong>💡 关键结论：</strong>迭代流程（Agent 循环）带来的提升，远大于换一个更强模型。这就是为什么行业一路从 Prompt 往后面演进。</div>
+  </div>
+
+  <div class="quiz">
+    <h4>🧪 小测验 1</h4>
+    <p style="font-size:13px;margin-bottom:10px;">你想让 AI 分析一份 100 页的客服手册，用 Prompt 工程能搞定吗？</p>
+    <div class="qo" onclick="qa(this,0,'a1')">A. 能，把 100 页全粘贴进去就行</div>
+    <div class="qo" onclick="qa(this,0,'a1')">B. 能，分 10 次粘贴，每次 10 页</div>
+    <div class="qo" onclick="qa(this,1,'a1')">C. 不太行，需要上下文工程来解决</div>
+    <div class="qa" id="a1">✅ 正确！100 页远超 token 限制；分批粘贴则丢失跨批上下文。这正是<strong>上下文工程</strong>（RAG）要解决的问题——让 AI 动态检索所需段落，而不是全塞进去。</div>
+  </div>
+</section>
+
+<!-- ==================== CH2: CONTEXT ENGINEERING ==================== -->
+<section class="ch fi" id="ch2">
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,var(--c2d),var(--c2));">02</div>
+    <div><h2>上下文工程 <span class="ch-tag" style="background:rgba(0,184,148,.12);color:var(--c2l);">2023—2025</span></h2></div>
+  </div>
+
+  <div class="blk">
+    <h3>💡 定义</h3>
+    <p><strong>上下文工程 = 在 AI 回答之前，系统地管理它能「看到」的全部信息。</strong></p>
+    <p>Prompt 工程关心的是「怎么问」，上下文工程关心的是「拿什么来答」。它不是一种技术，而是一组技术的总称：</p>
+    <div class="steps">
+      <div class="stp"><div class="si">🧠</div><h5>CoT 思维链</h5><p>教 AI <strong>怎么想</strong></p></div>
+      <div class="stp"><div class="si">🔍</div><h5>RAG 检索增强</h5><p>给 AI <strong>看什么</strong></p></div>
+      <div class="stp"><div class="si">📝</div><h5>Memory 记忆</h5><p>让 AI <strong>记住什么</strong></p></div>
+      <div class="stp"><div class="si">🔧</div><h5>Tool 描述</h5><p>告诉 AI <strong>能用什么</strong></p></div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📎 权威出处</h3>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>RAG 原始论文</strong>：Lewis et al.《Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks》<br>2020年5月 · Facebook AI / UCL / NYU · NeurIPS 2020<br><a href="https://arxiv.org/abs/2005.11401" target="_blank">arxiv.org/abs/2005.11401</a><br>首次提出 RAG 架构：检索外部知识 + 生成回答，解决模型知识过时和幻觉问题。</div>
+    </div>
+    <div class="cite">
+      <div class="cite-icon">🐦</div>
+      <div><strong>「Context Engineering」术语</strong>：Tobi Lütke（Shopify CEO）<br>2025年6月19日 · X/Twitter<br>原文：「I really like the term 'context engineering' over prompt engineering. It describes the core skill better.」<br>Andrej Karpathy 于 6月23日回复「+1 for context engineering」表示认可。</div>
+    </div>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic 专文</strong>：《Effective Context Engineering for AI Agents》<br>2025年9月29日<br><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">anthropic.com</a><br>定义：「considering the holistic state available to the LLM at any given time and what potential behaviors that state might yield.」</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📖 RAG 如何工作</h3>
+    <div class="dia">
+      <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="max-width:680px;">
+        <defs><marker id="ag" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#55EFC4"/></marker>
+        <marker id="ap" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#A29BFE"/></marker></defs>
+        <rect x="10" y="80" width="115" height="48" rx="10" fill="rgba(0,184,148,.12)" stroke="#00B894" stroke-width="1.5"/>
+        <text x="67" y="100" text-anchor="middle" fill="#55EFC4" font-size="11" font-weight="600">👤 用户提问</text>
+        <text x="67" y="116" text-anchor="middle" fill="#9898B8" font-size="9">「退款流程是什么」</text>
+        <line x1="125" y1="104" x2="168" y2="104" stroke="#55EFC4" stroke-width="1.5" marker-end="url(#ag)"/>
+        <rect x="173" y="65" width="130" height="72" rx="10" fill="rgba(0,184,148,.08)" stroke="#00B894" stroke-width="1.5"/>
+        <text x="238" y="90" text-anchor="middle" fill="#55EFC4" font-size="11" font-weight="600">🔍 向量检索</text>
+        <text x="238" y="106" text-anchor="middle" fill="#9898B8" font-size="9">在知识库中搜索</text>
+        <text x="238" y="122" text-anchor="middle" fill="#9898B8" font-size="9">最相关的 3-5 段</text>
+        <line x1="303" y1="101" x2="348" y2="101" stroke="#55EFC4" stroke-width="1.5" marker-end="url(#ag)"/>
+        <rect x="353" y="55" width="130" height="90" rx="10" fill="rgba(108,92,231,.08)" stroke="#6C5CE7" stroke-width="1.5"/>
+        <text x="418" y="80" text-anchor="middle" fill="#A29BFE" font-size="11" font-weight="600">📋 拼装 Prompt</text>
+        <text x="418" y="96" text-anchor="middle" fill="#9898B8" font-size="9">原始问题</text>
+        <text x="418" y="110" text-anchor="middle" fill="#9898B8" font-size="9">+ 检索到的段落</text>
+        <text x="418" y="124" text-anchor="middle" fill="#9898B8" font-size="9">+ 系统指令</text>
+        <line x1="483" y1="100" x2="528" y2="100" stroke="#A29BFE" stroke-width="1.5" marker-end="url(#ap)"/>
+        <rect x="533" y="72" width="115" height="52" rx="10" fill="rgba(108,92,231,.12)" stroke="#6C5CE7" stroke-width="1.5"/>
+        <text x="590" y="95" text-anchor="middle" fill="#A29BFE" font-size="11" font-weight="600">🤖 大模型</text>
+        <text x="590" y="112" text-anchor="middle" fill="#9898B8" font-size="9">生成精准回答</text>
+        <rect x="193" y="160" width="90" height="40" rx="8" fill="rgba(253,203,110,.08)" stroke="#FDCB6E" stroke-width="1"/>
+        <text x="238" y="180" text-anchor="middle" fill="#FDCB6E" font-size="9" font-weight="600">📁 知识库</text>
+        <text x="238" y="192" text-anchor="middle" fill="#9898B8" font-size="8">100页→切片索引</text>
+        <line x1="238" y1="160" x2="238" y2="137" stroke="#FDCB6E" stroke-width="1" stroke-dasharray="4,3"/>
+      </svg>
+    </div>
+    <div class="hl hl-g"><strong>一句话总结 RAG：</strong>不是把 100 页全塞给 AI，而是<strong>只给它最相关的几段</strong>。就像你不会把整个图书馆搬给朋友，而是帮他找好那几页。</div>
+  </div>
+
+  <div class="blk">
+    <h3>🆚 Prompt 工程 vs 上下文工程</h3>
+    <table class="tb">
+      <thead><tr><th>对比维度</th><th>Prompt 工程</th><th>上下文工程</th></tr></thead>
+      <tbody>
+        <tr><td>关注点</td><td>怎么写提示词</td><td><strong>AI 能看到什么信息</strong></td></tr>
+        <tr><td>知识来源</td><td>模型训练数据</td><td><strong>你的文档、数据库、API</strong></td></tr>
+        <tr><td>能处理的信息量</td><td>受限于上下文窗口</td><td><strong>无上限</strong>（检索后只取片段）</td></tr>
+        <tr><td>是否可溯源</td><td>不能，可能幻觉</td><td><strong>可以</strong>，标注出处</td></tr>
+        <tr><td>实时性</td><td>截止到训练日期</td><td><strong>知识库随时更新</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== CH3: WORKFLOW ==================== -->
+<section class="ch fi" id="ch3">
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,var(--c3d),var(--c3));">03</div>
+    <div><h2>Workflow 工作流 <span class="ch-tag" style="background:rgba(225,112,85,.12);color:var(--c3l);">2024</span></h2></div>
+  </div>
+
+  <div class="blk">
+    <h3>💡 定义</h3>
+    <p><strong>Workflow = 通过预定义的代码路径，编排多个 LLM 调用和工具。</strong></p>
+    <p>关键词是<strong>「预定义」</strong>——执行路径是人类设计好的，AI 只在每个节点上做决策，不能自主改变流程。</p>
+    <div class="ana">
+      <div class="ana-i">🏭</div>
+      <div class="ana-t"><strong>类比：流水线。</strong><br>工人（AI）在每个工位上干活，但工位顺序、转运规则都是工厂设计好的。工人不能自己决定跳过某个工位或增加一个新工序。</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📎 权威出处</h3>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic</strong>《Building Effective Agents》· 2024年12月19日<br><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">anthropic.com</a><br>原文：「<strong>Workflows</strong> are systems where LLMs and tools are orchestrated through <strong>predefined code paths</strong>. <strong>Agents</strong>, on the other hand, are systems where LLMs <strong>dynamically direct</strong> their own processes and tool usage.」<br>这是行业首次清晰区分 Workflow ≠ Agent。</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>🧩 Anthropic 定义的五种 Workflow 模式</h3>
+    <table class="tb">
+      <thead><tr><th>模式</th><th>工作方式</th><th>适用场景</th></tr></thead>
+      <tbody>
+        <tr><td><strong>① Prompt Chaining</strong><br>提示链</td><td>A 的输出是 B 的输入，<strong>串行</strong>执行</td><td>先翻译 → 再摘要 → 再格式化</td></tr>
+        <tr><td><strong>② Routing</strong><br>路由分发</td><td>分类输入，<strong>分发</strong>到不同处理路径</td><td>客服：退款问题→退款流程；配送问题→物流系统</td></tr>
+        <tr><td><strong>③ Parallelization</strong><br>并行处理</td><td>同一任务<strong>同时</strong>拆分给多个 LLM</td><td>同时翻译成 3 种语言；多角度审核同一份代码</td></tr>
+        <tr><td><strong>④ Orchestrator-Workers</strong><br>编排-执行</td><td>主 LLM 拆解任务，<strong>分配</strong>给多个工人 LLM</td><td>「分析这份报告」→ 主 LLM 拆成 5 个子任务 → 分别执行</td></tr>
+        <tr><td><strong>⑤ Evaluator-Optimizer</strong><br>评估-优化</td><td>一个 LLM 生成，另一个<strong>打分反馈</strong>，循环改进</td><td>写文案 → 评估质量 → 给修改建议 → 重写 → 直到达标</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="blk">
+    <h3>⚠️ 为什么要单独讲 Workflow？</h3>
+    <div class="hl hl-o"><strong>最常见的误区：</strong>很多人把 Workflow 和 Agent 混为一谈。Anthropic 在这篇文章中特别强调：<br><br>「When building applications with LLMs, we recommend <strong>finding the simplest solution possible</strong>, and only increasing complexity when needed. This might mean <strong>not building agentic systems at all</strong>.」<br><br>翻译：能用 Workflow 解决的，<strong>别上 Agent</strong>。Workflow 更可控、更便宜、更可预测。</div>
+  </div>
+
+  <div class="quiz">
+    <h4>🧪 小测验 2</h4>
+    <p style="font-size:13px;margin-bottom:10px;">用户发消息给客服 AI，系统先分类问题类型（退款/配送/投诉），再转到对应处理流程。这属于哪种模式？</p>
+    <div class="qo" onclick="qa(this,0,'a2')">A. Agent（因为 AI 在做决策）</div>
+    <div class="qo" onclick="qa(this,1,'a2')">B. Workflow — Routing（路由分发）</div>
+    <div class="qo" onclick="qa(this,0,'a2')">C. Workflow — Prompt Chaining（提示链）</div>
+    <div class="qa" id="a2">✅ 正确！虽然 AI 在「分类」这一步做了决策，但整体流程路径是<strong>预定义的</strong>（退款→退款流程，配送→物流查询）。AI 不能自主决定跳出这些路径，所以是 <strong>Workflow - Routing</strong>，不是 Agent。</div>
+  </div>
+</section>
+
+<!-- ==================== CH4: AGENT ==================== -->
+<section class="ch fi" id="ch4">
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,var(--c4d),var(--c4));">04</div>
+    <div><h2>Agent 智能体 <span class="ch-tag" style="background:rgba(9,132,227,.12);color:var(--c4l);">2023—2024</span></h2></div>
+  </div>
+
+  <div class="blk">
+    <h3>💡 定义</h3>
+    <p><strong>Agent = LLM 自主决定执行路径和工具使用，动态控制自己的工作流程。</strong></p>
+    <p>跟 Workflow 的本质区别：Workflow 的路径是人定义的，Agent 的路径是<strong> AI 自己规划的</strong>。</p>
+    <div class="ana">
+      <div class="ana-i">🏨</div>
+      <div class="ana-t"><strong>类比：管家 vs 前台。</strong><br>Workflow 是前台——你问什么，按手册查答案。Agent 是管家——你说「帮我订明天去北京的行程」，他自己去查航班、比价、订票、订酒店、安排接机。<strong>路径由他自己决定</strong>。</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📎 权威出处</h3>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Lilian Weng（OpenAI）</strong>《LLM Powered Autonomous Agents》<br>2023年6月23日<br><a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank">lilianweng.github.io</a><br>定义 Agent 三大支柱：<strong>Planning（规划）+ Memory（记忆）+ Tool Use（工具使用）</strong></div>
+    </div>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Andrew Ng</strong>《Agentic Design Patterns》系列 · 2024年3月20日<br><a href="https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/" target="_blank">deeplearning.ai</a><br>定义四种 Agentic 模式：<strong>Reflection（反思）/ Tool Use（工具使用）/ Planning（规划）/ Multi-Agent（多智能体协作）</strong></div>
+    </div>
+    <div class="cite">
+      <div class="cite-icon">🔧</div>
+      <div><strong>OpenAI Function Calling</strong> · 2023年6月13日<br><a href="https://openai.com/index/function-calling-and-other-api-updates/" target="_blank">openai.com</a><br>GPT-4/3.5 首次支持结构化函数调用，Agent 有了「动手」的能力基础。</div>
+    </div>
+    <div class="cite">
+      <div class="cite-icon">🤖</div>
+      <div><strong>AutoGPT</strong>：Toran Bruce Richards · 2023年3月30日<br>GitHub 首个全自主 GPT-4 Agent 演示项目。上线一周 Star 数破万，引爆「AI Agent」全球热潮。</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>🧠 Agent 的三大支柱（Lilian Weng 定义）</h3>
+    <div class="dia">
+      <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg" style="max-width:580px;">
+        <!-- center -->
+        <circle cx="300" cy="120" r="44" fill="rgba(9,132,227,.12)" stroke="#0984E3" stroke-width="2"/>
+        <text x="300" y="115" text-anchor="middle" fill="#74B9FF" font-size="13" font-weight="700">🤖 LLM</text>
+        <text x="300" y="132" text-anchor="middle" fill="#9898B8" font-size="9">核心控制器</text>
+        <!-- planning -->
+        <rect x="40" y="30" width="130" height="65" rx="10" fill="rgba(108,92,231,.1)" stroke="#6C5CE7" stroke-width="1.5"/>
+        <text x="105" y="55" text-anchor="middle" fill="#A29BFE" font-size="12" font-weight="600">🎯 Planning</text>
+        <text x="105" y="72" text-anchor="middle" fill="#9898B8" font-size="9">任务拆解 + 反思</text>
+        <text x="105" y="85" text-anchor="middle" fill="#9898B8" font-size="9">CoT / ReAct / 自我纠错</text>
+        <line x1="170" y1="70" x2="256" y2="105" stroke="#6C5CE7" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <!-- memory -->
+        <rect x="40" y="150" width="130" height="65" rx="10" fill="rgba(0,184,148,.1)" stroke="#00B894" stroke-width="1.5"/>
+        <text x="105" y="175" text-anchor="middle" fill="#55EFC4" font-size="12" font-weight="600">💾 Memory</text>
+        <text x="105" y="192" text-anchor="middle" fill="#9898B8" font-size="9">短期: 上下文窗口</text>
+        <text x="105" y="205" text-anchor="middle" fill="#9898B8" font-size="9">长期: 向量数据库</text>
+        <line x1="170" y1="175" x2="256" y2="140" stroke="#00B894" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <!-- tool use -->
+        <rect x="430" y="85" width="130" height="65" rx="10" fill="rgba(243,156,18,.1)" stroke="#F39C12" stroke-width="1.5"/>
+        <text x="495" y="110" text-anchor="middle" fill="#FDCB6E" font-size="12" font-weight="600">🔧 Tool Use</text>
+        <text x="495" y="127" text-anchor="middle" fill="#9898B8" font-size="9">搜索 / 代码执行</text>
+        <text x="495" y="140" text-anchor="middle" fill="#9898B8" font-size="9">API 调用 / 数据库</text>
+        <line x1="430" y1="117" x2="344" y2="117" stroke="#F39C12" stroke-width="1.2" stroke-dasharray="4,3"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>🆚 Workflow vs Agent</h3>
+    <table class="tb">
+      <thead><tr><th>维度</th><th>Workflow</th><th>Agent</th></tr></thead>
+      <tbody>
+        <tr><td>执行路径</td><td>人类预定义</td><td><strong>AI 自主规划</strong></td></tr>
+        <tr><td>可预测性</td><td>✅ 高（路径固定）</td><td>⚠️ 低（路径动态）</td></tr>
+        <tr><td>灵活性</td><td>❌ 低（不能处理意外）</td><td>✅ 高（可即兴应对）</td></tr>
+        <tr><td>成本</td><td>可控</td><td>⚠️ 不可控（可能反复试错）</td></tr>
+        <tr><td>适用场景</td><td>规则明确的重复任务</td><td><strong>需要判断力的开放任务</strong></td></tr>
+      </tbody>
+    </table>
+    <div class="hl hl-b"><strong>Anthropic 的建议：</strong>「Workflows offer predictability and consistency for well-defined tasks, whereas agents are the better option when flexibility and model-driven decision-making are needed at scale.」<br>—— 能用 Workflow 就用 Workflow，只有需要灵活性时才上 Agent。</div>
+  </div>
+</section>
+
+<!-- ==================== CH5: HARNESS ==================== -->
+<section class="ch fi" id="ch5">
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,var(--c5d),var(--c5));">05</div>
+    <div><h2>Harness 运行外骨骼 <span class="ch-tag" style="background:rgba(243,156,18,.12);color:var(--c5l);">2025—2026</span></h2></div>
+  </div>
+
+  <div class="blk">
+    <h3>💡 定义</h3>
+    <p><strong>Harness = 让 Agent 能够跨越多个上下文窗口、持续数小时甚至数天完成大型任务的基础设施。</strong></p>
+    <p>Agent 的致命弱点：<strong>上下文窗口是有限的</strong>。一个复杂项目可能需要几十轮对话、上百次工具调用，早就超出单次会话的容量了。Harness 解决的就是这个问题。</p>
+    <div class="ana">
+      <div class="ana-i">🏗️</div>
+      <div class="ana-t"><strong>类比：轮班制工厂。</strong><br>想象一个软件项目，每个工程师只工作 4 小时就走人，下一个人来接班，但<strong>接班的人对之前的进度一无所知</strong>。Harness 就是那套<strong>交接班制度</strong>——进度文档、任务清单、验收标准——确保每个「班次」都能无缝接上前一班的工作。</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📎 权威出处</h3>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic</strong>《Effective Harnesses for Long-running Agents》<br>2025年11月26日<br><a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank">anthropic.com</a><br>原文：「The core challenge of long-running agents is that they must work in <strong>discrete sessions</strong>, and each new session begins with <strong>no memory</strong> of what came before. Imagine a software project staffed by engineers working in shifts, where each new engineer arrives with no memory of what happened on the previous shift.」</div>
+    </div>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic</strong>《Harness Design for Long-running Application Development》<br>2026年3月24日<br><a href="https://www.anthropic.com/engineering" target="_blank">anthropic.com/engineering</a><br>续篇：聚焦 Harness 设计模式在前沿 Agentic Coding 中的应用。</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>🛠️ Anthropic 的 Harness 方案：双 Agent 架构</h3>
+    <div class="dia">
+      <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" style="max-width:680px;">
+        <defs><marker id="ay" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#FDCB6E"/></marker></defs>
+        <!-- initializer -->
+        <rect x="30" y="30" width="200" height="100" rx="12" fill="rgba(243,156,18,.08)" stroke="#F39C12" stroke-width="1.5"/>
+        <text x="130" y="58" text-anchor="middle" fill="#FDCB6E" font-size="13" font-weight="700">🏁 Initializer Agent</text>
+        <text x="130" y="78" text-anchor="middle" fill="#9898B8" font-size="10">首次运行时初始化环境</text>
+        <text x="130" y="95" text-anchor="middle" fill="#9898B8" font-size="10">• 理解项目全貌</text>
+        <text x="130" y="110" text-anchor="middle" fill="#9898B8" font-size="10">• 生成 Feature List</text>
+        <text x="130" y="125" text-anchor="middle" fill="#9898B8" font-size="10">• 创建 claude-progress.txt</text>
+        <!-- arrow -->
+        <line x1="230" y1="80" x2="278" y2="80" stroke="#FDCB6E" stroke-width="1.5" marker-end="url(#ay)"/>
+        <!-- coding agent loop -->
+        <rect x="283" y="20" width="380" height="120" rx="12" fill="rgba(9,132,227,.06)" stroke="#0984E3" stroke-width="1.5"/>
+        <text x="473" y="46" text-anchor="middle" fill="#74B9FF" font-size="13" font-weight="700">🔄 Coding Agent（循环执行）</text>
+        <text x="473" y="68" text-anchor="middle" fill="#9898B8" font-size="10">每个会话 (context window)：</text>
+        <!-- mini steps -->
+        <rect x="300" y="80" width="78" height="48" rx="6" fill="rgba(108,92,231,.1)" stroke="#6C5CE7" stroke-width="1"/>
+        <text x="339" y="100" text-anchor="middle" fill="#A29BFE" font-size="9" font-weight="600">📖 读进度</text>
+        <text x="339" y="115" text-anchor="middle" fill="#9898B8" font-size="8">claude-progress</text>
+        <rect x="388" y="80" width="78" height="48" rx="6" fill="rgba(0,184,148,.1)" stroke="#00B894" stroke-width="1"/>
+        <text x="427" y="100" text-anchor="middle" fill="#55EFC4" font-size="9" font-weight="600">⚙️ 增量开发</text>
+        <text x="427" y="115" text-anchor="middle" fill="#9898B8" font-size="8">1-3 个 feature</text>
+        <rect x="476" y="80" width="78" height="48" rx="6" fill="rgba(225,112,85,.1)" stroke="#E17055" stroke-width="1"/>
+        <text x="515" y="100" text-anchor="middle" fill="#FAB1A0" font-size="9" font-weight="600">✅ 跑测试</text>
+        <text x="515" y="115" text-anchor="middle" fill="#9898B8" font-size="8">验证通过</text>
+        <rect x="564" y="80" width="85" height="48" rx="6" fill="rgba(243,156,18,.1)" stroke="#F39C12" stroke-width="1"/>
+        <text x="606" y="100" text-anchor="middle" fill="#FDCB6E" font-size="9" font-weight="600">📝 更新进度</text>
+        <text x="606" y="115" text-anchor="middle" fill="#9898B8" font-size="8">写入 progress</text>
+        <!-- loop arrow -->
+        <path d="M650 104 Q670 104 670 160 Q670 200 473 200 Q300 200 290 160 Q283 140 300 104" stroke="#0984E3" stroke-width="1.2" fill="none" stroke-dasharray="5,4" marker-end="url(#ay)"/>
+        <text x="473" y="218" text-anchor="middle" fill="#74B9FF" font-size="10">🔁 下一个 context window 接力</text>
+        <!-- progress file -->
+        <rect x="200" y="220" width="300" height="40" rx="8" fill="rgba(253,203,110,.06)" stroke="#FDCB6E" stroke-width="1"/>
+        <text x="350" y="244" text-anchor="middle" fill="#FDCB6E" font-size="10" font-weight="600">📄 claude-progress.txt + Git History = 持久记忆</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>⚠️ 没有 Harness 会怎样？</h3>
+    <p>Anthropic 在论文中总结了两种典型失败模式：</p>
+    <table class="tb">
+      <thead><tr><th>失败模式</th><th>表现</th><th>后果</th></tr></thead>
+      <tbody>
+        <tr><td><strong>一口吃成胖子</strong></td><td>Agent 试图在单个 context window 中完成全部工作</td><td>上下文耗尽，半成品代码，留下一堆残废 feature</td></tr>
+        <tr><td><strong>虚假完成</strong></td><td>新的 context window 启动后，Agent 看到之前的代码就认为「已经做完了」</td><td>过早宣布完工，实际上大量功能未实现</td></tr>
+      </tbody>
+    </table>
+    <div class="hl hl-y"><strong>Anthropic 的洞察：</strong>「Inspiration for these practices came from knowing what <strong>effective software engineers</strong> do every day.」—— Harness 的设计灵感来自人类优秀工程师的日常工作习惯：写进度文档、做增量提交、跑测试验证。</div>
+  </div>
+
+  <div class="quiz">
+    <h4>🧪 小测验 3</h4>
+    <p style="font-size:13px;margin-bottom:10px;">一个 Agent 在开发大型项目时，每次新会话都从零开始理解代码，导致重复工作。应该用 Harness 的哪个机制解决？</p>
+    <div class="qo" onclick="qa(this,0,'a3')">A. 给它更大的上下文窗口</div>
+    <div class="qo" onclick="qa(this,1,'a3')">B. claude-progress.txt 持久化进度</div>
+    <div class="qo" onclick="qa(this,0,'a3')">C. 换一个更强的模型</div>
+    <div class="qa" id="a3">✅ 正确！Anthropic 的方案是用 <strong>claude-progress.txt + Git 历史</strong>作为跨会话的持久记忆。新会话启动后先读进度文件，就知道前面做到哪了。更大窗口和更强模型都不能根本解决「跨会话失忆」问题。</div>
+  </div>
+</section>
+
+<!-- ==================== CH6: LOOP ==================== -->
+<section class="ch fi" id="ch6">
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,var(--c6d),var(--c6));">06</div>
+    <div><h2>Loop 自主循环 <span class="ch-tag" style="background:rgba(232,67,147,.12);color:var(--c6l);">2026</span></h2></div>
+  </div>
+
+  <div class="blk">
+    <h3>💡 定义</h3>
+    <p><strong>Loop = Agent 在 Harness 的支撑下，按不同触发条件和停止条件自主循环执行任务，直到目标达成。</strong></p>
+    <p>这是前五层能力的集大成：Prompt 定义指令 → 上下文工程提供知识 → Workflow/Agent 执行任务 → Harness 保障跨会话连续性 → <strong>Loop 把这一切串成自动化闭环</strong>。</p>
+    <div class="ana">
+      <div class="ana-i">🏭</div>
+      <div class="ana-t"><strong>类比：自动化工厂。</strong><br>前五层是「教一个人怎么干活」。Loop 是把整条生产线自动化——原料进去、产品出来，你只在异常告警时才介入。</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📎 权威出处</h3>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Claude 官方博客</strong>《Getting Started with Loops》<br>2026年6月30日 · Claude Code 团队<br><a href="https://claude.com/blog/getting-started-with-loops" target="_blank">claude.com/blog</a><br>原文：「On the Claude Code team, we define <strong>loops as agents repeating cycles of work until a stop condition is met</strong>. We categorize a few different types of loops based on: How they are triggered; How they are stopped; What Claude Code primitive is used.」</div>
+    </div>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Addy Osmani（Google Chrome 团队负责人）</strong>《Loop Engineering》<br>2026年6月7日<br><a href="https://addyosmani.com/blog/loop-engineering/" target="_blank">addyosmani.com</a><br>受 Boris Cherny（Anthropic Claude Code 负责人）启发提出「Loop Engineering」术语。<br>定义：「Loop engineering is <strong>replacing yourself as the person who prompts the AI</strong>. You design the system that does it instead.」</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>🔄 四种 Loop 类型（Claude 官方定义）</h3>
+    <p style="font-size:13px;color:var(--txt2);margin-bottom:14px;">核心分类维度：<strong>如何触发</strong>（Triggered by）× <strong>如何停止</strong>（Stop criteria）</p>
+
+    <!-- Loop 1 -->
+    <div style="background:rgba(108,92,231,.05);border:1px solid rgba(108,92,231,.18);border-radius:12px;padding:18px;margin:14px 0;">
+      <h4 style="color:var(--c1l);font-size:15px;margin-bottom:6px;">① Turn-based Loop 回合制循环</h4>
+      <table class="tb">
+        <tbody>
+          <tr><td style="width:100px;"><strong>触发方式</strong></td><td>用户发一条 Prompt</td></tr>
+          <tr><td><strong>停止条件</strong></td><td>Claude 判断任务完成 or 需要更多信息</td></tr>
+          <tr><td><strong>适用场景</strong></td><td>短期任务：修 Bug、写文档、代码优化</td></tr>
+          <tr><td><strong>人类角色</strong></td><td>提需求 → 等结果 → 验收</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--c2l);margin-top:8px;">🔑 每条 Prompt 启动一个自主循环：理解 → 执行 → 验证 → 必要时重复</p>
+    </div>
+
+    <!-- Loop 2 -->
+    <div style="background:rgba(0,184,148,.05);border:1px solid rgba(0,184,148,.18);border-radius:12px;padding:18px;margin:14px 0;">
+      <h4 style="color:var(--c2l);font-size:15px;margin-bottom:6px;">② Goal-based Loop 目标循环 · <code style="font-size:12px;background:rgba(0,184,148,.15);padding:2px 6px;border-radius:4px;">/goal</code></h4>
+      <table class="tb">
+        <tbody>
+          <tr><td style="width:100px;"><strong>触发方式</strong></td><td>用户手动发 Prompt（实时）</td></tr>
+          <tr><td><strong>停止条件</strong></td><td>目标达成 <strong>OR</strong> 达到最大轮次上限</td></tr>
+          <tr><td><strong>关键机制</strong></td><td>小型快速模型在每轮后评估是否达标</td></tr>
+          <tr><td><strong>适用场景</strong></td><td>有量化目标的任务：测试覆盖率 ≥ 80%、Lighthouse ≥ 90 分</td></tr>
+          <tr><td><strong>人类角色</strong></td><td>只定义「成功是什么样」，不管「怎么到达」</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Loop 3 -->
+    <div style="background:rgba(243,156,18,.05);border:1px solid rgba(243,156,18,.18);border-radius:12px;padding:18px;margin:14px 0;">
+      <h4 style="color:var(--c5l);font-size:15px;margin-bottom:6px;">③ Time-based Loop 定时循环 · <code style="font-size:12px;background:rgba(243,156,18,.15);padding:2px 6px;border-radius:4px;">/loop</code> <code style="font-size:12px;background:rgba(243,156,18,.15);padding:2px 6px;border-radius:4px;">/schedule</code></h4>
+      <table class="tb">
+        <tbody>
+          <tr><td style="width:100px;"><strong>触发方式</strong></td><td>时间表 / 定时器</td></tr>
+          <tr><td><strong>停止条件</strong></td><td>时间到 or 完成指定迭代次数</td></tr>
+          <tr><td><strong>适用场景</strong></td><td>定期任务：每天总结 Slack、每小时检查 CI、每日日报</td></tr>
+          <tr><td><strong>人类角色</strong></td><td>设置一次，之后只看结果</td></tr>
+        </tbody>
+      </table>
+      <div class="code" style="margin-top:8px;">
+<span class="kw">/loop</span> <span class="st">5m</span> check my PR, address review comments, and fix failing CI
+<br><span class="cm">// 每 5 分钟检查一次 PR，处理 review 意见，修复失败的 CI</span>
+      </div>
+    </div>
+
+    <!-- Loop 4 -->
+    <div style="background:rgba(232,67,147,.05);border:1px solid rgba(232,67,147,.18);border-radius:12px;padding:18px;margin:14px 0;">
+      <h4 style="color:var(--c6l);font-size:15px;margin-bottom:6px;">④ Proactive Loop 主动循环 · Dynamic Workflows</h4>
+      <table class="tb">
+        <tbody>
+          <tr><td style="width:100px;"><strong>触发方式</strong></td><td>事件驱动（新 PR、新 Issue、代码提交等）</td></tr>
+          <tr><td><strong>停止条件</strong></td><td>事件处理完毕</td></tr>
+          <tr><td><strong>关键机制</strong></td><td>串联 trigger（触发器）+ goal（目标）+ orchestration（编排），全流程自动</td></tr>
+          <tr><td><strong>适用场景</strong></td><td>完全无人值守：自动 Code Review、自动修复、自动部署</td></tr>
+          <tr><td><strong>人类角色</strong></td><td>只看最终结果</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📊 四种 Loop 的递进关系</h3>
+    <p style="font-size:13px;color:var(--txt2);margin-bottom:10px;">Claude 官方的分类逻辑：你每升一层，<strong>交出去的东西</strong>就多一样。</p>
+    <table class="tb">
+      <thead><tr><th>Loop 类型</th><th>你交出了什么</th><th>你还保留什么</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--c1l);">① 回合制</td><td>交出<strong>执行</strong></td><td>保留触发、检查、判断</td></tr>
+        <tr><td style="color:var(--c2l);">② 目标循环</td><td>交出<strong>执行 + 检查</strong></td><td>保留触发、最终判断</td></tr>
+        <tr><td style="color:var(--c5l);">③ 定时循环</td><td>交出<strong>执行 + 检查 + 触发</strong></td><td>保留异常干预</td></tr>
+        <tr><td style="color:var(--c6l);">④ 主动循环</td><td>交出<strong>一切</strong></td><td>只看结果</td></tr>
+      </tbody>
+    </table>
+    <div class="hl hl-k"><strong>⚠️ 重点不是循环越多越好。</strong>选哪种 Loop 取决于你对 AI 的信任度和场景的容错空间。一个精准的回合制循环，可能比一个失控的全自动循环好 10 倍。</div>
+  </div>
+
+  <div class="quiz">
+    <h4>🧪 小测验 4</h4>
+    <p style="font-size:13px;margin-bottom:10px;">你希望 AI 每天早上自动生成解决率日报并推送到群里。应该用哪种 Loop？</p>
+    <div class="qo" onclick="qa(this,0,'a4')">A. 回合制——每天手动跟 AI 说「帮我看看」</div>
+    <div class="qo" onclick="qa(this,0,'a4')">B. 目标循环——设定「解决率 ≥ 85%」为目标</div>
+    <div class="qo" onclick="qa(this,1,'a4')">C. 定时循环——/schedule 每天 09:00 执行</div>
+    <div class="qo" onclick="qa(this,0,'a4')">D. 主动循环——让 AI 自己决定什么时候生成</div>
+    <div class="qa" id="a4">✅ 正确！日报是<strong>固定时间 + 固定流程</strong>的任务，定时循环最合适。目标循环适合「优化到某个值」，主动循环适合「事件驱动」。这里的触发条件是时间，不是事件。</div>
+  </div>
+</section>
+
+<!-- ==================== SUMMARY ==================== -->
+<section class="ch fi" id="sum">
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,#2D3436,#636E72);">🎯</div>
+    <div><h2>课程总结</h2></div>
+  </div>
+
+  <div class="blk">
+    <h3>📊 六阶段全景对照表</h3>
+    <table class="tb">
+      <thead><tr><th>阶段</th><th>核心能力</th><th>权威定义者</th><th>你的角色</th><th>AI 新增能力</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--c1l);">① Prompt</td>
+          <td>表达需求</td>
+          <td>OpenAI GPT-3 (2020)<br>Google CoT (2022)</td>
+          <td>操作员</td>
+          <td>理解自然语言</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c2l);">② 上下文工程</td>
+          <td>管理 AI 能看到的信息</td>
+          <td>Facebook RAG (2020)<br>Tobi Lütke (2025)<br>Anthropic (2025.9)</td>
+          <td>策展人</td>
+          <td>基于你的数据回答</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c3l);">③ Workflow</td>
+          <td>预定义多步编排</td>
+          <td>Anthropic (2024.12)</td>
+          <td>流程设计师</td>
+          <td>按预设路径多步执行</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c4l);">④ Agent</td>
+          <td>自主决策 + 工具调用</td>
+          <td>Lilian Weng (2023.6)<br>Andrew Ng (2024.3)<br>OpenAI (2023.6)</td>
+          <td>指挥官</td>
+          <td>自主规划执行路径</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c5l);">⑤ Harness</td>
+          <td>跨会话持久执行</td>
+          <td>Anthropic (2025.11)<br>Anthropic (2026.3)</td>
+          <td>督察</td>
+          <td>跨 context window 接力</td>
+        </tr>
+        <tr>
+          <td style="color:var(--c6l);">⑥ Loop</td>
+          <td>自主循环闭环</td>
+          <td>Claude 官方 (2026.6.30)<br>Addy Osmani (2026.6.7)</td>
+          <td>决策者</td>
+          <td>自触发 + 自停止 + 自交付</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="blk">
+    <h3>📐 六阶段演进 SVG 全景图</h3>
+    <div class="dia">
+      <svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" style="max-width:800px;">
+        <defs>
+          <linearGradient id="s1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6C5CE7"/><stop offset="100%" stop-color="#A29BFE"/></linearGradient>
+          <linearGradient id="s2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00B894"/><stop offset="100%" stop-color="#55EFC4"/></linearGradient>
+          <linearGradient id="s3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E17055"/><stop offset="100%" stop-color="#FAB1A0"/></linearGradient>
+          <linearGradient id="s4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0984E3"/><stop offset="100%" stop-color="#74B9FF"/></linearGradient>
+          <linearGradient id="s5" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E67E22"/><stop offset="100%" stop-color="#FDCB6E"/></linearGradient>
+          <linearGradient id="s6" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E84393"/><stop offset="100%" stop-color="#FD79A8"/></linearGradient>
+        </defs>
+        <!-- blocks -->
+        <rect x="10" y="290" width="115" height="58" rx="8" fill="url(#s1)" opacity=".9"/>
+        <text x="67" y="314" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">① Prompt</text>
+        <text x="67" y="332" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">单轮提问 · 2020</text>
+
+        <rect x="145" y="232" width="115" height="58" rx="8" fill="url(#s2)" opacity=".9"/>
+        <text x="202" y="256" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">② 上下文工程</text>
+        <text x="202" y="274" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">RAG+CoT · 2023</text>
+
+        <rect x="280" y="174" width="115" height="58" rx="8" fill="url(#s3)" opacity=".9"/>
+        <text x="337" y="198" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">③ Workflow</text>
+        <text x="337" y="216" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">预定义编排 · 2024</text>
+
+        <rect x="415" y="116" width="115" height="58" rx="8" fill="url(#s4)" opacity=".9"/>
+        <text x="472" y="140" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">④ Agent</text>
+        <text x="472" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">自主决策 · 2023-24</text>
+
+        <rect x="550" y="58" width="115" height="58" rx="8" fill="url(#s5)" opacity=".9"/>
+        <text x="607" y="82" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">⑤ Harness</text>
+        <text x="607" y="100" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">运行外骨骼 · 2025</text>
+
+        <rect x="685" y="10" width="120" height="58" rx="8" fill="url(#s6)" opacity=".9"/>
+        <text x="745" y="34" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">⑥ Loop</text>
+        <text x="745" y="52" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">自主循环 · 2026</text>
+
+        <!-- connecting lines -->
+        <path d="M125 290 L145 290 L145 262" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
+        <path d="M260 232 L280 232 L280 204" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
+        <path d="M395 174 L415 174 L415 146" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
+        <path d="M530 116 L550 116 L550 88" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
+        <path d="M665 58 L685 58 L685 40" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
+
+        <!-- role labels -->
+        <text x="67" y="366" text-anchor="middle" fill="#A29BFE" font-size="9">🧑 操作员</text>
+        <text x="202" y="308" text-anchor="middle" fill="#55EFC4" font-size="9">🧑 策展人</text>
+        <text x="337" y="250" text-anchor="middle" fill="#FAB1A0" font-size="9">🧑 流程设计师</text>
+        <text x="472" y="192" text-anchor="middle" fill="#74B9FF" font-size="9">🧑 指挥官</text>
+        <text x="607" y="134" text-anchor="middle" fill="#FDCB6E" font-size="9">🧑 督察</text>
+        <text x="745" y="86" text-anchor="middle" fill="#FD79A8" font-size="9">🧑 决策者</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>🧠 两个心法</h3>
+    <div style="text-align:center;padding:20px 0;">
+      <p style="font-size:18px;font-weight:700;color:var(--c5l);margin-bottom:8px;">「控制权上移，标准下沉」</p>
+      <p style="font-size:13px;color:var(--txt2);max-width:520px;margin:0 auto;">每升一层，你交出去的是<strong>执行权</strong>。<br>每升一层，你必须写下更精确的<strong>标准和约束</strong>。</p>
+    </div>
+    <div style="text-align:center;padding:16px 0;">
+      <p style="font-size:18px;font-weight:700;color:var(--c4l);margin-bottom:8px;">「能用简单方案就别上复杂方案」</p>
+      <p style="font-size:13px;color:var(--txt2);max-width:520px;margin:0 auto;">Anthropic 原话：<em>「We recommend finding the <strong>simplest solution possible</strong>, and only increasing complexity when needed.」</em></p>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>📚 完整引用索引</h3>
+    <table class="tb">
+      <thead><tr><th>#</th><th>来源</th><th>日期</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Brown et al.《Language Models are Few-Shot Learners》GPT-3 · <a href="https://arxiv.org/abs/2005.14165" target="_blank" style="color:var(--c4l)">arXiv</a></td><td>2020.5</td></tr>
+        <tr><td>2</td><td>Lewis et al.《Retrieval-Augmented Generation》RAG · <a href="https://arxiv.org/abs/2005.11401" target="_blank" style="color:var(--c4l)">arXiv</a></td><td>2020.5</td></tr>
+        <tr><td>3</td><td>Wei et al.《Chain-of-Thought Prompting》CoT · <a href="https://arxiv.org/abs/2201.11903" target="_blank" style="color:var(--c4l)">arXiv</a></td><td>2022.1</td></tr>
+        <tr><td>4</td><td>AutoGPT 首发 · GitHub</td><td>2023.3</td></tr>
+        <tr><td>5</td><td>OpenAI Function Calling 发布 · <a href="https://openai.com/index/function-calling-and-other-api-updates/" target="_blank" style="color:var(--c4l)">openai.com</a></td><td>2023.6</td></tr>
+        <tr><td>6</td><td>Lilian Weng《LLM Powered Autonomous Agents》· <a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank" style="color:var(--c4l)">lilianweng.github.io</a></td><td>2023.6</td></tr>
+        <tr><td>7</td><td>Andrew Ng《Agentic Design Patterns》· <a href="https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/" target="_blank" style="color:var(--c4l)">deeplearning.ai</a></td><td>2024.3</td></tr>
+        <tr><td>8</td><td>Anthropic《Building Effective Agents》· <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" style="color:var(--c4l)">anthropic.com</a></td><td>2024.12</td></tr>
+        <tr><td>9</td><td>Tobi Lütke 提出 Context Engineering · X/Twitter</td><td>2025.6</td></tr>
+        <tr><td>10</td><td>Karpathy 附议 Context Engineering · X/Twitter</td><td>2025.6</td></tr>
+        <tr><td>11</td><td>Anthropic《Effective Context Engineering》· <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" style="color:var(--c4l)">anthropic.com</a></td><td>2025.9</td></tr>
+        <tr><td>12</td><td>Anthropic《Effective Harnesses for Long-running Agents》· <a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank" style="color:var(--c4l)">anthropic.com</a></td><td>2025.11</td></tr>
+        <tr><td>13</td><td>Anthropic Claude Code 发布 · Research Preview</td><td>2025.2</td></tr>
+        <tr><td>14</td><td>Anthropic《Harness Design for Long-running App Dev》· <a href="https://www.anthropic.com/engineering" target="_blank" style="color:var(--c4l)">anthropic.com</a></td><td>2026.3</td></tr>
+        <tr><td>15</td><td>Addy Osmani《Loop Engineering》· <a href="https://addyosmani.com/blog/loop-engineering/" target="_blank" style="color:var(--c4l)">addyosmani.com</a></td><td>2026.6.7</td></tr>
+        <tr><td>16</td><td>Claude 官博《Getting Started with Loops》· <a href="https://claude.com/blog/getting-started-with-loops" target="_blank" style="color:var(--c4l)">claude.com</a></td><td>2026.6.30</td></tr>
+        <tr><td>17</td><td>OpenAI《A Practical Guide to Building Agents》· <a href="https://cdn.openai.com/business/guides/a-practical-guide-to-building-agents.pdf" target="_blank" style="color:var(--c4l)">PDF</a></td><td>2025.4</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="blk">
+    <h3>🗺️ 自测：你在哪一层？</h3>
+    <div class="tl">
+      <div class="tl-i"><div class="tl-d" style="border-color:var(--c1);"></div>
+        <h4 style="color:var(--c1l);">你还在手动打字问 AI？</h4>
+        <p>→ 第 1 层。先掌握 Zero-Shot / Few-Shot / CoT 三板斧。</p></div>
+      <div class="tl-i"><div class="tl-d" style="border-color:var(--c2);"></div>
+        <h4 style="color:var(--c2l);">你开始给 AI 喂自己的文档了？</h4>
+        <p>→ 第 2 层。试试 RAG，让 AI 检索你的知识库再回答。</p></div>
+      <div class="tl-i"><div class="tl-d" style="border-color:var(--c3);"></div>
+        <h4 style="color:var(--c3l);">你设计了多步处理流程？</h4>
+        <p>→ 第 3 层。把重复流程固化为 Workflow（链式 / 路由 / 并行）。</p></div>
+      <div class="tl-i"><div class="tl-d" style="border-color:var(--c4);"></div>
+        <h4 style="color:var(--c4l);">你让 AI 自己决定调什么工具、走什么路径？</h4>
+        <p>→ 第 4 层。这就是 Agent。下一步考虑长时任务的连续性。</p></div>
+      <div class="tl-i"><div class="tl-d" style="border-color:var(--c5);"></div>
+        <h4 style="color:var(--c5l);">你的 Agent 能跨会话持续工作了？</h4>
+        <p>→ 第 5 层。有了 Harness，可以开始跑 Loop 了。</p></div>
+      <div class="tl-i"><div class="tl-d" style="border-color:var(--c6);"></div>
+        <h4 style="color:var(--c6l);">你只看结果，AI 自动触发、自动执行、自动交付？</h4>
+        <p>→ 恭喜，第 6 层 🏆 持续优化约束和标准即可。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<div class="ft">
+  <p>📖 从 Prompt 到 Loop — 大模型应用演进六阶段 · 权威教学课程</p>
+  <p style="margin-top:5px;">Prompt → Context Engineering → Workflow → Agent → Harness → Loop</p>
+  <p style="margin-top:5px;">基于 Anthropic / OpenAI / Andrew Ng / Lilian Weng / Addy Osmani 等 17 篇一手文献</p>
+  <p style="margin-top:5px;color:var(--txt2);">2026.7</p>
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-window.innerHeight;document.getElementById('pb').style.width=(h>0?(scrollY/h)*100:0)+'%';});
+const ob=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis');});},{threshold:.08});
+document.querySelectorAll('.fi').forEach(e=>ob.observe(e));
+function qa(el,ok,id){const p=el.closest('.quiz'),os=p.querySelectorAll('.qo');os.forEach(o=>{o.style.pointerEvents='none';if(o===el)o.classList.add(ok?'ok':'no');});if(ok){document.getElementById(id).style.display='block';}else{const h=document.createElement('div');h.style.cssText='margin-top:6px;padding:6px 10px;border-radius:6px;background:rgba(225,112,85,.08);font-size:12px;color:#FAB1A0;';h.textContent='❌ 不对哦，再想想？';el.after(h);setTimeout(()=>{os.forEach(o=>{if(o!==el)o.style.pointerEvents='auto';});},600);}}
+</script>
+</body>
+</html>
