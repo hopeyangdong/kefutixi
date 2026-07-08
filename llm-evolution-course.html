@@ -177,698 +177,2109 @@ body{font-family:-apple-system,'PingFang SC','Noto Sans SC','Microsoft YaHei',sa
   </div>
 </section>
 
-<!-- ==================== CH1: PROMPT ==================== -->
+<!-- ==================== CH1: PROMPT 工程（深度展开版） ==================== -->
 <section class="ch fi" id="ch1">
   <div class="ch-hd">
     <div class="ch-n" style="background:linear-gradient(135deg,var(--c1d),var(--c1));">01</div>
     <div><h2>Prompt 工程 <span class="ch-tag" style="background:rgba(108,92,231,.12);color:var(--c1l);">2020—2023</span></h2></div>
   </div>
 
+  <!-- ====== 1.1 定义 ====== -->
   <div class="blk">
-    <h3>💡 定义</h3>
+    <h3>💡 什么是 Prompt 工程？</h3>
     <p><strong>Prompt 工程 = 通过精心设计输入文本（提示词），引导大模型生成高质量输出。</strong></p>
-    <p>这是人类与大模型交互的第一种范式。你的全部输入就是 AI 唯一的信息来源——它不知道你有什么文档，不记得昨天聊了什么，也不能去查任何系统。</p>
+    <p>这是人类与大模型交互的第一种范式。你的全部输入就是 AI 唯一的信息来源——它不知道你有什么文档，不记得昨天聊了什么，也不能去查任何系统。你输入的那段话，就是它的整个世界。</p>
     <div class="ana">
       <div class="ana-i">📱</div>
-      <div class="ana-t"><strong>类比：给陌生人发短信。</strong><br>收信人很聪明，但只看到这一条短信。回答质量 100% 取决于你写得有多清楚。</div>
+      <div class="ana-t"><strong>类比：给一个天才陌生人发短信。</strong><br>这个人极其聪明，博览群书，但他只能看到你发的这一条短信。他不知道你是谁，不知道你在什么公司，不知道你的业务规则。回答质量 100% 取决于你这条短信写得有多清楚、多完整。</div>
     </div>
   </div>
 
+  <!-- ====== 1.2 GPT-3 Few-Shot 的震撼 ====== -->
   <div class="blk">
-    <h3>📎 权威出处</h3>
+    <h3>🚀 GPT-3 Few-Shot 的震撼：2020 年发生了什么？</h3>
+    <p>要理解 Prompt 工程为什么是一场革命，我们得先看看<strong>2020 年之前</strong>，做一个客服 AI 有多痛苦。</p>
+
+    <p>假设你要做一个「退款原因分类器」——用户申请退款时，自动判断是「商品质量问题」「配送损坏」「口味不合」还是「其他」。在传统 NLP 时代，流程是这样的：</p>
+
+    <div class="steps">
+      <div class="stp"><div class="si">①</div><h5>标注数据</h5><p>找 20 个标注员，标注 <strong>10,000~50,000 条</strong>退款记录</p></div>
+      <div class="stp"><div class="si">②</div><h5>训练模型</h5><p>工程师用 BERT/TextCNN 训练一个分类模型，调参跑实验，周期 <strong>2-4 周</strong></p></div>
+      <div class="stp"><div class="si">③</div><h5>部署上线</h5><p>模型封装成 API，部署到服务器，接入业务系统</p></div>
+      <div class="stp"><div class="si">④</div><h5>持续维护</h5><p>每季度补充新数据、重新训练、更新线上模型</p></div>
+    </div>
+
+    <p>整个流程下来，<strong>最少 2 个月、花费几十万</strong>，还需要一支包含标注员、算法工程师、后端工程师的技术团队。如果业务规则变了（比如增加了一个「配送超时」的退款类型），你得重新标注数据、重新训练——又是两周起步。</p>
+
+    <p>然后，<strong>2020 年 5 月</strong>，OpenAI 发布了 GPT-3。</p>
+
     <div class="cite">
       <div class="cite-icon">📄</div>
       <div><strong>GPT-3 论文</strong>：Brown et al.《Language Models are Few-Shot Learners》<br>2020年5月 · OpenAI · 31位作者<br><a href="https://arxiv.org/abs/2005.14165" target="_blank">arxiv.org/abs/2005.14165</a><br>首次系统展示 Few-Shot Prompting：在提示词中给几个示例，模型就能学会新任务，无需微调。</div>
     </div>
-    <div class="cite">
-      <div class="cite-icon">📄</div>
-      <div><strong>Chain-of-Thought 论文</strong>：Wei et al.《Chain-of-Thought Prompting Elicits Reasoning in Large Language Models》<br>2022年1月 · Google Research · NeurIPS 2022<br><a href="https://arxiv.org/abs/2201.11903" target="_blank">arxiv.org/abs/2201.11903</a><br>发现在提示词中加入推理步骤，可以显著提升模型的推理能力。</div>
+
+    <p>论文标题翻译过来就是：<strong>「语言模型是少样本学习者」</strong>。什么意思？你不用标注 1 万条数据了——<strong>在提示词里给 3 个例子</strong>，模型就能学会你的分类规则。</p>
+
+    <p>同样是退款原因分类，GPT-3 的做法：</p>
+
+    <div class="code">
+<span class="cm">## 退款原因分类 Prompt（Few-Shot）</span>
+
+<span class="kw">你是一个客服退款原因分类助手。根据用户的退款描述，分类到以下类别之一：
+- 商品质量问题
+- 配送损坏
+- 口味不合
+- 配送超时
+- 其他</span>
+
+<span class="st">## 示例：
+
+用户描述：「汤全洒了，米饭也凉了」
+分类：配送损坏
+
+用户描述：「点的微辣结果巨辣，完全没法吃」
+分类：口味不合
+
+用户描述：「鸡腿只咬了一口发现是生的」
+分类：商品质量问题</span>
+
+<span class="cm">## 请分类：</span>
+用户描述：「等了一个半小时才到，菜都凉透了」
+分类：
     </div>
+
+    <p>就这么一段文字，<strong>没有训练、没有标注、没有部署</strong>——直接输入，GPT-3 就能输出「配送超时」。从 2 个月缩短到 <strong>2 分钟</strong>。</p>
+
+    <div class="hl hl-p"><strong>🎯 革命性在哪？</strong>不是说 GPT-3 比 BERT 准确率高多少（早期准确率其实不一定更高），而是<strong>门槛降到了零</strong>：不需要标注团队、不需要算法工程师、不需要 GPU 训练——一个运营人员，打几行字就能做到。这才是真正的范式转变。</div>
   </div>
 
+  <!-- ====== 1.3 Chain-of-Thought ====== -->
   <div class="blk">
-    <h3>🔑 核心技巧</h3>
+    <h3>🧠 Chain-of-Thought：让 AI 「展示推理过程」</h3>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Chain-of-Thought 论文</strong>：Wei et al.《Chain-of-Thought Prompting Elicits Reasoning in Large Language Models》<br>2022年1月 · Google Research · NeurIPS 2022<br><a href="https://arxiv.org/abs/2201.11903" target="_blank">arxiv.org/abs/2201.11903</a><br>发现在提示词中加入推理步骤，可以显著提升模型在数学、逻辑、常识推理任务上的表现。</div>
+    </div>
+
+    <p>Few-Shot 解决了「怎么让 AI 学会分类」，但有些任务不只是分类那么简单——它需要<strong>推理判断</strong>。比如客服退款审批：用户说「外卖少了一个菜」，该不该批准退款？退多少？</p>
+
+    <p>我们来看<strong>不加 CoT</strong> 和 <strong>加了 CoT</strong> 的巨大区别：</p>
+
+    <p><strong>❌ 不加 Chain-of-Thought：直接猜答案</strong></p>
+    <div class="code">
+<span class="kw">Prompt:</span> 用户投诉「我点了3个菜，只收到2个，少了一份宫保鸡丁（28元）」，请判断是否应该退款。
+
+<span class="st">AI 回复:</span> 同意退款。
+    </div>
+
+    <p>就一句话。你根本不知道它为什么同意——是看了订单吗？考虑了用户历史了吗？这个结论能信吗？万一是恶意退款呢？</p>
+
+    <p><strong>✅ 加了 Chain-of-Thought：展示推理链</strong></p>
+    <div class="code">
+<span class="kw">Prompt:</span> 用户投诉「我点了3个菜，只收到2个，少了一份宫保鸡丁（28元）」。
+请<span class="fn">一步一步分析</span>以下维度后给出结论：
+1. 订单实际情况（点了几个菜、实收几个）
+2. 商家/骑手责任判断
+3. 用户历史退款记录是否异常
+4. 推荐处理方案
+
+<span class="st">AI 回复:</span>
+<span class="fn">让我一步步分析：</span>
+
+<span class="st">1. 订单情况：</span>用户下单 3 个菜品，实际收到 2 个，缺少「宫保鸡丁」（28元）。
+   属于典型的「少餐」问题。
+
+<span class="st">2. 责任判断：</span>
+   - 少餐通常是<span class="kw">商家漏装</span>或<span class="kw">骑手遗漏</span>导致
+   - 需要看商家出餐记录。如果商家已出餐3份而骑手只送了2份 → 骑手责任
+   - 如果商家本身只出了2份 → 商家责任
+   - 无论哪种情况，用户都不应承担损失
+
+<span class="st">3. 用户历史：</span>
+   - 如果用户近30天退款次数 ≤ 2 次 → 正常用户，直接退
+   - 如果用户近30天退款次数 ≥ 5 次 → 疑似异常，建议人工复审
+
+<span class="st">4. 推荐方案：</span>
+   - 退还缺少菜品金额 28 元
+   - 如金额 ≤ 30 元且用户无异常记录 → 可自动审批
+   - 附带道歉话术 + 优惠券补偿
+    </div>
+
+    <p>看到区别了吗？<strong>同样的问题，加了「一步一步分析」这几个字</strong>，AI 的回答从一句话变成了一份完整的分析报告。而且因为推理过程透明了，你可以检查它的逻辑是不是对的——如果第 3 步的判断标准不符合公司政策，你可以针对性地调整 prompt，而不是像之前那样面对一个黑盒。</p>
+
+    <div class="hl hl-p"><strong>🎯 CoT 的本质：</strong>不是让 AI 变聪明了，而是<strong>强迫 AI 把思考过程展开</strong>。就像让学生在数学考试时必须写解题步骤——一步一步写出来的过程中，自己会发现逻辑漏洞，最终答案的正确率自然更高。</div>
+  </div>
+
+  <!-- ====== 1.4 五种核心技巧 ====== -->
+  <div class="blk">
+    <h3>🔑 5 种核心 Prompt 技巧详解</h3>
+    <p>下面每种技巧都给出客服场景的<strong>完整、可直接使用的 Prompt 模板</strong>，不是一句话概括。</p>
+
+    <p><strong>技巧 ① Zero-Shot（零样本）</strong>—— 不给任何示例，直接告诉 AI 干什么。</p>
+    <div class="code">
+<span class="kw">你是美团客服质检专员。请阅读以下客服对话记录，评估客服人员的服务质量。</span>
+
+评分标准（1-5分）：
+- 响应速度：是否在30秒内首次回复
+- 问题解决：是否有效解决了用户问题
+- 服务态度：用语是否礼貌、有同理心
+- 流程规范：是否按标准流程操作
+
+<span class="st">对话记录：
+[用户] 我的外卖都等了40分钟了还没到！
+[客服] 稍等。
+[客服] 帮你查了，骑手还在取餐。
+[用户] 那要等到什么时候？？
+[客服] 预计还要15分钟，你再等一下。</span>
+
+请输出 JSON 格式的评分结果，包含每项分数和总体评语。
+    </div>
+    <p>适用场景：<strong>任务定义清晰、标准明确的场景</strong>。优点是简洁高效，缺点是如果 AI 对你的「标准」理解有偏差，输出就不稳定。</p>
+
+    <p><strong>技巧 ② Few-Shot（少样本）</strong>—— 给 2-5 个示例，定义输入输出标准。</p>
+    <div class="code">
+<span class="kw">你是客服话术生成助手。根据用户的投诉内容，生成标准回复话术。</span>
+
+<span class="fn">## 示例：</span>
+
+<span class="st">投诉：外卖洒了
+话术：非常抱歉给您带来不好的体验！您的餐品在配送过程中出现了洒漏情况，我已帮您申请该商品的全额退款，预计1-3个工作日到账。同时赠送您一张5元无门槛优惠券，期待下次为您提供更好的服务～</span>
+
+<span class="st">投诉：送错地址了
+话术：非常抱歉，核实到您的订单确实配送到了错误地址。我已联系骑手为您重新配送/为您安排全额退款（预计1-3个工作日到账）。对此次失误深感抱歉，已赠送您一张8元优惠券作为补偿！</span>
+
+<span class="st">投诉：商品和图片不一致
+话术：很抱歉给您造成了困扰！已核实您反馈的情况，商家出餐与菜单展示确实存在差异。我已帮您申请差价退款XX元，同时会将情况反馈给商家进行整改。感谢您的反馈，祝您用餐愉快～</span>
+
+<span class="fn">## 请生成：</span>
+投诉：骑手态度恶劣，打电话催我下楼还骂人
+话术：
+    </div>
+    <p>适用场景：<strong>需要统一风格和格式的场景</strong>。示例就是最好的说明书——与其用文字描述「回复要有同理心、要给解决方案、要给补偿」，不如直接给 3 个标杆回复。</p>
+
+    <p><strong>技巧 ③ Chain-of-Thought（思维链）</strong>—— 要求 AI 先推理再结论。</p>
+    <div class="code">
+<span class="kw">你是客服退款审批助手。请按以下步骤分析退款申请：</span>
+
+<span class="fn">Step 1: 提取关键信息</span>（订单号、商品、金额、投诉内容）
+<span class="fn">Step 2: 判断责任方</span>（商家/骑手/用户/平台）
+<span class="fn">Step 3: 检查退款政策</span>（该情况是否符合自动退款条件）
+<span class="fn">Step 4: 评估风险</span>（用户是否有异常退款行为）
+<span class="fn">Step 5: 给出结论</span>（退款金额 + 补偿方案 + 置信度）
+
+退款申请：用户称「收到的奶茶全是冰的，我备注了去冰，喝了一口就肚子疼」
+    </div>
+    <p>适用场景：<strong>需要多因素综合判断的决策场景</strong>。强制分步能避免 AI 跳跃式得出结论。</p>
+
+    <p><strong>技巧 ④ 角色设定（Persona）</strong>—— 给 AI 一个专业身份，激活特定知识。</p>
+    <div class="code">
+<span class="kw">你是一个拥有10年美团客服管理经验的培训师。你现在要培训一批新入职的客服人员。</span>
+
+你的特点：
+- 说话接地气，用真实场景举例
+- 特别擅长处理「用户情绪激动」的场景
+- 总是先肯定新人做对的地方，再指出改进空间
+
+请对以下新客服的回复做点评和改进建议：
+
+<span class="st">用户消息：「你们是不是骗子公司？！我退款三天了还没到账！再不退我就投诉到12315！」
+新客服回复：「您好，退款需要1-3个工作日处理，请您耐心等待。」</span>
+    </div>
+    <p>适用场景：<strong>需要特定视角或专业深度的场景</strong>。角色设定不是「玩角色扮演」，而是通过设定身份来约束 AI 的输出风格、知识范围和回答深度。</p>
+
+    <p><strong>技巧 ⑤ 格式约束（Output Formatting）</strong>—— 规定输出结构，方便下游系统对接。</p>
+    <div class="code">
+<span class="kw">分析以下客服对话，输出严格的 JSON 格式结果。</span>
+
+<span class="fn">要求的 JSON 结构：</span>
+{
+  "issue_type": "退款|配送|投诉|咨询",
+  "urgency": "高|中|低",
+  "sentiment": "愤怒|不满|中性|满意",
+  "requires_human": true/false,
+  "suggested_action": "具体建议操作",
+  "confidence": 0.0-1.0
+}
+
+<span class="st">对话内容：
+[用户] 骑手把餐放在门口就走了，也不敲门也不打电话，我两小时后才发现，饭菜全凉了
+[用户] 而且我备注了「请打电话」，骑手根本没看备注</span>
+
+请直接输出 JSON，不要其他解释。
+    </div>
+    <p>适用场景：<strong>AI 输出需要被程序读取的场景</strong>。你的客服工单系统要根据 AI 的分析结果自动分配工单、设置优先级——那 AI 输出必须是结构化的，不能是一段自然语言。</p>
+  </div>
+
+  <!-- ====== 1.5 Prompt 的三大天花板 ====== -->
+  <div class="blk">
+    <h3>⚠️ Prompt 的三大天花板：为什么光靠写提示词不够？</h3>
+    <p>Prompt 工程很强大，但用着用着你会撞上三面墙，怎么写都绕不过去。</p>
+
+    <p><strong>天花板 ①：知识塞不进去</strong></p>
+    <p>你的客服知识库有 <strong>500 页</strong>，涵盖退款政策、配送规则、商家管理、活动规则、特殊品类处理（药品、鲜花、生鲜各一套规则）……GPT-3.5 的上下文窗口只有 <strong>4K token ≈ 3000 字</strong>，也就是大约 3 页 A4 纸。就算用 GPT-4 的 128K 窗口，也只能塞进约 100 页——而且全塞进去，AI 在「大海捞针」式的长文本中准确率会大幅下降。</p>
+    <div class="hl hl-p"><strong>具体场景：</strong>用户问「我买的药品拆封了还能退吗？」这个答案在知识库第 347 页。你怎么办？把 500 页全粘进去？token 不够。只粘第一章？答案不在那里。你需要一种方式<strong>自动找到第 347 页那段话</strong>——这就是第二章要讲的 RAG。</div>
+
+    <p><strong>天花板 ②：每次对话都要重新教</strong></p>
+    <p>昨天你花了 20 分钟，通过反复调试，教会了 AI 你们公司的退款审批流程——什么情况自动退、什么情况要人审。今天打开一个新对话，<strong>AI 全忘了</strong>。你得重新教一遍。</p>
+    <p>更要命的是，如果你的客服团队有 50 个人在用 AI，每个人都要各自教一遍。有人教得好，有人教得差，AI 的表现参差不齐——<strong>没有统一的知识基座</strong>。</p>
+
+    <p><strong>天花板 ③：AI 只能说，不能做</strong></p>
+    <p>AI 能告诉你「这个订单应该退款 28 元」，但它<strong>不能真的去操作退款</strong>。它不能查询你的订单数据库，不能调用退款接口，不能更新工单状态。它只是一个「说话的人」，不是一个「干活的人」。</p>
+    <p>客服场景里，用户要的不是一个分析报告，而是<strong>问题被解决</strong>。「帮我退款」不是要你说「我建议退款」，而是要你真的点那个按钮把钱退了。</p>
+
     <table class="tb">
-      <thead><tr><th>技巧</th><th>原理</th><th>示例</th></tr></thead>
+      <thead><tr><th>天花板</th><th>客服场景</th><th>后续解决方案</th></tr></thead>
       <tbody>
-        <tr><td><strong>Zero-Shot</strong></td><td>不给示例，直接问</td><td>「把这段翻译成英文」</td></tr>
-        <tr><td><strong>Few-Shot</strong></td><td>给几个示例定义标准</td><td>「好的回复像这样：…，差的像这样：…」</td></tr>
-        <tr><td><strong>Chain-of-Thought</strong></td><td>要求分步推理</td><td>「请一步一步思考」</td></tr>
-        <tr><td><strong>角色设定</strong></td><td>激活对应领域知识</td><td>「你是一个有 10 年经验的客服培训师」</td></tr>
-        <tr><td><strong>格式约束</strong></td><td>减少猜测输出形式</td><td>「用 JSON 格式回答，包含 reason 和 score 两个字段」</td></tr>
+        <tr><td><strong>知识塞不进</strong></td><td>500页知识库放不进 prompt</td><td>→ 第2章 <strong>RAG 检索增强</strong></td></tr>
+        <tr><td><strong>没有记忆</strong></td><td>每次对话重新教规则</td><td>→ 第2章 <strong>Memory 记忆机制</strong></td></tr>
+        <tr><td><strong>不能操作</strong></td><td>只能说建议，不能执行退款</td><td>→ 第3章 <strong>Workflow</strong> / 第4章 <strong>Agent</strong></td></tr>
       </tbody>
     </table>
   </div>
 
+  <!-- ====== 1.6 Andrew Ng 的数据 ====== -->
   <div class="blk">
-    <h3>⚠️ 天花板</h3>
-    <ul>
-      <li><strong>无记忆</strong>：每次对话全新开始，之前教的全忘</li>
-      <li><strong>无外部数据</strong>：不知道你公司的文档、流程、规则</li>
-      <li><strong>无行动能力</strong>：只能回答文字，不能操作任何系统</li>
-      <li><strong>上下文窗口有限</strong>：早期 GPT-3.5 仅 4K token ≈ 3000 字</li>
-    </ul>
-    <div class="hl hl-p">
-      <strong>🎯 天花板公式：</strong>Prompt 上限 = 你的表达能力 × 模型自身知识。当你发现「怎么写提示词都差点意思」的时候，就该进入第二阶段了。
-    </div>
-  </div>
-
-  <div class="blk">
-    <h3>📊 Andrew Ng 的实测数据</h3>
+    <h3>📊 Andrew Ng 的实测数据：迭代 > 换模型</h3>
     <div class="cite">
       <div class="cite-icon">📄</div>
-      <div><strong>Andrew Ng</strong>《Agentic Design Patterns Part 1》· 2024年3月20日<br><a href="https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/" target="_blank">deeplearning.ai</a></div>
+      <div><strong>Andrew Ng</strong>《Agentic Design Patterns Part 1》· 2024年3月20日<br><a href="https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/" target="_blank">deeplearning.ai</a><br>斯坦福教授、DeepLearning.AI 创始人，用 HumanEval 编码基准做了对比实验。</div>
     </div>
-    <p>Ng 用 HumanEval 编码基准做了对比：</p>
+    <p>Andrew Ng 做了一个特别有说服力的实验——用编程任务（HumanEval）对比三种方式的表现：</p>
     <table class="tb">
-      <thead><tr><th>方式</th><th>准确率</th><th>说明</th></tr></thead>
+      <thead><tr><th>方式</th><th>准确率</th><th>背后的逻辑</th></tr></thead>
       <tbody>
-        <tr><td>GPT-3.5 Zero-Shot（纯 Prompt）</td><td><strong>48.1%</strong></td><td>一次生成，不迭代</td></tr>
-        <tr><td>GPT-4 Zero-Shot（纯 Prompt）</td><td><strong>67.0%</strong></td><td>更强模型，但仍是一次生成</td></tr>
-        <tr><td>GPT-3.5 + Agent 循环</td><td><strong>95.1%</strong></td><td>弱模型 + 迭代验证，碾压强模型的一次性输出</td></tr>
+        <tr><td>GPT-3.5 Zero-Shot（纯 Prompt）</td><td><strong>48.1%</strong></td><td>写一次 prompt，AI 输出一次答案，不迭代</td></tr>
+        <tr><td>GPT-4 Zero-Shot（纯 Prompt）</td><td><strong>67.0%</strong></td><td>换了更强的模型，但仍然是一次性输出</td></tr>
+        <tr><td>GPT-3.5 + Agent 迭代循环</td><td><strong>95.1%</strong></td><td>弱模型，但加了「写代码→跑测试→看报错→改代码」的迭代循环</td></tr>
       </tbody>
     </table>
-    <div class="hl hl-p"><strong>💡 关键结论：</strong>迭代流程（Agent 循环）带来的提升，远大于换一个更强模型。这就是为什么行业一路从 Prompt 往后面演进。</div>
+
+    <p>看到那个关键数字了吗？<strong>弱模型 + 迭代流程（95.1%）碾压了强模型的一次性输出（67.0%）</strong>。差距不是一点半点，是 28 个百分点。</p>
+
+    <p>这告诉我们什么？</p>
+    <div class="hl hl-p"><strong>🎯 Andrew Ng 的结论：</strong>与其花大钱把 GPT-3.5 升级到 GPT-4，不如<strong>在流程上做文章</strong>——让 AI 能自我检查、自我纠错、反复迭代。这就是为什么行业从 Prompt 工程出发，一路往 Workflow → Agent → Harness → Loop 演进。<br><br>换个客服场景来理解：一个普通客服 + 完善的质检流程（写回复→质检打分→不合格重写→再质检）的效果，很可能比一个资深客服不做质检直接发出去要好。<strong>流程制度的力量，大于个人能力的差距。</strong></div>
+  </div>
+
+  <!-- ====== 1.7 测验 ====== -->
+  <div class="quiz">
+    <h4>🧪 小测验 1-A</h4>
+    <p style="font-size:13px;margin-bottom:10px;">你想让 AI 分析一份 100 页的客服手册，用 Prompt 工程能搞定吗？</p>
+    <div class="qo" onclick="qa(this,0,'a1a')">A. 能，把 100 页全粘贴进去就行</div>
+    <div class="qo" onclick="qa(this,0,'a1a')">B. 能，分 10 次粘贴，每次 10 页</div>
+    <div class="qo" onclick="qa(this,1,'a1a')">C. 不太行，需要上下文工程（RAG）来解决</div>
+    <div class="qa" id="a1a">✅ 正确！100 页远超早期模型的 token 限制；即便用大窗口模型全塞进去，准确率也会下降。分批粘贴则丢失跨批上下文。这正是<strong>上下文工程</strong>（RAG）要解决的问题——让 AI 动态检索所需段落，而不是全塞进去。</div>
   </div>
 
   <div class="quiz">
-    <h4>🧪 小测验 1</h4>
-    <p style="font-size:13px;margin-bottom:10px;">你想让 AI 分析一份 100 页的客服手册，用 Prompt 工程能搞定吗？</p>
-    <div class="qo" onclick="qa(this,0,'a1')">A. 能，把 100 页全粘贴进去就行</div>
-    <div class="qo" onclick="qa(this,0,'a1')">B. 能，分 10 次粘贴，每次 10 页</div>
-    <div class="qo" onclick="qa(this,1,'a1')">C. 不太行，需要上下文工程来解决</div>
-    <div class="qa" id="a1">✅ 正确！100 页远超 token 限制；分批粘贴则丢失跨批上下文。这正是<strong>上下文工程</strong>（RAG）要解决的问题——让 AI 动态检索所需段落，而不是全塞进去。</div>
+    <h4>🧪 小测验 1-B</h4>
+    <p style="font-size:13px;margin-bottom:10px;">Andrew Ng 的实验显示，GPT-3.5 + Agent 迭代循环的准确率（95.1%）超过了 GPT-4 Zero-Shot（67.0%）。这说明什么？</p>
+    <div class="qo" onclick="qa(this,0,'a1b')">A. GPT-3.5 其实比 GPT-4 更强</div>
+    <div class="qo" onclick="qa(this,1,'a1b')">B. 好的流程/迭代机制比单纯换更强的模型更有效</div>
+    <div class="qo" onclick="qa(this,0,'a1b')">C. Prompt 工程已经没用了</div>
+    <div class="qa" id="a1b">✅ 正确！这不是说 GPT-3.5 比 GPT-4 强——而是说<strong>「弱模型 + 好流程」优于「强模型 + 无流程」</strong>。Prompt 工程仍然是基础技能，但要做出优秀的 AI 应用，还需要在迭代、检验、纠错机制上下功夫。这就是后面几章要讲的内容。</div>
   </div>
 </section>
 
-<!-- ==================== CH2: CONTEXT ENGINEERING ==================== -->
+
+<!-- ==================== CH2: 上下文工程（深度展开版） ==================== -->
 <section class="ch fi" id="ch2">
   <div class="ch-hd">
     <div class="ch-n" style="background:linear-gradient(135deg,var(--c2d),var(--c2));">02</div>
     <div><h2>上下文工程 <span class="ch-tag" style="background:rgba(0,184,148,.12);color:var(--c2l);">2023—2025</span></h2></div>
   </div>
 
+  <!-- ====== 2.1 认知升级 ====== -->
   <div class="blk">
-    <h3>💡 定义</h3>
+    <h3>💡 从 Prompt 到 Context：一次认知升级</h3>
     <p><strong>上下文工程 = 在 AI 回答之前，系统地管理它能「看到」的全部信息。</strong></p>
-    <p>Prompt 工程关心的是「怎么问」，上下文工程关心的是「拿什么来答」。它不是一种技术，而是一组技术的总称：</p>
+    <p>第 1 章我们讲了 Prompt 工程——怎么写提示词。但到了实际业务中你会发现，<strong>问题往往不在于「你问得对不对」，而在于「AI 手上有没有足够的信息来回答」</strong>。</p>
+
+    <div class="ana">
+      <div class="ana-i">📝</div>
+      <div class="ana-t"><strong>类比：考试。</strong><br>Prompt 工程 = 考试时<strong>怎么审题、怎么答题</strong>（技巧层面）。<br>上下文工程 = 考试前<strong>准备什么复习资料</strong>（信息层面）。<br><br>一个学生审题技巧再好，如果考试范围的内容他根本没复习到，也答不出来。同理，prompt 写得再精巧，如果 AI「看不到」你的客服知识库、看不到订单数据、不知道历史对话——它就只能靠通用知识瞎猜。</div>
+    </div>
+
+    <p>所以，上下文工程的核心问题不是「怎么问」，而是——</p>
+    <div class="hl hl-g"><strong>🎯 核心问题：在 AI 处理每个请求时，它「看到」的信息是不是对的、够不够、有没有噪声？</strong></div>
+  </div>
+
+  <!-- ====== 2.2 权威出处 ====== -->
+  <div class="blk">
+    <h3>📎 这个词是怎么来的？</h3>
+    <div class="cite">
+      <div class="cite-icon">🐦</div>
+      <div><strong>「Context Engineering」术语来源</strong>：Tobi Lütke（Shopify CEO）<br>2025年6月19日 · X/Twitter<br>原文：「I really like the term 'context engineering' over prompt engineering. It describes the core skill better.」<br>翻译：「比起 prompt engineering，我更喜欢 context engineering 这个说法。它更准确地描述了核心技能。」<br><br>Andrej Karpathy（OpenAI 联合创始人、前 Tesla AI 总监）于 6月23日回复「+1 for context engineering」表示认可。</div>
+    </div>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic 权威定义</strong>：《Effective Context Engineering for AI Agents》<br>2025年9月29日<br><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">anthropic.com</a><br>原文：「Context engineering is about <strong>considering the holistic state available to the LLM at any given time</strong> and what potential behaviors that state might yield.」</div>
+    </div>
+
+    <p>我们来逐句拆解 Anthropic 的这段定义：</p>
+    <ul>
+      <li><strong>「holistic state」（全局状态）</strong>—— 不只是 prompt 本身，而是 AI 能看到的<em>所有</em>信息：系统指令 + 用户消息 + 检索到的文档 + 工具描述 + 历史对话 + 记忆摘要……整个信息包。</li>
+      <li><strong>「available to the LLM at any given time」（在任何给定时刻）</strong>—— 强调动态性。不同的用户提问，检索出的文档不同；不同的对话阶段，加载的记忆不同。上下文是<em>动态组装</em>的，不是写死的。</li>
+      <li><strong>「what potential behaviors that state might yield」（这个状态可能产生什么行为）</strong>—— 你给 AI 什么信息，它就做什么事。如果上下文里有退款按钮的 tool 描述，它就可能去退款；如果没有，它就只能告诉用户「请联系人工客服」。<strong>上下文决定行为。</strong></li>
+    </ul>
+  </div>
+
+  <!-- ====== 2.3 上下文工程的 4 个维度 ====== -->
+  <div class="blk">
+    <h3>🧩 上下文工程的 4 个维度</h3>
+    <p>很多人以为上下文工程 = RAG（检索增强生成）。其实 RAG 只是四分之一。上下文工程包含<strong>四个维度</strong>，每个维度解决不同问题：</p>
+
     <div class="steps">
       <div class="stp"><div class="si">🧠</div><h5>CoT 思维链</h5><p>教 AI <strong>怎么想</strong></p></div>
       <div class="stp"><div class="si">🔍</div><h5>RAG 检索增强</h5><p>给 AI <strong>看什么</strong></p></div>
       <div class="stp"><div class="si">📝</div><h5>Memory 记忆</h5><p>让 AI <strong>记住什么</strong></p></div>
       <div class="stp"><div class="si">🔧</div><h5>Tool 描述</h5><p>告诉 AI <strong>能用什么</strong></p></div>
     </div>
+
+    <p><strong>维度 ① CoT 思维链：教 AI 怎么想</strong></p>
+    <p>第 1 章已经讲过 CoT，但在上下文工程视角下，CoT 不只是一个 prompt 技巧——它是<strong>往上下文中注入推理模板</strong>。比如你在系统指令中内置一套退款判断的思维链模板，所有用户提问都会自动触发这套分析流程，而不需要每个用户每次都手动加「请一步一步分析」。</p>
+
+    <p><strong>维度 ② RAG 检索增强：给 AI 看什么</strong></p>
+    <p>这是最重要的维度，下面会详细展开。</p>
+
+    <p><strong>维度 ③ Memory 记忆：让 AI 记住什么</strong></p>
+    <p>Prompt 工程的天花板之一就是「每次对话都要重新教」。Memory 解决这个问题——把重要信息持久化存储，新对话自动加载。</p>
+    <div class="code">
+<span class="cm">## Memory 在客服场景的例子</span>
+
+<span class="kw">短期记忆（同一次对话内）：</span>
+用户先说「我想退款」，又说「订单号是 MT20241201001」
+→ AI 需要记住前面说的「退款」意图，结合订单号一起处理
+
+<span class="kw">长期记忆（跨对话持久化）：</span>
+这个用户上次投诉过骑手态度问题，我们赠送了优惠券
+→ 这次用户又来投诉，AI 能看到历史记录，知道这是「二次投诉」
+→ 自动升级到 VIP 处理通道，而不是再发一张优惠券敷衍
+    </div>
+
+    <p><strong>维度 ④ Tool 描述：告诉 AI 能用什么</strong></p>
+    <p>这个最容易被忽视。当你给 AI 配备了「查询订单」「发起退款」「发优惠券」等工具时，你需要在上下文中<strong>准确描述每个工具的用途和使用条件</strong>。描述写得好，AI 才知道什么时候该调用哪个工具。</p>
+    <div class="code">
+<span class="cm">## Tool 描述示例</span>
+
+<span class="kw">工具名称：</span>query_order
+<span class="kw">功能：</span>根据订单号查询订单详情（包括商品、金额、状态、配送信息）
+<span class="kw">参数：</span>order_id (string, 必填)
+<span class="kw">什么时候用：</span>当用户提到具体订单号，或需要核实订单信息时调用
+<span class="kw">什么时候不用：</span>用户只是一般性咨询（如「你们的退款政策是什么」），不涉及具体订单时不要调用
+
+<span class="kw">工具名称：</span>process_refund
+<span class="kw">功能：</span>对指定订单发起退款
+<span class="kw">参数：</span>order_id (string, 必填), amount (number, 必填), reason (string, 必填)
+<span class="kw">什么时候用：</span>已确认用户投诉属实，且符合退款条件时调用
+<span class="kw">什么时候不用：</span>用户还未提供订单号，或投诉尚未核实时<span class="fn">绝对不能调用</span>
+    </div>
   </div>
 
+  <!-- ====== 2.4 RAG 完整工作流 ====== -->
   <div class="blk">
-    <h3>📎 权威出处</h3>
+    <h3>🔍 RAG 完整工作流详解</h3>
     <div class="cite">
       <div class="cite-icon">📄</div>
       <div><strong>RAG 原始论文</strong>：Lewis et al.《Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks》<br>2020年5月 · Facebook AI / UCL / NYU · NeurIPS 2020<br><a href="https://arxiv.org/abs/2005.11401" target="_blank">arxiv.org/abs/2005.11401</a><br>首次提出 RAG 架构：检索外部知识 + 生成回答，解决模型知识过时和幻觉问题。</div>
     </div>
-    <div class="cite">
-      <div class="cite-icon">🐦</div>
-      <div><strong>「Context Engineering」术语</strong>：Tobi Lütke（Shopify CEO）<br>2025年6月19日 · X/Twitter<br>原文：「I really like the term 'context engineering' over prompt engineering. It describes the core skill better.」<br>Andrej Karpathy 于 6月23日回复「+1 for context engineering」表示认可。</div>
+
+    <p>RAG 不是一个简单的「搜索+回答」，它有 <strong>5 个关键步骤</strong>。我们用一个完整的客服场景走一遍：</p>
+
+    <p>假设你有一份 <strong>500 页的客服知识手册</strong>，涵盖退款政策、配送规则、商家管理、活动规则等等。</p>
+
+    <p><strong>Step 1：文档切片（Chunking）</strong></p>
+    <p>把 500 页手册切成小段落。为什么要切？因为用户问「骑手超时怎么赔」，你不需要给 AI 看全部 500 页，只需要「配送超时赔偿政策」那一段。</p>
+    <div class="code">
+<span class="cm">## 切片示例</span>
+
+<span class="kw">原始文档（第 127 页）：</span>
+「5.3 配送超时赔偿规则
+5.3.1 超时定义：实际送达时间超过预估送达时间15分钟以上视为超时。
+5.3.2 赔偿标准：
+  - 超时15-30分钟：赔偿订单金额的10%，最低3元
+  - 超时30-60分钟：赔偿订单金额的20%，最低5元
+  - 超时60分钟以上：可申请全额退款
+5.3.3 特殊说明：恶劣天气（暴雨/暴雪/台风）期间，超时阈值调整为30分钟。」
+
+<span class="fn">→ 切成一个 chunk（片段），保留章节标题作为元数据</span>
     </div>
-    <div class="cite">
-      <div class="cite-icon">📄</div>
-      <div><strong>Anthropic 专文</strong>：《Effective Context Engineering for AI Agents》<br>2025年9月29日<br><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">anthropic.com</a><br>定义：「considering the holistic state available to the LLM at any given time and what potential behaviors that state might yield.」</div>
+    <p>500 页手册大约切成 <strong>2000 个 chunk</strong>，每个 chunk 200-500 字。</p>
+
+    <p><strong>Step 2：向量化（Embedding）</strong></p>
+    <p>每个 chunk 通过 Embedding 模型转换成一个<strong>向量</strong>（一串数字）。这个向量代表了这段文字的「语义含义」。语义相近的文字，向量在空间中的距离就近。</p>
+    <div class="ana">
+      <div class="ana-i">🧭</div>
+      <div class="ana-t"><strong>类比：给每段文字标注 GPS 坐标。</strong><br>「配送超时赔偿」和「骑手迟到补偿」虽然用词不同，但语义相近，所以它们的「GPS 坐标」很近。搜索时，只要用户问题的坐标在附近，就能找到它们。这就是为什么向量检索比关键词搜索强——它理解「意思」，而不只是匹配「字面」。</div>
     </div>
+
+    <p><strong>Step 3：存入向量数据库</strong></p>
+    <p>把 2000 个 chunk 的向量存入向量数据库（如 Pinecone、Milvus、Weaviate）。这就像建了一个「语义搜索引擎」。</p>
+
+    <p><strong>Step 4：用户提问时检索 Top-K</strong></p>
+    <p>用户问「骑手超时了怎么赔付？」→ 系统把这句话也转成向量 → 在向量数据库中找到<strong>最近的 3-5 个 chunk</strong>。</p>
+    <div class="code">
+<span class="cm">## 检索结果示例</span>
+
+<span class="kw">用户提问：</span>「骑手超时了怎么赔付？」
+
+<span class="fn">检索到的 Top-3 chunk：</span>
+
+<span class="st">Chunk #1（相似度 0.94）：</span>
+「5.3 配送超时赔偿规则 ... 超时15-30分钟：赔偿订单金额的10%...」
+
+<span class="st">Chunk #2（相似度 0.87）：</span>
+「5.3.3 特殊说明：恶劣天气期间，超时阈值调整为30分钟...」
+
+<span class="st">Chunk #3（相似度 0.82）：</span>
+「5.4 配送异常处理流程 ... 用户可通过APP内「申请赔付」入口...」
+    </div>
+
+    <p><strong>Step 5：拼装 Prompt 送给 LLM</strong></p>
+    <p>把检索到的 chunk + 用户问题 + 系统指令拼在一起，组成一个完整的 prompt：</p>
+    <div class="code">
+<span class="kw">System:</span> 你是美团客服助手。请<span class="fn">仅根据以下参考资料</span>回答用户问题。
+如果参考资料中找不到答案，请说「抱歉，我需要转接人工客服为您处理」。
+回答后请标注信息来源的章节号。
+
+<span class="st">参考资料：</span>
+---
+[来源: 第5.3节] 配送超时赔偿规则...超时15-30分钟：赔偿订单金额的10%...
+[来源: 第5.3.3节] 特殊说明：恶劣天气期间，超时阈值调整为30分钟...
+[来源: 第5.4节] 配送异常处理流程...用户可通过APP内「申请赔付」入口...
+---
+
+<span class="kw">用户问题：</span>骑手超时了怎么赔付？
+    </div>
+
+    <div class="hl hl-g"><strong>一句话总结 RAG：</strong>不是把 500 页全塞给 AI，而是<strong>只给它最相关的几段</strong>。就像你不会把整个图书馆搬给朋友，而是帮他找好那几页，翻到那一段，指着说「看这里」。</div>
   </div>
 
+  <!-- ====== 2.5 RAG 的常见坑 ====== -->
   <div class="blk">
-    <h3>📖 RAG 如何工作</h3>
-    <div class="dia">
-      <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="max-width:680px;">
-        <defs><marker id="ag" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#55EFC4"/></marker>
-        <marker id="ap" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#A29BFE"/></marker></defs>
-        <rect x="10" y="80" width="115" height="48" rx="10" fill="rgba(0,184,148,.12)" stroke="#00B894" stroke-width="1.5"/>
-        <text x="67" y="100" text-anchor="middle" fill="#55EFC4" font-size="11" font-weight="600">👤 用户提问</text>
-        <text x="67" y="116" text-anchor="middle" fill="#9898B8" font-size="9">「退款流程是什么」</text>
-        <line x1="125" y1="104" x2="168" y2="104" stroke="#55EFC4" stroke-width="1.5" marker-end="url(#ag)"/>
-        <rect x="173" y="65" width="130" height="72" rx="10" fill="rgba(0,184,148,.08)" stroke="#00B894" stroke-width="1.5"/>
-        <text x="238" y="90" text-anchor="middle" fill="#55EFC4" font-size="11" font-weight="600">🔍 向量检索</text>
-        <text x="238" y="106" text-anchor="middle" fill="#9898B8" font-size="9">在知识库中搜索</text>
-        <text x="238" y="122" text-anchor="middle" fill="#9898B8" font-size="9">最相关的 3-5 段</text>
-        <line x1="303" y1="101" x2="348" y2="101" stroke="#55EFC4" stroke-width="1.5" marker-end="url(#ag)"/>
-        <rect x="353" y="55" width="130" height="90" rx="10" fill="rgba(108,92,231,.08)" stroke="#6C5CE7" stroke-width="1.5"/>
-        <text x="418" y="80" text-anchor="middle" fill="#A29BFE" font-size="11" font-weight="600">📋 拼装 Prompt</text>
-        <text x="418" y="96" text-anchor="middle" fill="#9898B8" font-size="9">原始问题</text>
-        <text x="418" y="110" text-anchor="middle" fill="#9898B8" font-size="9">+ 检索到的段落</text>
-        <text x="418" y="124" text-anchor="middle" fill="#9898B8" font-size="9">+ 系统指令</text>
-        <line x1="483" y1="100" x2="528" y2="100" stroke="#A29BFE" stroke-width="1.5" marker-end="url(#ap)"/>
-        <rect x="533" y="72" width="115" height="52" rx="10" fill="rgba(108,92,231,.12)" stroke="#6C5CE7" stroke-width="1.5"/>
-        <text x="590" y="95" text-anchor="middle" fill="#A29BFE" font-size="11" font-weight="600">🤖 大模型</text>
-        <text x="590" y="112" text-anchor="middle" fill="#9898B8" font-size="9">生成精准回答</text>
-        <rect x="193" y="160" width="90" height="40" rx="8" fill="rgba(253,203,110,.08)" stroke="#FDCB6E" stroke-width="1"/>
-        <text x="238" y="180" text-anchor="middle" fill="#FDCB6E" font-size="9" font-weight="600">📁 知识库</text>
-        <text x="238" y="192" text-anchor="middle" fill="#9898B8" font-size="8">100页→切片索引</text>
-        <line x1="238" y1="160" x2="238" y2="137" stroke="#FDCB6E" stroke-width="1" stroke-dasharray="4,3"/>
-      </svg>
-    </div>
-    <div class="hl hl-g"><strong>一句话总结 RAG：</strong>不是把 100 页全塞给 AI，而是<strong>只给它最相关的几段</strong>。就像你不会把整个图书馆搬给朋友，而是帮他找好那几页。</div>
+    <h3>💣 RAG 的三个常见坑</h3>
+    <p>RAG 不是银弹。做得不好，效果可能比纯 Prompt 还差。以下是三个最常见的坑：</p>
+
+    <p><strong>坑 ①：切片太大 → 噪声太多</strong></p>
+    <p>如果你把整个「第五章 配送管理」（20 页）作为一个 chunk，用户问「超时怎么赔」时，AI 要在 20 页里自己找答案——大量无关信息（正常配送流程、骑手调度规则）会干扰它的判断。</p>
+    <div class="hl hl-o"><strong>客服场景：</strong>用户问「少餐怎么退款」，你给 AI 的 chunk 包含了整个「退款章节」——里面有正常退款、商品质量退款、配送问题退款、恶意退款处理等十几种场景。AI 可能把「恶意退款」的处理方式混进回答里，告诉用户「您的退款需要提供视频举证」——其实少餐根本不需要举证，直接退就行。</div>
+
+    <p><strong>坑 ②：切片太小 → 丢失上下文</strong></p>
+    <p>如果每个 chunk 只有一两句话，比如只切到「超时30-60分钟：赔偿订单金额的20%」，丢掉了前面的「超时定义」和后面的「恶劣天气特殊规则」——AI 不知道什么叫超时，也不知道暴雨天标准不一样。</p>
+    <div class="hl hl-o"><strong>客服场景：</strong>用户在暴雨天投诉超时 20 分钟。AI 检索到了「超时15分钟以上赔偿」这个 chunk，但没检索到「恶劣天气阈值调整为30分钟」那个 chunk。结果 AI 告诉用户可以赔付——但按照公司政策，暴雨天 20 分钟根本不算超时。这就是切太碎导致上下文缺失。</div>
+
+    <p><strong>坑 ③：检索不准 → 答非所问</strong></p>
+    <p>向量检索是基于语义相似度的，有时候语义相似的内容并不是用户真正要问的。</p>
+    <div class="hl hl-o"><strong>客服场景：</strong>用户问「怎么<strong>取消</strong>退款申请？」（用户不想退了，想把退款撤回来）。向量检索可能返回的是「怎么<strong>申请</strong>退款」的章节——因为「取消退款」和「申请退款」在语义上很接近（都和退款相关），但用户要的是完全相反的操作。AI 如果基于错误的 chunk 回答，就会教用户「第一步打开退款页面，第二步选择退款原因…」——完全牛头不对马嘴。</div>
+
+    <table class="tb">
+      <thead><tr><th>常见坑</th><th>原因</th><th>解法方向</th></tr></thead>
+      <tbody>
+        <tr><td><strong>切片太大</strong></td><td>噪声信息干扰 AI 判断</td><td>按语义段落切片，保持 200-500 字</td></tr>
+        <tr><td><strong>切片太小</strong></td><td>丢失必要上下文</td><td>重叠切片（overlap）+ 保留章节元数据</td></tr>
+        <tr><td><strong>检索不准</strong></td><td>语义相似 ≠ 意图匹配</td><td>混合检索（向量+关键词）+ 重排序（Reranker）</td></tr>
+      </tbody>
+    </table>
   </div>
 
+  <!-- ====== 2.6 Prompt 工程 vs 上下文工程 ====== -->
   <div class="blk">
-    <h3>🆚 Prompt 工程 vs 上下文工程</h3>
+    <h3>🆚 同一个问题，两种做法的对比</h3>
+    <p>我们用一个具体场景来看 Prompt 工程和上下文工程的做法差异：</p>
+    <p><strong>场景：用户问「我买的药品已经拆封了，能退款吗？」</strong></p>
+
+    <p><strong>Prompt 工程的做法：</strong></p>
+    <div class="code">
+<span class="kw">你是美团客服。请回答：用户买的药品已经拆封了，能退款吗？</span>
+
+<span class="st">AI 回复：</span>一般来说，药品属于特殊商品，拆封后通常不支持退款，
+因为涉及到药品安全和卫生问题。建议您联系商家协商处理。
+
+<span class="cm">→ 这是 AI 基于通用知识猜的，不一定对。你们公司可能有特殊政策。</span>
+    </div>
+
+    <p><strong>上下文工程的做法：</strong></p>
+    <div class="code">
+<span class="kw">System:</span> 你是美团客服助手。仅根据以下参考资料回答。
+
+<span class="st">参考资料（RAG 检索结果）：</span>
+[来源: 第8.2.1节 药品退款政策]
+「药品类商品退款规则：
+1. 未拆封：支持7天无理由退款
+2. 已拆封但存在质量问题（如过期、变质、错发）：支持全额退款
+3. 已拆封且无质量问题：不支持退款
+4. 特殊情况：如用户能提供医生证明该药品不适合使用，可申请退款审核」
+
+<span class="kw">用户问题：</span>我买的药品已经拆封了，能退款吗？
+
+<span class="fn">AI 回复：</span>根据我们的药品退款政策（第8.2.1节），已拆封的药品分两种情况：
+1. 如果药品存在质量问题（过期、变质、或发错药了），<strong>可以全额退款</strong>
+2. 如果药品没有质量问题，<strong>不支持退款</strong>
+
+请问您的药品是出现了什么问题呢？如果存在质量问题，我可以马上帮您处理退款。
+
+<span class="cm">→ 回答准确、有依据、可溯源到具体章节号，还主动追问了一步。</span>
+    </div>
+
     <table class="tb">
       <thead><tr><th>对比维度</th><th>Prompt 工程</th><th>上下文工程</th></tr></thead>
       <tbody>
         <tr><td>关注点</td><td>怎么写提示词</td><td><strong>AI 能看到什么信息</strong></td></tr>
-        <tr><td>知识来源</td><td>模型训练数据</td><td><strong>你的文档、数据库、API</strong></td></tr>
-        <tr><td>能处理的信息量</td><td>受限于上下文窗口</td><td><strong>无上限</strong>（检索后只取片段）</td></tr>
-        <tr><td>是否可溯源</td><td>不能，可能幻觉</td><td><strong>可以</strong>，标注出处</td></tr>
-        <tr><td>实时性</td><td>截止到训练日期</td><td><strong>知识库随时更新</strong></td></tr>
+        <tr><td>知识来源</td><td>模型训练数据（可能过时或不准）</td><td><strong>你的知识库（实时、准确）</strong></td></tr>
+        <tr><td>能处理的信息量</td><td>受限于上下文窗口</td><td><strong>理论上无上限</strong>（检索后只取片段）</td></tr>
+        <tr><td>是否可溯源</td><td>不能，可能是 AI 编的</td><td><strong>可以</strong>，标注出处章节号</td></tr>
+        <tr><td>实时性</td><td>截止到模型训练日期</td><td><strong>知识库随时更新即可</strong></td></tr>
+        <tr><td>一致性</td><td>每个人写的 prompt 不同，答案不同</td><td><strong>统一知识库，回答一致</strong></td></tr>
+        <tr><td>维护成本</td><td>每次对话手动粘贴规则</td><td><strong>维护知识库即可，自动检索</strong></td></tr>
       </tbody>
     </table>
   </div>
+
+  <!-- ====== 2.7 Anthropic 原文 ====== -->
+  <div class="blk">
+    <h3>📖 Anthropic 的完整定义解读</h3>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic</strong>《Effective Context Engineering for AI Agents》· 2025年9月29日<br><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">anthropic.com</a></div>
+    </div>
+
+    <p>Anthropic 在这篇文章中给出了一段精炼的定义，我们来逐句翻译和解读：</p>
+
+    <div class="hl hl-g">
+      <strong>原文：</strong>「Context engineering is about considering the <strong>holistic state</strong> available to the LLM at any given time and what <strong>potential behaviors</strong> that state might yield. It includes things like what it knows about the world (from retrieval / RAG), how it should approach problems (from system prompts / instructions), what tools it can use (from tool definitions), and what it remembers about the current interaction (from conversation history and memory).」
+    </div>
+
+    <p>翻译拆解：</p>
+    <ul>
+      <li>「<strong>holistic state</strong>（全局状态）」—— 上下文工程看的不是某一个维度，而是 AI 能接触到的<strong>全部信息的总和</strong></li>
+      <li>「<strong>what it knows about the world</strong>（它对世界的认知）」—— 对应 <strong>RAG</strong>，从你的知识库检索来的信息</li>
+      <li>「<strong>how it should approach problems</strong>（它应该怎么处理问题）」—— 对应 <strong>系统指令和 CoT</strong>，定义推理方法</li>
+      <li>「<strong>what tools it can use</strong>（它能用什么工具）」—— 对应 <strong>Tool 描述</strong></li>
+      <li>「<strong>what it remembers</strong>（它记住了什么）」—— 对应 <strong>Memory</strong>，对话历史和长期记忆</li>
+    </ul>
+
+    <p>注意到了吗？这正好对应我们前面讲的四个维度。<strong>Anthropic 的定义就是把这四个维度统一成了一个框架。</strong></p>
+
+    <div class="hl hl-g"><strong>🎯 一句话总结：</strong>上下文工程 = <strong>动态管理 AI 在每一刻能看到的全部信息</strong>。不是写一个好的 prompt 就完事了，而是搭建一个完整的信息供给系统——检索该看的文档、加载该用的记忆、描述该调的工具、注入该走的思路——然后把这些动态组装成 AI 的「输入」。</div>
+  </div>
+
+  <!-- ====== 2.8 测验 ====== -->
+  <div class="quiz">
+    <h4>🧪 小测验 2-A</h4>
+    <p style="font-size:13px;margin-bottom:10px;">用户问客服 AI「暴雨天骑手超时 20 分钟要赔钱吗？」AI 查了知识库，检索到了「超时15分钟以上赔偿」，但没检索到「恶劣天气阈值调整为30分钟」。AI 回答说可以赔付。这属于 RAG 的哪个坑？</p>
+    <div class="qo" onclick="qa(this,0,'a2a')">A. 切片太大，噪声太多</div>
+    <div class="qo" onclick="qa(this,1,'a2a')">B. 切片太小，丢失了上下文</div>
+    <div class="qo" onclick="qa(this,0,'a2a')">C. 知识库过时了</div>
+    <div class="qa" id="a2a">✅ 正确！「恶劣天气特殊规则」和「超时赔偿标准」在原文中可能是紧挨着的两段。如果切得太碎，它们被分到不同的 chunk，检索时只命中了一个，就丢失了关键上下文。解法是用<strong>重叠切片（overlap）</strong>或者把逻辑上相关的段落保持在同一个 chunk 里。</div>
+  </div>
+
+  <div class="quiz">
+    <h4>🧪 小测验 2-B</h4>
+    <p style="font-size:13px;margin-bottom:10px;">上下文工程的四个维度中，「告诉 AI 什么时候该调用退款接口、什么时候不该」属于哪个维度？</p>
+    <div class="qo" onclick="qa(this,0,'a2b')">A. CoT 思维链</div>
+    <div class="qo" onclick="qa(this,0,'a2b')">B. RAG 检索增强</div>
+    <div class="qo" onclick="qa(this,0,'a2b')">C. Memory 记忆</div>
+    <div class="qo" onclick="qa(this,1,'a2b')">D. Tool 描述</div>
+    <div class="qa" id="a2b">✅ 正确！在 Tool 描述中明确「什么时候用」和「什么时候不用」是上下文工程的重要一环。好的 Tool 描述能防止 AI 在不该退款的时候调用退款接口（比如用户还没提供订单号，或者投诉内容尚未核实）。</div>
+  </div>
 </section>
 
-<!-- ==================== CH3: WORKFLOW ==================== -->
+
+<!-- ==================== CH3: WORKFLOW 工作流（深度展开版） ==================== -->
 <section class="ch fi" id="ch3">
   <div class="ch-hd">
     <div class="ch-n" style="background:linear-gradient(135deg,var(--c3d),var(--c3));">03</div>
     <div><h2>Workflow 工作流 <span class="ch-tag" style="background:rgba(225,112,85,.12);color:var(--c3l);">2024</span></h2></div>
   </div>
 
+  <!-- ====== 3.1 为什么需要 Workflow ====== -->
   <div class="blk">
-    <h3>💡 定义</h3>
-    <p><strong>Workflow = 通过预定义的代码路径，编排多个 LLM 调用和工具。</strong></p>
-    <p>关键词是<strong>「预定义」</strong>——执行路径是人类设计好的，AI 只在每个节点上做决策，不能自主改变流程。</p>
+    <h3>💡 为什么要从「一次调用」走向「多步编排」？</h3>
+    <p><strong>Workflow = 通过预定义的代码路径，编排多个 LLM 调用和工具操作。</strong></p>
+    <p>关键词是<strong>「预定义」</strong>——执行路径是人类设计好的。AI 只在每个节点上做具体决策，但<strong>不能自主改变流程走向</strong>。</p>
+
+    <p>先说为什么需要它。我们来看一个真实的客服场景：</p>
+
+    <div class="hl hl-o">
+      <strong>用户投诉：</strong>「我的外卖少了一个菜，而且汤还洒了一半，骑手态度还特别差，让我自己看着办。我要退款！还要投诉这个骑手！」
+    </div>
+
+    <p>这一条消息里，<strong>包含了至少 3 个问题</strong>：① 少餐 ② 汤洒了 ③ 骑手态度差。处理这个投诉，一次 LLM 调用搞不定——你需要：</p>
+
+    <div class="steps">
+      <div class="stp"><div class="si">①</div><h5>问题拆解</h5><p>识别出3个问题：少餐+洒漏+骑手态度</p></div>
+      <div class="stp"><div class="si">②</div><h5>查询订单</h5><p>调接口看订单详情、配送记录</p></div>
+      <div class="stp"><div class="si">③</div><h5>分别判责</h5><p>少餐→商家责任<br>洒漏→骑手/商家<br>态度差→骑手责任</p></div>
+      <div class="stp"><div class="si">④</div><h5>计算赔偿</h5><p>少餐退菜品金额 + 洒漏部分退款</p></div>
+      <div class="stp"><div class="si">⑤</div><h5>处理投诉</h5><p>骑手态度投诉走单独流程</p></div>
+      <div class="stp"><div class="si">⑥</div><h5>生成话术</h5><p>组合所有处理结果，生成一段完整的回复</p></div>
+    </div>
+
+    <p>而且每一步都可能走不同的分支——比如第③步，如果判定洒漏是包装问题，那是商家责任；如果是骑手颠簸导致的，那是骑手责任。不同的责任方，赔偿从不同的渠道出。</p>
+
     <div class="ana">
       <div class="ana-i">🏭</div>
-      <div class="ana-t"><strong>类比：流水线。</strong><br>工人（AI）在每个工位上干活，但工位顺序、转运规则都是工厂设计好的。工人不能自己决定跳过某个工位或增加一个新工序。</div>
+      <div class="ana-t"><strong>类比：流水线工厂。</strong><br>每个工位上有一个工人（AI），工人很能干，但他只负责自己工位上的事。工位的顺序、转运规则（这个零件接下来去哪个工位）都是工厂设计好的。工人不能自己决定「我觉得这个零件应该跳过下一个工位直接去组装」——那是工厂的事。</div>
     </div>
+
+    <p>这就是 Workflow 的价值：<strong>把一个复杂任务拆成多个步骤，每步由 AI 处理，但步骤之间的流转逻辑由人设计好</strong>。</p>
   </div>
 
+  <!-- ====== 3.2 权威出处 ====== -->
   <div class="blk">
     <h3>📎 权威出处</h3>
     <div class="cite">
       <div class="cite-icon">📄</div>
-      <div><strong>Anthropic</strong>《Building Effective Agents》· 2024年12月19日<br><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">anthropic.com</a><br>原文：「<strong>Workflows</strong> are systems where LLMs and tools are orchestrated through <strong>predefined code paths</strong>. <strong>Agents</strong>, on the other hand, are systems where LLMs <strong>dynamically direct</strong> their own processes and tool usage.」<br>这是行业首次清晰区分 Workflow ≠ Agent。</div>
+      <div><strong>Anthropic</strong>《Building Effective Agents》· 2024年12月19日<br><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">anthropic.com</a><br>原文：「<strong>Workflows</strong> are systems where LLMs and tools are orchestrated through <strong>predefined code paths</strong>. <strong>Agents</strong>, on the other hand, are systems where LLMs <strong>dynamically direct</strong> their own processes and tool usage.」<br><br>翻译：Workflow 是通过<strong>预定义代码路径</strong>编排 LLM 和工具的系统。Agent 则是 LLM <strong>自主动态控制</strong>自身流程和工具使用的系统。<br><br>这是行业首次清晰区分 Workflow ≠ Agent。这篇文章发布后被整个 AI 行业广泛引用。</div>
     </div>
   </div>
 
+  <!-- ====== 3.3 五种 Workflow 模式 ====== -->
   <div class="blk">
-    <h3>🧩 Anthropic 定义的五种 Workflow 模式</h3>
+    <h3>🧩 Anthropic 定义的五种 Workflow 模式（详解版）</h3>
+    <p>Anthropic 在文中定义了五种 Workflow 设计模式。下面每种模式都用<strong>客服场景的完整例子</strong>来说明。</p>
+
+    <p><strong>模式 ① Prompt Chaining（提示链）—— 串行流水线</strong></p>
+    <p>A 的输出是 B 的输入，B 的输出是 C 的输入。就像流水线，一步接一步。</p>
+    <div class="code">
+<span class="cm">## 客服场景：处理外语用户的投诉</span>
+
+<span class="kw">Step 1 - 语言检测 + 翻译</span>
+Input: 用户消息（可能是英文、日文、韩文）
+LLM 任务: 检测语言 → 翻译成中文
+Output: 中文版投诉内容
+
+    <span class="fn">↓ 传递给下一步</span>
+
+<span class="kw">Step 2 - 情绪分析</span>
+Input: 中文版投诉内容
+LLM 任务: 分析用户情绪（愤怒/不满/中性）+ 紧急程度
+Output: { emotion: "愤怒", urgency: "高" }
+
+    <span class="fn">↓ 传递给下一步</span>
+
+<span class="kw">Step 3 - 问题分类</span>
+Input: 中文投诉 + 情绪/紧急度
+LLM 任务: 分类（退款/配送/商品质量/骑手投诉/其他）
+Output: { category: "配送问题-超时" }
+
+    <span class="fn">↓ 传递给下一步</span>
+
+<span class="kw">Step 4 - 生成回复</span>
+Input: 分类结果 + 情绪 + 原始投诉
+LLM 任务: 按模板生成对应回复（注意匹配情绪等级调整语气）
+Output: 一段专业的客服回复（用用户的原始语言输出）
+    </div>
+    <p><strong>适用场景：</strong>每个步骤都是独立的、有明确输入输出的任务。好处是<strong>每步都可以单独验证和优化</strong>——翻译不准就调翻译那步的 prompt，不影响其他步骤。</p>
+
+    <p><strong>模式 ② Routing（路由分发）—— 一个入口，多个出口</strong></p>
+    <p>先识别输入的类型，再分发到不同的处理流程。就像医院的分诊台。</p>
+    <div class="code">
+<span class="cm">## 客服场景：统一入口，智能分流</span>
+
+<span class="kw">用户消息进入 → LLM 分类器判断类型</span>
+
+    ├── 退款问题 → <span class="st">退款处理流程</span>（查订单→判责→计算金额→执行退款）
+    ├── 配送问题 → <span class="st">物流查询流程</span>（查配送状态→联系骑手→给用户反馈）
+    ├── 商品质量 → <span class="st">质量投诉流程</span>（记录问题→联系商家→赔偿方案）
+    ├── 骑手投诉 → <span class="st">骑手管理流程</span>（记录投诉→升级主管→反馈处理结果）
+    └── 一般咨询 → <span class="st">知识库问答</span>（RAG 检索→回答）
+    </div>
+    <p><strong>适用场景：</strong>输入类型多样，每种类型有完全不同的处理逻辑。<strong>路由分发是客服场景中最常用的模式</strong>——因为客服本来就是一个「入口统一，问题多样」的场景。</p>
+
+    <p><strong>模式 ③ Parallelization（并行处理）—— 同时做多件事</strong></p>
+    <p>同一个输入，同时送给多个 LLM 处理不同维度，最后汇总。</p>
+    <div class="code">
+<span class="cm">## 客服场景：投诉责任判定（三方并行）</span>
+
+用户投诉：「外卖到了但是菜都洒了」
+
+<span class="kw">同时启动 3 个 LLM 分析：</span>
+
+<span class="st">LLM-A 分析商家责任：</span>
+  → 检查商家打包是否规范（有没有用防洒包装）
+  → 结论：打包规范，非商家责任
+
+<span class="st">LLM-B 分析骑手责任：</span>
+  → 检查配送轨迹（有无异常绕路、骑行速度是否过快）
+  → 结论：骑手骑行速度超标，存在急刹车记录，骑手责任
+
+<span class="st">LLM-C 分析平台责任：</span>
+  → 检查是否存在系统派单不合理（距离过远、接单量过多）
+  → 结论：派单正常，非平台责任
+
+<span class="kw">汇总：</span>骑手责任 → 从骑手账户扣款赔偿用户
+    </div>
+    <p><strong>适用场景：</strong>需要多角度、独立评估的决策。并行的好处不只是快——更重要的是每个分析独立进行，<strong>避免了一个维度的结论影响另一个维度的判断</strong>。</p>
+
+    <p><strong>模式 ④ Orchestrator-Workers（编排-执行）—— 一个老板带多个工人</strong></p>
+    <p>一个「主管 LLM」理解总任务后，拆成子任务分配给多个「工人 LLM」。</p>
+    <div class="code">
+<span class="cm">## 客服场景：分析一条差评并制定改进方案</span>
+
+<span class="kw">差评内容：</span>「份量太少了，这个价格就给这么点东西？而且米饭还是
+冷的。送餐速度倒是挺快的，但是包装太简陋，汤差点就洒了。」
+
+<span class="st">Orchestrator（主管LLM）分析后拆成4个子任务：</span>
+
+  → Worker-1：<span class="fn">情感分析</span>
+    「整体负面（3/10），但有一个正面点（配送速度）」
+
+  → Worker-2：<span class="fn">问题归类</span>
+    「① 份量少（商品问题）② 米饭冷（出餐问题）③ 包装简陋（包装问题）」
+
+  → Worker-3：<span class="fn">竞品对比</span>
+    「同品类同价位商家平均份量是...，该商家确实偏少」
+
+  → Worker-4：<span class="fn">改进建议</span>
+    「建议商家：① 增加份量或降价 ② 出餐后保温 ③ 升级包装」
+
+<span class="kw">Orchestrator 汇总所有 Worker 的结果 → 输出完整的差评分析报告</span>
+    </div>
+    <p><strong>适用场景：</strong>任务太大、太复杂，单次 LLM 调用处理不好；需要拆解后各个击破。注意与 Parallelization 的区别——并行是「同一个问题多角度看」，编排-执行是「大问题拆成小问题」。</p>
+
+    <p><strong>模式 ⑤ Evaluator-Optimizer（评估-优化）—— 写完改、改完查、查完再改</strong></p>
+    <p>一个 LLM 生成内容，另一个 LLM 评估质量，不合格就打回重做。</p>
+    <div class="code">
+<span class="cm">## 客服场景：高质量话术生成</span>
+
+<span class="kw">Round 1:</span>
+<span class="st">Generator（生成器LLM）：</span>
+  用户投诉骑手态度差 → 生成回复：
+  「您好，很抱歉给您带来不好的体验。我们会对骑手进行处理。」
+
+<span class="fn">Evaluator（评估器LLM）打分：</span>
+  - 同理心表达：3/5（「很抱歉」太敷衍，没有具体回应用户的感受）
+  - 解决方案：2/5（「进行处理」太模糊，用户不知道会怎么处理）
+  - 补偿方案：0/5（完全没有提到任何补偿）
+  - 总分：5/15 → <span class="kw">不合格，打回重写</span>
+  - 改进建议：① 具体描述理解用户的感受 ② 说明具体处理措施 ③ 给出补偿方案
+
+<span class="kw">Round 2:</span>
+<span class="st">Generator 根据反馈重写：</span>
+  「非常理解您的感受，骑手的态度确实让人不舒服，这完全不应该发生。
+  我已经将此骑手的行为记录在案，会由配送主管在24小时内进行约谈处理，
+  并在3个工作日内将处理结果反馈给您。为了弥补这次不好的体验，
+  我为您发放了一张10元无门槛优惠券，已自动放入您的卡券包中。
+  再次向您道歉，感谢您的反馈帮助我们改进服务！」
+
+<span class="fn">Evaluator 再次打分：</span>
+  - 同理心表达：5/5 ✅
+  - 解决方案：5/5 ✅
+  - 补偿方案：4/5 ✅
+  - 总分：14/15 → <span class="st">合格，输出</span>
+    </div>
+    <p><strong>适用场景：</strong>对输出质量要求高的场景。这个模式本质上就是一个<strong>自动化的质检流程</strong>——跟你们人工客服的「写回复→质检打分→不合格重写」是一样的逻辑，只不过质检员也是 AI。</p>
+  </div>
+
+  <!-- ====== 3.4 伪代码 ====== -->
+  <div class="blk">
+    <h3>💻 代码实现：Routing 模式的伪代码</h3>
+    <p>我们用 Python 伪代码展示一个 Routing（路由分发）的实现，让你感受一下 Workflow 在代码层面长什么样：</p>
+    <div class="code">
+<span class="kw">import</span> llm  <span class="cm"># 假设的 LLM 调用库</span>
+
+<span class="kw">def</span> <span class="fn">handle_customer_message</span>(user_message):
+    <span class="cm"># Step 1: 用 LLM 做分类（路由节点）</span>
+    category = llm.classify(
+        prompt=<span class="st">f"""将用户消息分类到以下类别之一，只输出类别名：
+        - 退款问题
+        - 配送问题
+        - 商品质量
+        - 骑手投诉
+        - 一般咨询
+        
+        用户消息：{user_message}"""</span>
+    )
+    
+    <span class="cm"># Step 2: 根据分类结果，走不同的处理流程（预定义路径）</span>
+    <span class="kw">if</span> category == <span class="st">"退款问题"</span>:
+        <span class="kw">return</span> <span class="fn">refund_workflow</span>(user_message)
+    <span class="kw">elif</span> category == <span class="st">"配送问题"</span>:
+        <span class="kw">return</span> <span class="fn">delivery_workflow</span>(user_message)
+    <span class="kw">elif</span> category == <span class="st">"商品质量"</span>:
+        <span class="kw">return</span> <span class="fn">quality_workflow</span>(user_message)
+    <span class="kw">elif</span> category == <span class="st">"骑手投诉"</span>:
+        <span class="kw">return</span> <span class="fn">rider_complaint_workflow</span>(user_message)
+    <span class="kw">else</span>:
+        <span class="kw">return</span> <span class="fn">faq_workflow</span>(user_message)  <span class="cm"># RAG 问答</span>
+
+<span class="kw">def</span> <span class="fn">refund_workflow</span>(user_message):
+    <span class="cm"># 退款子流程（也是预定义的多步骤）</span>
+    order_id = llm.extract(user_message, field=<span class="st">"order_id"</span>)
+    order_info = <span class="fn">database.query_order</span>(order_id)  <span class="cm"># 查数据库</span>
+    
+    analysis = llm.analyze(
+        prompt=<span class="st">f"""根据订单信息判断是否应该退款：
+        订单信息：{order_info}
+        用户投诉：{user_message}
+        请分析责任方和建议退款金额。"""</span>
+    )
+    
+    <span class="kw">if</span> analysis.should_refund <span class="kw">and</span> analysis.amount <= <span class="st">30</span>:
+        <span class="fn">refund_api.process</span>(order_id, analysis.amount)  <span class="cm"># 自动退款</span>
+        <span class="kw">return</span> llm.generate_reply(analysis, tone=<span class="st">"empathetic"</span>)
+    <span class="kw">else</span>:
+        <span class="kw">return</span> <span class="fn">escalate_to_human</span>(order_id, analysis)  <span class="cm"># 转人工</span>
+    </div>
+
+    <p>注意看这段代码的结构：<strong>每个 if-elif-else 分支都是人类预先定义好的</strong>。LLM 只在两个地方做决策：① 分类用户消息 ② 分析退款是否合理。但「退款问题走退款流程、配送问题走配送流程」这个路由规则，是<strong>写死在代码里</strong>的。</p>
+
+    <p>这就是 Workflow 和 Agent 的本质区别。</p>
+  </div>
+
+  <!-- ====== 3.5 Workflow ≠ Agent ====== -->
+  <div class="blk">
+    <h3>⚠️ 本章最重要的点：Workflow ≠ Agent</h3>
+    <p>这是整个课程中<strong>最容易搞混、也最重要的一个区分</strong>。很多人在讨论「AI Agent」时，实际上说的是 Workflow。让我们把区别讲清楚。</p>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic 原文</strong>（2024年12月）：<br>「When building applications with LLMs, we recommend <strong>finding the simplest solution possible</strong>, and only increasing complexity when needed. This might mean <strong>not building agentic systems at all</strong>.」<br><br>翻译：构建 LLM 应用时，我们建议<strong>找到最简单的解决方案</strong>，只在必要时才增加复杂度。这可能意味着<strong>根本不需要构建 Agent 系统</strong>。</div>
+    </div>
+
     <table class="tb">
-      <thead><tr><th>模式</th><th>工作方式</th><th>适用场景</th></tr></thead>
+      <thead><tr><th>维度</th><th>Workflow（工作流）</th><th>Agent（智能体）</th></tr></thead>
       <tbody>
-        <tr><td><strong>① Prompt Chaining</strong><br>提示链</td><td>A 的输出是 B 的输入，<strong>串行</strong>执行</td><td>先翻译 → 再摘要 → 再格式化</td></tr>
-        <tr><td><strong>② Routing</strong><br>路由分发</td><td>分类输入，<strong>分发</strong>到不同处理路径</td><td>客服：退款问题→退款流程；配送问题→物流系统</td></tr>
-        <tr><td><strong>③ Parallelization</strong><br>并行处理</td><td>同一任务<strong>同时</strong>拆分给多个 LLM</td><td>同时翻译成 3 种语言；多角度审核同一份代码</td></tr>
-        <tr><td><strong>④ Orchestrator-Workers</strong><br>编排-执行</td><td>主 LLM 拆解任务，<strong>分配</strong>给多个工人 LLM</td><td>「分析这份报告」→ 主 LLM 拆成 5 个子任务 → 分别执行</td></tr>
-        <tr><td><strong>⑤ Evaluator-Optimizer</strong><br>评估-优化</td><td>一个 LLM 生成，另一个<strong>打分反馈</strong>，循环改进</td><td>写文案 → 评估质量 → 给修改建议 → 重写 → 直到达标</td></tr>
+        <tr><td><strong>谁决定下一步做什么？</strong></td><td>人类预定义的代码逻辑</td><td><strong>AI 自己决定</strong></td></tr>
+        <tr><td><strong>路径是否可预测？</strong></td><td>✅ 是，流程图是固定的</td><td>❌ 否，每次运行可能不同</td></tr>
+        <tr><td><strong>能处理意外情况吗？</strong></td><td>❌ 只能走预设分支</td><td>✅ 可以即兴应对</td></tr>
+        <tr><td><strong>成本可控吗？</strong></td><td>✅ 可预估 token 消耗</td><td>⚠️ 可能反复试错，消耗不可控</td></tr>
+        <tr><td><strong>出错时好排查吗？</strong></td><td>✅ 哪一步出错一目了然</td><td>⚠️ 中间过程是黑盒</td></tr>
+        <tr><td><strong>客服场景例子</strong></td><td>固定流程：分类→查单→判责→退款</td><td>AI 自己决定先查单还是先问用户</td></tr>
       </tbody>
     </table>
-  </div>
 
-  <div class="blk">
-    <h3>⚠️ 为什么要单独讲 Workflow？</h3>
-    <div class="hl hl-o"><strong>最常见的误区：</strong>很多人把 Workflow 和 Agent 混为一谈。Anthropic 在这篇文章中特别强调：<br><br>「When building applications with LLMs, we recommend <strong>finding the simplest solution possible</strong>, and only increasing complexity when needed. This might mean <strong>not building agentic systems at all</strong>.」<br><br>翻译：能用 Workflow 解决的，<strong>别上 Agent</strong>。Workflow 更可控、更便宜、更可预测。</div>
-  </div>
-
-  <div class="quiz">
-    <h4>🧪 小测验 2</h4>
-    <p style="font-size:13px;margin-bottom:10px;">用户发消息给客服 AI，系统先分类问题类型（退款/配送/投诉），再转到对应处理流程。这属于哪种模式？</p>
-    <div class="qo" onclick="qa(this,0,'a2')">A. Agent（因为 AI 在做决策）</div>
-    <div class="qo" onclick="qa(this,1,'a2')">B. Workflow — Routing（路由分发）</div>
-    <div class="qo" onclick="qa(this,0,'a2')">C. Workflow — Prompt Chaining（提示链）</div>
-    <div class="qa" id="a2">✅ 正确！虽然 AI 在「分类」这一步做了决策，但整体流程路径是<strong>预定义的</strong>（退款→退款流程，配送→物流查询）。AI 不能自主决定跳出这些路径，所以是 <strong>Workflow - Routing</strong>，不是 Agent。</div>
-  </div>
-</section>
-
-<!-- ==================== CH4: AGENT ==================== -->
-<section class="ch fi" id="ch4">
-  <div class="ch-hd">
-    <div class="ch-n" style="background:linear-gradient(135deg,var(--c4d),var(--c4));">04</div>
-    <div><h2>Agent 智能体 <span class="ch-tag" style="background:rgba(9,132,227,.12);color:var(--c4l);">2023—2024</span></h2></div>
-  </div>
-
-  <div class="blk">
-    <h3>💡 定义</h3>
-    <p><strong>Agent = LLM 自主决定执行路径和工具使用，动态控制自己的工作流程。</strong></p>
-    <p>跟 Workflow 的本质区别：Workflow 的路径是人定义的，Agent 的路径是<strong> AI 自己规划的</strong>。</p>
+    <p>打个比方：</p>
     <div class="ana">
       <div class="ana-i">🏨</div>
-      <div class="ana-t"><strong>类比：管家 vs 前台。</strong><br>Workflow 是前台——你问什么，按手册查答案。Agent 是管家——你说「帮我订明天去北京的行程」，他自己去查航班、比价、订票、订酒店、安排接机。<strong>路径由他自己决定</strong>。</div>
+      <div class="ana-t"><strong>Workflow 就像酒店前台。</strong>有一本《服务手册》——客人要订房，翻到第 3 章；客人要退房，翻到第 7 章；客人投诉，翻到第 12 章。手册上怎么写，就怎么做。<br><br><strong>Agent 就像私人管家。</strong>你说「帮我安排明天的行程」，管家自己去查天气、查景点、订餐厅、叫车——他自己决定做什么、以什么顺序做、做到什么程度。</div>
     </div>
+
+    <div class="hl hl-o"><strong>Anthropic 的核心建议（也是本章的核心主旨）：</strong><br><br>「Workflows offer <strong>predictability and consistency</strong> for well-defined tasks, whereas agents are the better option when <strong>flexibility and model-driven decision-making</strong> are needed at scale.」<br><br>翻译：对于<strong>规则明确的任务</strong>，Workflow 提供更好的可预测性和一致性；只有在需要<strong>灵活性和模型驱动决策</strong>的场景，才应该考虑 Agent。<br><br><strong>一句话：能用 Workflow 解决的，别上 Agent。</strong></div>
   </div>
 
+  <!-- ====== 3.6 什么时候该升级到 Agent ====== -->
   <div class="blk">
-    <h3>📎 权威出处</h3>
-    <div class="cite">
-      <div class="cite-icon">📄</div>
-      <div><strong>Lilian Weng（OpenAI）</strong>《LLM Powered Autonomous Agents》<br>2023年6月23日<br><a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank">lilianweng.github.io</a><br>定义 Agent 三大支柱：<strong>Planning（规划）+ Memory（记忆）+ Tool Use（工具使用）</strong></div>
-    </div>
-    <div class="cite">
-      <div class="cite-icon">📄</div>
-      <div><strong>Andrew Ng</strong>《Agentic Design Patterns》系列 · 2024年3月20日<br><a href="https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/" target="_blank">deeplearning.ai</a><br>定义四种 Agentic 模式：<strong>Reflection（反思）/ Tool Use（工具使用）/ Planning（规划）/ Multi-Agent（多智能体协作）</strong></div>
-    </div>
-    <div class="cite">
-      <div class="cite-icon">🔧</div>
-      <div><strong>OpenAI Function Calling</strong> · 2023年6月13日<br><a href="https://openai.com/index/function-calling-and-other-api-updates/" target="_blank">openai.com</a><br>GPT-4/3.5 首次支持结构化函数调用，Agent 有了「动手」的能力基础。</div>
-    </div>
-    <div class="cite">
-      <div class="cite-icon">🤖</div>
-      <div><strong>AutoGPT</strong>：Toran Bruce Richards · 2023年3月30日<br>GitHub 首个全自主 GPT-4 Agent 演示项目。上线一周 Star 数破万，引爆「AI Agent」全球热潮。</div>
-    </div>
-  </div>
+    <h3>🔮 什么时候该用 Workflow？什么时候该上 Agent？</h3>
+    <p>这里给你一个实用的判断框架：</p>
 
-  <div class="blk">
-    <h3>🧠 Agent 的三大支柱（Lilian Weng 定义）</h3>
-    <div class="dia">
-      <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg" style="max-width:580px;">
-        <!-- center -->
-        <circle cx="300" cy="120" r="44" fill="rgba(9,132,227,.12)" stroke="#0984E3" stroke-width="2"/>
-        <text x="300" y="115" text-anchor="middle" fill="#74B9FF" font-size="13" font-weight="700">🤖 LLM</text>
-        <text x="300" y="132" text-anchor="middle" fill="#9898B8" font-size="9">核心控制器</text>
-        <!-- planning -->
-        <rect x="40" y="30" width="130" height="65" rx="10" fill="rgba(108,92,231,.1)" stroke="#6C5CE7" stroke-width="1.5"/>
-        <text x="105" y="55" text-anchor="middle" fill="#A29BFE" font-size="12" font-weight="600">🎯 Planning</text>
-        <text x="105" y="72" text-anchor="middle" fill="#9898B8" font-size="9">任务拆解 + 反思</text>
-        <text x="105" y="85" text-anchor="middle" fill="#9898B8" font-size="9">CoT / ReAct / 自我纠错</text>
-        <line x1="170" y1="70" x2="256" y2="105" stroke="#6C5CE7" stroke-width="1.2" stroke-dasharray="4,3"/>
-        <!-- memory -->
-        <rect x="40" y="150" width="130" height="65" rx="10" fill="rgba(0,184,148,.1)" stroke="#00B894" stroke-width="1.5"/>
-        <text x="105" y="175" text-anchor="middle" fill="#55EFC4" font-size="12" font-weight="600">💾 Memory</text>
-        <text x="105" y="192" text-anchor="middle" fill="#9898B8" font-size="9">短期: 上下文窗口</text>
-        <text x="105" y="205" text-anchor="middle" fill="#9898B8" font-size="9">长期: 向量数据库</text>
-        <line x1="170" y1="175" x2="256" y2="140" stroke="#00B894" stroke-width="1.2" stroke-dasharray="4,3"/>
-        <!-- tool use -->
-        <rect x="430" y="85" width="130" height="65" rx="10" fill="rgba(243,156,18,.1)" stroke="#F39C12" stroke-width="1.5"/>
-        <text x="495" y="110" text-anchor="middle" fill="#FDCB6E" font-size="12" font-weight="600">🔧 Tool Use</text>
-        <text x="495" y="127" text-anchor="middle" fill="#9898B8" font-size="9">搜索 / 代码执行</text>
-        <text x="495" y="140" text-anchor="middle" fill="#9898B8" font-size="9">API 调用 / 数据库</text>
-        <line x1="430" y1="117" x2="344" y2="117" stroke="#F39C12" stroke-width="1.2" stroke-dasharray="4,3"/>
-      </svg>
-    </div>
-  </div>
-
-  <div class="blk">
-    <h3>🆚 Workflow vs Agent</h3>
     <table class="tb">
-      <thead><tr><th>维度</th><th>Workflow</th><th>Agent</th></tr></thead>
+      <thead><tr><th>判断条件</th><th>适合 Workflow</th><th>需要 Agent</th></tr></thead>
       <tbody>
-        <tr><td>执行路径</td><td>人类预定义</td><td><strong>AI 自主规划</strong></td></tr>
-        <tr><td>可预测性</td><td>✅ 高（路径固定）</td><td>⚠️ 低（路径动态）</td></tr>
-        <tr><td>灵活性</td><td>❌ 低（不能处理意外）</td><td>✅ 高（可即兴应对）</td></tr>
-        <tr><td>成本</td><td>可控</td><td>⚠️ 不可控（可能反复试错）</td></tr>
-        <tr><td>适用场景</td><td>规则明确的重复任务</td><td><strong>需要判断力的开放任务</strong></td></tr>
+        <tr><td><strong>处理流程</strong></td><td>流程固定，可以画出流程图</td><td>流程不确定，需要根据情况随机应变</td></tr>
+        <tr><td><strong>输入类型</strong></td><td>可以穷举（退款/配送/投诉/咨询…）</td><td>无法穷举，千奇百怪的请求</td></tr>
+        <tr><td><strong>质量要求</strong></td><td>每次结果要高度一致</td><td>允许一定的创造性和变化</td></tr>
+        <tr><td><strong>风险等级</strong></td><td>出错代价大（涉及退款/财务）</td><td>出错可接受（如生成初稿）</td></tr>
+        <tr><td><strong>执行步骤</strong></td><td>通常 3-8 步，步骤明确</td><td>步骤数不确定，可能需要 20+ 步</td></tr>
       </tbody>
     </table>
-    <div class="hl hl-b"><strong>Anthropic 的建议：</strong>「Workflows offer predictability and consistency for well-defined tasks, whereas agents are the better option when flexibility and model-driven decision-making are needed at scale.」<br>—— 能用 Workflow 就用 Workflow，只有需要灵活性时才上 Agent。</div>
-  </div>
-</section>
 
-<!-- ==================== CH5: HARNESS ==================== -->
-<section class="ch fi" id="ch5">
-  <div class="ch-hd">
-    <div class="ch-n" style="background:linear-gradient(135deg,var(--c5d),var(--c5));">05</div>
-    <div><h2>Harness 运行外骨骼 <span class="ch-tag" style="background:rgba(243,156,18,.12);color:var(--c5l);">2025—2026</span></h2></div>
-  </div>
+    <p>在客服场景中，<strong>绝大多数任务适合 Workflow</strong>：</p>
+    <ul>
+      <li>✅ Workflow：退款审批流程、工单分类分发、常规问题自动回复、质检打分</li>
+      <li>✅ Workflow：配送超时赔偿计算、新用户引导流程</li>
+      <li>⚠️ Agent：处理从未见过的新型投诉（比如用户投诉「骑手用我的电话号码注册了借贷平台」）</li>
+      <li>⚠️ Agent：需要跨系统、多轮交互、动态调整策略的复杂问题</li>
+    </ul>
 
-  <div class="blk">
-    <h3>💡 定义</h3>
-    <p><strong>Harness = 让 Agent 能够跨越多个上下文窗口、持续数小时甚至数天完成大型任务的基础设施。</strong></p>
-    <p>Agent 的致命弱点：<strong>上下文窗口是有限的</strong>。一个复杂项目可能需要几十轮对话、上百次工具调用，早就超出单次会话的容量了。Harness 解决的就是这个问题。</p>
-    <div class="ana">
-      <div class="ana-i">🏗️</div>
-      <div class="ana-t"><strong>类比：轮班制工厂。</strong><br>想象一个软件项目，每个工程师只工作 4 小时就走人，下一个人来接班，但<strong>接班的人对之前的进度一无所知</strong>。Harness 就是那套<strong>交接班制度</strong>——进度文档、任务清单、验收标准——确保每个「班次」都能无缝接上前一班的工作。</div>
-    </div>
+    <div class="hl hl-o"><strong>🎯 实操建议：</strong>先把 80% 的常见问题用 Workflow 自动化（投入产出比最高），剩下 20% 的复杂/边缘 case 再考虑是用 Agent 还是转人工。Anthropic 的建议非常实在——<strong>不要为了「用上 Agent」而用 Agent</strong>，简单方案能解决的问题，简单方案永远是最好的方案。</div>
   </div>
 
-  <div class="blk">
-    <h3>📎 权威出处</h3>
-    <div class="cite">
-      <div class="cite-icon">📄</div>
-      <div><strong>Anthropic</strong>《Effective Harnesses for Long-running Agents》<br>2025年11月26日<br><a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank">anthropic.com</a><br>原文：「The core challenge of long-running agents is that they must work in <strong>discrete sessions</strong>, and each new session begins with <strong>no memory</strong> of what came before. Imagine a software project staffed by engineers working in shifts, where each new engineer arrives with no memory of what happened on the previous shift.」</div>
-    </div>
-    <div class="cite">
-      <div class="cite-icon">📄</div>
-      <div><strong>Anthropic</strong>《Harness Design for Long-running Application Development》<br>2026年3月24日<br><a href="https://www.anthropic.com/engineering" target="_blank">anthropic.com/engineering</a><br>续篇：聚焦 Harness 设计模式在前沿 Agentic Coding 中的应用。</div>
-    </div>
-  </div>
-
-  <div class="blk">
-    <h3>🛠️ Anthropic 的 Harness 方案：双 Agent 架构</h3>
-    <div class="dia">
-      <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" style="max-width:680px;">
-        <defs><marker id="ay" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#FDCB6E"/></marker></defs>
-        <!-- initializer -->
-        <rect x="30" y="30" width="200" height="100" rx="12" fill="rgba(243,156,18,.08)" stroke="#F39C12" stroke-width="1.5"/>
-        <text x="130" y="58" text-anchor="middle" fill="#FDCB6E" font-size="13" font-weight="700">🏁 Initializer Agent</text>
-        <text x="130" y="78" text-anchor="middle" fill="#9898B8" font-size="10">首次运行时初始化环境</text>
-        <text x="130" y="95" text-anchor="middle" fill="#9898B8" font-size="10">• 理解项目全貌</text>
-        <text x="130" y="110" text-anchor="middle" fill="#9898B8" font-size="10">• 生成 Feature List</text>
-        <text x="130" y="125" text-anchor="middle" fill="#9898B8" font-size="10">• 创建 claude-progress.txt</text>
-        <!-- arrow -->
-        <line x1="230" y1="80" x2="278" y2="80" stroke="#FDCB6E" stroke-width="1.5" marker-end="url(#ay)"/>
-        <!-- coding agent loop -->
-        <rect x="283" y="20" width="380" height="120" rx="12" fill="rgba(9,132,227,.06)" stroke="#0984E3" stroke-width="1.5"/>
-        <text x="473" y="46" text-anchor="middle" fill="#74B9FF" font-size="13" font-weight="700">🔄 Coding Agent（循环执行）</text>
-        <text x="473" y="68" text-anchor="middle" fill="#9898B8" font-size="10">每个会话 (context window)：</text>
-        <!-- mini steps -->
-        <rect x="300" y="80" width="78" height="48" rx="6" fill="rgba(108,92,231,.1)" stroke="#6C5CE7" stroke-width="1"/>
-        <text x="339" y="100" text-anchor="middle" fill="#A29BFE" font-size="9" font-weight="600">📖 读进度</text>
-        <text x="339" y="115" text-anchor="middle" fill="#9898B8" font-size="8">claude-progress</text>
-        <rect x="388" y="80" width="78" height="48" rx="6" fill="rgba(0,184,148,.1)" stroke="#00B894" stroke-width="1"/>
-        <text x="427" y="100" text-anchor="middle" fill="#55EFC4" font-size="9" font-weight="600">⚙️ 增量开发</text>
-        <text x="427" y="115" text-anchor="middle" fill="#9898B8" font-size="8">1-3 个 feature</text>
-        <rect x="476" y="80" width="78" height="48" rx="6" fill="rgba(225,112,85,.1)" stroke="#E17055" stroke-width="1"/>
-        <text x="515" y="100" text-anchor="middle" fill="#FAB1A0" font-size="9" font-weight="600">✅ 跑测试</text>
-        <text x="515" y="115" text-anchor="middle" fill="#9898B8" font-size="8">验证通过</text>
-        <rect x="564" y="80" width="85" height="48" rx="6" fill="rgba(243,156,18,.1)" stroke="#F39C12" stroke-width="1"/>
-        <text x="606" y="100" text-anchor="middle" fill="#FDCB6E" font-size="9" font-weight="600">📝 更新进度</text>
-        <text x="606" y="115" text-anchor="middle" fill="#9898B8" font-size="8">写入 progress</text>
-        <!-- loop arrow -->
-        <path d="M650 104 Q670 104 670 160 Q670 200 473 200 Q300 200 290 160 Q283 140 300 104" stroke="#0984E3" stroke-width="1.2" fill="none" stroke-dasharray="5,4" marker-end="url(#ay)"/>
-        <text x="473" y="218" text-anchor="middle" fill="#74B9FF" font-size="10">🔁 下一个 context window 接力</text>
-        <!-- progress file -->
-        <rect x="200" y="220" width="300" height="40" rx="8" fill="rgba(253,203,110,.06)" stroke="#FDCB6E" stroke-width="1"/>
-        <text x="350" y="244" text-anchor="middle" fill="#FDCB6E" font-size="10" font-weight="600">📄 claude-progress.txt + Git History = 持久记忆</text>
-      </svg>
-    </div>
-  </div>
-
-  <div class="blk">
-    <h3>⚠️ 没有 Harness 会怎样？</h3>
-    <p>Anthropic 在论文中总结了两种典型失败模式：</p>
-    <table class="tb">
-      <thead><tr><th>失败模式</th><th>表现</th><th>后果</th></tr></thead>
-      <tbody>
-        <tr><td><strong>一口吃成胖子</strong></td><td>Agent 试图在单个 context window 中完成全部工作</td><td>上下文耗尽，半成品代码，留下一堆残废 feature</td></tr>
-        <tr><td><strong>虚假完成</strong></td><td>新的 context window 启动后，Agent 看到之前的代码就认为「已经做完了」</td><td>过早宣布完工，实际上大量功能未实现</td></tr>
-      </tbody>
-    </table>
-    <div class="hl hl-y"><strong>Anthropic 的洞察：</strong>「Inspiration for these practices came from knowing what <strong>effective software engineers</strong> do every day.」—— Harness 的设计灵感来自人类优秀工程师的日常工作习惯：写进度文档、做增量提交、跑测试验证。</div>
+  <!-- ====== 3.7 测验 ====== -->
+  <div class="quiz">
+    <h4>🧪 小测验 3-A</h4>
+    <p style="font-size:13px;margin-bottom:10px;">用户发消息给客服 AI，系统先分类问题类型（退款/配送/投诉），再转到对应处理流程。这属于哪种模式？</p>
+    <div class="qo" onclick="qa(this,0,'a3a')">A. Agent（因为 AI 在做分类决策）</div>
+    <div class="qo" onclick="qa(this,1,'a3a')">B. Workflow — Routing（路由分发）</div>
+    <div class="qo" onclick="qa(this,0,'a3a')">C. Workflow — Prompt Chaining（提示链）</div>
+    <div class="qa" id="a3a">✅ 正确！虽然 AI 在「分类」这一步做了决策，但「退款问题→走退款流程，配送问题→走配送流程」这个路由规则是<strong>预定义的</strong>。AI 不能自主决定跳出这些路径去做别的事情，所以是 <strong>Workflow - Routing</strong>，不是 Agent。记住：<strong>判断是 Workflow 还是 Agent，看的是「路径是谁决定的」，不是「谁在做决策」。</strong></div>
   </div>
 
   <div class="quiz">
-    <h4>🧪 小测验 3</h4>
-    <p style="font-size:13px;margin-bottom:10px;">一个 Agent 在开发大型项目时，每次新会话都从零开始理解代码，导致重复工作。应该用 Harness 的哪个机制解决？</p>
-    <div class="qo" onclick="qa(this,0,'a3')">A. 给它更大的上下文窗口</div>
-    <div class="qo" onclick="qa(this,1,'a3')">B. claude-progress.txt 持久化进度</div>
-    <div class="qo" onclick="qa(this,0,'a3')">C. 换一个更强的模型</div>
-    <div class="qa" id="a3">✅ 正确！Anthropic 的方案是用 <strong>claude-progress.txt + Git 历史</strong>作为跨会话的持久记忆。新会话启动后先读进度文件，就知道前面做到哪了。更大窗口和更强模型都不能根本解决「跨会话失忆」问题。</div>
+    <h4>🧪 小测验 3-B</h4>
+    <p style="font-size:13px;margin-bottom:10px;">你的团队在构建客服 AI 系统，有人提议「我们直接上 Agent，让 AI 自己决定怎么处理所有问题」。根据 Anthropic 的建议，你应该怎么回应？</p>
+    <div class="qo" onclick="qa(this,0,'a3b')">A. 同意，Agent 比 Workflow 更先进，应该直接用 Agent</div>
+    <div class="qo" onclick="qa(this,0,'a3b')">B. 不同意，Agent 不适合客服场景</div>
+    <div class="qo" onclick="qa(this,1,'a3b')">C. 建议先用 Workflow 覆盖常见场景，只在需要灵活性的复杂场景才考虑 Agent</div>
+    <div class="qa" id="a3b">✅ 正确！Anthropic 明确建议「finding the simplest solution possible」—— 能用简单方案就别上复杂方案。客服 80% 的问题是流程固定的（退款、配送、常见投诉），用 Workflow 就够了，而且更可控、更便宜、更好排查问题。只有那 20% 真正需要灵活应变的复杂 case，才值得上 Agent。<strong>技术选型不是越先进越好，而是越匹配越好。</strong></div>
   </div>
 </section>
-
-<!-- ==================== CH6: LOOP ==================== -->
-<section class="ch fi" id="ch6">
-  <div class="ch-hd">
-    <div class="ch-n" style="background:linear-gradient(135deg,var(--c6d),var(--c6));">06</div>
-    <div><h2>Loop 自主循环 <span class="ch-tag" style="background:rgba(232,67,147,.12);color:var(--c6l);">2026</span></h2></div>
+<!-- ============== 第4章：Agent 智能体 ============== -->
+<section class="ch fi" id="ch4">
+  <div class="ch-hd" style="background:linear-gradient(135deg,#0984E3,#74B9FF)">
+    <span class="ch-n">第四章</span>
+    <h2>Agent 智能体 <small>(2023-2024)</small></h2>
+    <p>让 AI 自己决定下一步做什么</p>
   </div>
 
   <div class="blk">
-    <h3>💡 定义</h3>
-    <p><strong>Loop = Agent 在 Harness 的支撑下，按不同触发条件和停止条件自主循环执行任务，直到目标达成。</strong></p>
-    <p>这是前五层能力的集大成：Prompt 定义指令 → 上下文工程提供知识 → Workflow/Agent 执行任务 → Harness 保障跨会话连续性 → <strong>Loop 把这一切串成自动化闭环</strong>。</p>
+    <h3>4.1 从 Workflow 到 Agent 的质变</h3>
+    <p>上一章我们讲了 Workflow——你画好流程图，AI 按图索骥。这已经很厉害了对吧？但你用久了会发现一个让人抓狂的问题：<strong>现实世界的客诉，从来不按你画的流程图走。</strong></p>
+
     <div class="ana">
-      <div class="ana-i">🏭</div>
-      <div class="ana-t"><strong>类比：自动化工厂。</strong><br>前五层是「教一个人怎么干活」。Loop 是把整条生产线自动化——原料进去、产品出来，你只在异常告警时才介入。</div>
-    </div>
-  </div>
-
-  <div class="blk">
-    <h3>📎 权威出处</h3>
-    <div class="cite">
-      <div class="cite-icon">📄</div>
-      <div><strong>Claude 官方博客</strong>《Getting Started with Loops》<br>2026年6月30日 · Claude Code 团队<br><a href="https://claude.com/blog/getting-started-with-loops" target="_blank">claude.com/blog</a><br>原文：「On the Claude Code team, we define <strong>loops as agents repeating cycles of work until a stop condition is met</strong>. We categorize a few different types of loops based on: How they are triggered; How they are stopped; What Claude Code primitive is used.」</div>
-    </div>
-    <div class="cite">
-      <div class="cite-icon">📄</div>
-      <div><strong>Addy Osmani（Google Chrome 团队负责人）</strong>《Loop Engineering》<br>2026年6月7日<br><a href="https://addyosmani.com/blog/loop-engineering/" target="_blank">addyosmani.com</a><br>受 Boris Cherny（Anthropic Claude Code 负责人）启发提出「Loop Engineering」术语。<br>定义：「Loop engineering is <strong>replacing yourself as the person who prompts the AI</strong>. You design the system that does it instead.」</div>
-    </div>
-  </div>
-
-  <div class="blk">
-    <h3>🔄 四种 Loop 类型（Claude 官方定义）</h3>
-    <p style="font-size:13px;color:var(--txt2);margin-bottom:14px;">核心分类维度：<strong>如何触发</strong>（Triggered by）× <strong>如何停止</strong>（Stop criteria）</p>
-
-    <!-- Loop 1 -->
-    <div style="background:rgba(108,92,231,.05);border:1px solid rgba(108,92,231,.18);border-radius:12px;padding:18px;margin:14px 0;">
-      <h4 style="color:var(--c1l);font-size:15px;margin-bottom:6px;">① Turn-based Loop 回合制循环</h4>
-      <table class="tb">
-        <tbody>
-          <tr><td style="width:100px;"><strong>触发方式</strong></td><td>用户发一条 Prompt</td></tr>
-          <tr><td><strong>停止条件</strong></td><td>Claude 判断任务完成 or 需要更多信息</td></tr>
-          <tr><td><strong>适用场景</strong></td><td>短期任务：修 Bug、写文档、代码优化</td></tr>
-          <tr><td><strong>人类角色</strong></td><td>提需求 → 等结果 → 验收</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:12px;color:var(--c2l);margin-top:8px;">🔑 每条 Prompt 启动一个自主循环：理解 → 执行 → 验证 → 必要时重复</p>
-    </div>
-
-    <!-- Loop 2 -->
-    <div style="background:rgba(0,184,148,.05);border:1px solid rgba(0,184,148,.18);border-radius:12px;padding:18px;margin:14px 0;">
-      <h4 style="color:var(--c2l);font-size:15px;margin-bottom:6px;">② Goal-based Loop 目标循环 · <code style="font-size:12px;background:rgba(0,184,148,.15);padding:2px 6px;border-radius:4px;">/goal</code></h4>
-      <table class="tb">
-        <tbody>
-          <tr><td style="width:100px;"><strong>触发方式</strong></td><td>用户手动发 Prompt（实时）</td></tr>
-          <tr><td><strong>停止条件</strong></td><td>目标达成 <strong>OR</strong> 达到最大轮次上限</td></tr>
-          <tr><td><strong>关键机制</strong></td><td>小型快速模型在每轮后评估是否达标</td></tr>
-          <tr><td><strong>适用场景</strong></td><td>有量化目标的任务：测试覆盖率 ≥ 80%、Lighthouse ≥ 90 分</td></tr>
-          <tr><td><strong>人类角色</strong></td><td>只定义「成功是什么样」，不管「怎么到达」</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Loop 3 -->
-    <div style="background:rgba(243,156,18,.05);border:1px solid rgba(243,156,18,.18);border-radius:12px;padding:18px;margin:14px 0;">
-      <h4 style="color:var(--c5l);font-size:15px;margin-bottom:6px;">③ Time-based Loop 定时循环 · <code style="font-size:12px;background:rgba(243,156,18,.15);padding:2px 6px;border-radius:4px;">/loop</code> <code style="font-size:12px;background:rgba(243,156,18,.15);padding:2px 6px;border-radius:4px;">/schedule</code></h4>
-      <table class="tb">
-        <tbody>
-          <tr><td style="width:100px;"><strong>触发方式</strong></td><td>时间表 / 定时器</td></tr>
-          <tr><td><strong>停止条件</strong></td><td>时间到 or 完成指定迭代次数</td></tr>
-          <tr><td><strong>适用场景</strong></td><td>定期任务：每天总结 Slack、每小时检查 CI、每日日报</td></tr>
-          <tr><td><strong>人类角色</strong></td><td>设置一次，之后只看结果</td></tr>
-        </tbody>
-      </table>
-      <div class="code" style="margin-top:8px;">
-<span class="kw">/loop</span> <span class="st">5m</span> check my PR, address review comments, and fix failing CI
-<br><span class="cm">// 每 5 分钟检查一次 PR，处理 review 意见，修复失败的 CI</span>
+      <div class="ana-icon">🔀</div>
+      <div>
+        <strong>Workflow 的天花板</strong><br>
+        想象一下这个场景：一个用户打进来说「我点的外卖两小时了还没到，而且商家多收了我钱，我要退款！」<br><br>
+        这个客诉<strong>同时涉及三件事</strong>：配送超时 + 商家多收费 + 退款申请。<br><br>
+        你画的 Workflow 路由是什么样的？大概是：<br>
+        「退款问题 → 走退款分支」<br>
+        「配送问题 → 走配送分支」<br>
+        「商家投诉 → 走商家分支」<br><br>
+        但这个客诉该走哪个分支？<strong>三个都要走</strong>。而且还有先后依赖——你得先查订单状态，再看骑手轨迹判断配送是否超时，再看商家出餐时间判断是商家延迟还是骑手延迟，最后才能做出退款决策。<br><br>
+        Workflow 处理不了这种「需要临场判断下一步做什么」的场景。它只会沿着你预设的路走，遇到交叉路口就懵了。
       </div>
     </div>
 
-    <!-- Loop 4 -->
-    <div style="background:rgba(232,67,147,.05);border:1px solid rgba(232,67,147,.18);border-radius:12px;padding:18px;margin:14px 0;">
-      <h4 style="color:var(--c6l);font-size:15px;margin-bottom:6px;">④ Proactive Loop 主动循环 · Dynamic Workflows</h4>
-      <table class="tb">
-        <tbody>
-          <tr><td style="width:100px;"><strong>触发方式</strong></td><td>事件驱动（新 PR、新 Issue、代码提交等）</td></tr>
-          <tr><td><strong>停止条件</strong></td><td>事件处理完毕</td></tr>
-          <tr><td><strong>关键机制</strong></td><td>串联 trigger（触发器）+ goal（目标）+ orchestration（编排），全流程自动</td></tr>
-          <tr><td><strong>适用场景</strong></td><td>完全无人值守：自动 Code Review、自动修复、自动部署</td></tr>
-          <tr><td><strong>人类角色</strong></td><td>只看最终结果</td></tr>
-        </tbody>
-      </table>
+    <p>这就是 Agent 出现的原因。<strong>Agent 不是按流程图走的，它是自己想、自己决定下一步做什么。</strong></p>
+
+    <p>同样这个客诉，Agent 会这么做：</p>
+    <div class="steps">
+      <div class="stp" style="border-left:3px solid #0984E3">
+        <strong>第1步：理解问题</strong><br>
+        「用户说了三件事：配送慢、多收费、要退款。我得一件一件查。先从订单查起。」
+      </div>
+      <div class="stp" style="border-left:3px solid #0984E3">
+        <strong>第2步：查订单</strong><br>
+        调用 query_order(id=20250601001) → 发现订单金额58元，用户付了68元，确实多收了10元。下单时间12:00，骑手15:05才送达。
+      </div>
+      <div class="stp" style="border-left:3px solid #0984E3">
+        <strong>第3步：主动决定查骑手轨迹</strong><br>
+        「超时3小时05分钟，太离谱了。我查一下骑手轨迹看看是什么情况。」<br>
+        调用 query_rider_track(order_id=20250601001) → 骑手13:50才接单，14:00才到店。
+      </div>
+      <div class="stp" style="border-left:3px solid #0984E3">
+        <strong>第4步：再查商家</strong><br>
+        「骑手13:50才接单，但12:00就下单了——为什么中间隔了将近2小时？可能是商家出餐太慢导致没有骑手愿意接。」<br>
+        调用 query_merchant_status(order_id=20250601001) → 商家13:40才出餐，比承诺时间晚了1小时20分钟。
+      </div>
+      <div class="stp" style="border-left:3px solid #0984E3">
+        <strong>第5步：综合判责</strong><br>
+        「主要责任在商家（出餐延迟1小时20分），次要责任在配送调度。多收费10元是事实。应该全额退款68元，其中10元走多收费退款通道，58元走超时赔付通道。」
+      </div>
+    </div>
+
+    <p>看到区别了吗？<strong>没有人告诉 Agent 「先查骑手再查商家」</strong>，是它自己根据上一步的结果决定下一步该干嘛。这就是 Agent 和 Workflow 的根本区别——<strong>决策权从你手里转移到了 AI 手里</strong>。</p>
+  </div>
+
+  <div class="blk">
+    <h3>4.2 Agent 三大支柱：Planning、Memory、Tool Use</h3>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Lilian Weng, "LLM Powered Autonomous Agents" (2023)</strong>：Agent = LLM + Planning + Memory + Tool Use。这篇博客被认为是 Agent 概念的奠基性文章，出自 OpenAI 安全团队负责人之手。<br><a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank">lilianweng.github.io/posts/2023-06-23-agent/</a></div>
+    </div>
+
+    <p>Lilian Weng 把 Agent 拆成了三根支柱。我们一根一根讲，全部用客服的例子。</p>
+
+    <h4>支柱一：Planning（规划）</h4>
+    <p>Planning 就是 Agent 的「脑子」——拿到一个复杂问题，能拆成可执行的小步骤。</p>
+    <p>核心方法叫 <strong>ReAct（Reasoning + Acting）</strong>，意思是「先想再做，做完再想」。这个我们后面 4.4 会用完整例子讲，这里你先记住：Agent 不是一股脑把事情做完，它是<strong>想一步、做一步、看结果、再想下一步</strong>。</p>
+
+    <div class="ana">
+      <div class="ana-icon">🧠</div>
+      <div>
+        <strong>Planning 的类比</strong><br>
+        你是客服组长，新来了一个工单：「用户说饭菜撒了一半，要求退一半的钱」。你会怎么做？<br><br>
+        你会想：「先查有没有照片凭证 → 有照片的话看照片确认情况 → 确认后按部分退款规则处理 → 如果金额超过权限就升级审批」。<br><br>
+        你不会一上来就点「退款」按钮。你会<strong>先在脑子里过一遍该怎么处理</strong>，然后一步步走。Agent 的 Planning 就是这个过程。
+      </div>
+    </div>
+
+    <h4>支柱二：Memory（记忆）</h4>
+    <p>Agent 有两种记忆：</p>
+    <div class="hl hl-b">
+      <strong>短期记忆 = 上下文窗口</strong><br>
+      就是当前这次对话的内容。AI 能记住用户说了什么、你之前查了什么。但上下文窗口有容量限制（几万到十几万字），用完就忘了。<br><br>
+      <strong>长期记忆 = 向量数据库</strong><br>
+      把历史信息存在外部数据库里，需要的时候检索出来。比如：这个用户过去3个月投诉了8次，上次答应给他补偿优惠券但还没发——这些信息不在当前对话里，Agent 需要去向量数据库「回忆」。
+    </div>
+
+    <p>用客服的话说：<strong>短期记忆是你桌上这个工单的资料，长期记忆是你去系统里查这个客户的历史记录。</strong></p>
+
+    <h4>支柱三：Tool Use（工具使用）</h4>
+    <p>光会想不行，还得会动手。Agent 的「手」就是各种工具——也就是你接入的 API 和系统。</p>
+
+    <p>Tool Use 的工作原理，其实出乎意料地简单：</p>
+    <div class="code"><pre>
+// 你告诉 AI 有哪些工具可用：
+tools = [
+  {
+    name: "query_order",
+    description: "根据订单号查询订单详情，包括金额、状态、时间",
+    parameters: { order_id: "string, 订单号" }
+  },
+  {
+    name: "apply_refund",
+    description: "发起退款申请",
+    parameters: { order_id: "string", amount: "number, 退款金额", reason: "string" }
+  },
+  {
+    name: "query_user_history",
+    description: "查询用户历史工单和投诉记录",
+    parameters: { user_id: "string" }
+  }
+]
+
+// AI 看到用户问题后，会输出一个「工具调用指令」：
+AI输出 → { "tool": "query_order", "parameters": { "order_id": "20250601001" } }
+
+// 你的系统执行这个调用，把结果返回给 AI：
+系统返回 → { "status": "已完成", "amount": 58, "paid": 68, ... }
+
+// AI 看到结果后，继续思考下一步...
+    </pre></div>
+
+    <p><strong>本质上就是：AI 不直接操作你的系统，它只是告诉你「我想调用哪个工具、传什么参数」，你的系统负责执行，然后把结果告诉 AI。</strong> 这是一个「间接操作」的模式，安全性其实很好——因为你可以在中间加审批、加权限控制。</p>
+  </div>
+
+  <div class="blk">
+    <h3>4.3 Andrew Ng 的四种 Agentic 模式</h3>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Andrew Ng, "What's next for AI agentic workflows" (2024)</strong>：吴恩达在 Sequoia Capital AI Ascent 大会上提出了四种 Agentic 设计模式：Reflection（反思）、Tool Use（工具使用）、Planning（规划）、Multi-Agent（多智能体协作）。<br><a href="https://www.youtube.com/watch?v=sal78ACtGTc" target="_blank">YouTube: Andrew Ng - Agentic Workflows</a></div>
+    </div>
+
+    <table class="tb">
+      <tr><th style="background:rgba(9,132,227,.12)">模式</th><th>核心思想</th><th>客服场景例子</th></tr>
+      <tr>
+        <td><strong>Reflection<br>反思</strong></td>
+        <td>AI 先给一个答案，然后自我检查：「这个答案对吗？有没有漏洞？」反复打磨几轮。</td>
+        <td>Agent 起草了一封客诉回复邮件，然后自己审查：「这封邮件有没有承诺超出权限的赔偿？语气是否到位？有没有遗漏用户提到的问题？」修改3轮后再发出。</td>
+      </tr>
+      <tr>
+        <td><strong>Tool Use<br>工具使用</strong></td>
+        <td>AI 会调用外部工具获取信息或执行操作。</td>
+        <td>用户说「我的退款怎么还没到账」→ Agent 调用 query_refund_status(order_id) 查退款进度 → 发现卡在银行处理环节 → 告诉用户「您的退款已通过我司审核，预计1-3个工作日到达银行账户」。</td>
+      </tr>
+      <tr>
+        <td><strong>Planning<br>规划</strong></td>
+        <td>面对复杂任务，先拆解成子任务，按顺序执行。</td>
+        <td>「帮我分析上周所有3星以下差评，找出共性问题，生成改进建议报告」→ Agent 拆解：①导出上周差评数据 ②按问题类型分类 ③统计各类占比 ④分析根因 ⑤生成报告。</td>
+      </tr>
+      <tr>
+        <td><strong>Multi-Agent<br>多智能体</strong></td>
+        <td>多个 Agent 分工协作，各司其职。</td>
+        <td>「查单 Agent」负责查订单和骑手信息；「话术 Agent」负责生成回复文案；「审核 Agent」负责检查回复是否合规。三个 Agent 像一个团队一样配合完成一次客诉处理。</td>
+      </tr>
+    </table>
+
+    <div class="hl hl-p">
+      <strong>💡 一个关键洞察</strong><br>
+      这四种模式不是互斥的，而是可以组合的。一个成熟的客服 Agent 可能同时用到全部四种：用 Planning 拆任务，用 Tool Use 查数据，用 Reflection 检查回复质量，用 Multi-Agent 分工处理复杂案件。
     </div>
   </div>
 
   <div class="blk">
-    <h3>📊 四种 Loop 的递进关系</h3>
-    <p style="font-size:13px;color:var(--txt2);margin-bottom:10px;">Claude 官方的分类逻辑：你每升一层，<strong>交出去的东西</strong>就多一样。</p>
-    <table class="tb">
-      <thead><tr><th>Loop 类型</th><th>你交出了什么</th><th>你还保留什么</th></tr></thead>
-      <tbody>
-        <tr><td style="color:var(--c1l);">① 回合制</td><td>交出<strong>执行</strong></td><td>保留触发、检查、判断</td></tr>
-        <tr><td style="color:var(--c2l);">② 目标循环</td><td>交出<strong>执行 + 检查</strong></td><td>保留触发、最终判断</td></tr>
-        <tr><td style="color:var(--c5l);">③ 定时循环</td><td>交出<strong>执行 + 检查 + 触发</strong></td><td>保留异常干预</td></tr>
-        <tr><td style="color:var(--c6l);">④ 主动循环</td><td>交出<strong>一切</strong></td><td>只看结果</td></tr>
-      </tbody>
-    </table>
-    <div class="hl hl-k"><strong>⚠️ 重点不是循环越多越好。</strong>选哪种 Loop 取决于你对 AI 的信任度和场景的容错空间。一个精准的回合制循环，可能比一个失控的全自动循环好 10 倍。</div>
+    <h3>4.4 ReAct 范式完整示例：一次退款审批</h3>
+    <p>现在我们来完整走一遍 Agent 的思考过程。这是理解 Agent 最重要的环节——看看 AI 到底是怎么「想」的。</p>
+
+    <p><strong>场景：</strong>用户王先生来电，说他点了一份 68 元的套餐，等了 2 小时没送到，最后自己去便利店买了吃的。他要求全额退款。</p>
+
+    <div class="code"><pre>
+<strong>═══ 第1轮 ═══</strong>
+
+<span style="color:#0984E3">💭 Thought（想）：</span>
+用户要求全额退款，原因是配送超时未送达。我需要先核实订单状态，
+确认是否真的未送达。先查一下订单。
+
+<span style="color:#E17055">🔧 Action（做）：</span>
+调用 query_order(order_id="MT20250601068")
+
+<span style="color:#00B894">👁 Observation（看结果）：</span>
+{
+  "order_id": "MT20250601068",
+  "user": "王先生",
+  "amount": 68,
+  "status": "已完成",         // ← 注意：系统显示已完成！
+  "delivery_time": "14:35",
+  "order_time": "12:00",
+  "merchant": "张记黄焖鸡"
+}
+
+<strong>═══ 第2轮 ═══</strong>
+
+<span style="color:#0984E3">💭 Thought（想）：</span>
+有意思，系统显示订单状态是「已完成」，说明骑手标记了送达。
+但用户说没收到。这可能是骑手虚假送达。我需要查骑手轨迹
+确认他到底有没有到用户地址附近。
+
+<span style="color:#E17055">🔧 Action（做）：</span>
+调用 query_rider_track(order_id="MT20250601068")
+
+<span style="color:#00B894">👁 Observation（看结果）：</span>
+{
+  "rider": "李师傅",
+  "pickup_time": "13:45",
+  "delivery_marked_time": "14:35",
+  "final_location": "朝阳区望京SOHO T1",   // 骑手标记送达时的位置
+  "user_address": "朝阳区望京SOHO T3 20层"  // 用户地址
+}
+
+<strong>═══ 第3轮 ═══</strong>
+
+<span style="color:#0984E3">💭 Thought（想）：</span>
+骑手标记送达的位置是望京SOHO T1，但用户地址是T3。T1和T3
+是不同的楼栋！骑手很可能送错了楼或者根本没送到用户手上就
+标记了完成。这基本坐实了用户的投诉。
+
+现在我需要查一下这个用户的历史记录——如果是频繁投诉的用户，
+需要额外注意；如果是正常用户，直接走退款。
+
+<span style="color:#E17055">🔧 Action（做）：</span>
+调用 query_user_history(user_id="U_WANG_0389")
+
+<span style="color:#00B894">👁 Observation（看结果）：</span>
+{
+  "total_orders": 234,
+  "complaints": 3,         // 234单才投诉3次
+  "complaint_rate": 1.28%, // 远低于平均水平
+  "last_complaint": "2024-11-20",
+  "vip_level": "金卡会员"
+}
+
+<strong>═══ 第4轮 ═══</strong>
+
+<span style="color:#0984E3">💭 Thought（想）：</span>
+王先生是金卡会员，234单只投诉过3次，投诉率1.28%远低于平均值。
+是非常优质的客户。综合判断：
+1. 配送确实超时（12:00下单，14:35才送达，超时2.5小时）
+2. 骑手轨迹显示送错楼栋（T1 vs T3）
+3. 用户信用良好
+结论：应该全额退款68元 + 补偿5元优惠券。退款金额在我的权限
+（100元以内）范围内，可以直接处理。
+
+<span style="color:#E17055">🔧 Action（做）：</span>
+调用 apply_refund(order_id="MT20250601068", amount=68, reason="配送异常-骑手送错地址-用户未收到餐品")
+调用 send_coupon(user_id="U_WANG_0389", amount=5, reason="配送体验补偿")
+
+<span style="color:#00B894">👁 Observation（看结果）：</span>
+{ "refund_status": "成功", "refund_id": "RF20250601068" }
+{ "coupon_status": "已发放", "coupon_id": "CP88901" }
+
+<strong>═══ 第5轮（最终回复）═══</strong>
+
+<span style="color:#0984E3">💭 Thought（想）：</span>
+退款和优惠券都处理成功了。现在我需要组织一段得体的回复，
+向用户说明处理结果，同时表达歉意。
+</pre></div>
+
+    <p><strong>Agent 最终回复用户：</strong></p>
+    <div class="hl hl-g">
+      王先生您好，非常抱歉给您带来了这次不愉快的用餐体验。我已经核实了您的订单情况：<br><br>
+      经查，骑手在配送过程中出现了地址偏差，未能将餐品准确送达到您手上。我们已经为您办理了<strong>全额退款 68 元</strong>，预计 1-3 个工作日内原路退回。<br><br>
+      同时，作为补偿，我们为您发放了一张 <strong>5 元无门槛优惠券</strong>，您下次下单时可以直接使用。<br><br>
+      再次为本次体验问题向您致歉，如有其他问题随时联系我们。祝您生活愉快！
+    </div>
+
+    <p>看到了吗？<strong>整个过程里，没有人告诉 Agent 该查什么、按什么顺序查。</strong> 它自己决定先查订单，发现异常后决定查骑手轨迹，然后决定查用户历史，最终综合做出判断。每一步的 Thought 就是它的「思考过程」，完全透明可审计。</p>
+  </div>
+
+  <div class="blk">
+    <h3>4.5 Agent 的代价：不可预测、成本高、可能死循环</h3>
+
+    <p>Agent 听起来很美好，但它有几个实实在在的代价：</p>
+
+    <div class="hl hl-o">
+      <strong>⚠️ 三大代价</strong><br><br>
+      <strong>1. 不可预测</strong><br>
+      同样的客诉，Agent 今天可能先查订单再查骑手，明天可能先查用户历史再查订单。路径不固定意味着结果可能不一致。你没法向上级保证「每一单都按这个流程走」。<br><br>
+      <strong>2. 成本高</strong><br>
+      那个退款案例走了5轮思考 + 4次工具调用。每一轮都要消耗 AI token（也就是钱）。一个 Workflow 调一次 AI 就够了，Agent 可能要调 5-10 次。成本翻了好几倍。<br><br>
+      <strong>3. 可能死循环</strong><br>
+      Agent 卡住了——比如它查到信息不全，又去查另一个系统，结果那个系统也没数据，于是它又去查第三个系统……转来转去停不下来。你的 token 在疯狂燃烧，问题却没解决。
+    </div>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic, "Building effective agents" (2024)</strong>：「对于大多数应用来说，优化单个 LLM 调用配合检索和上下文示例就够了。对于更复杂的场景，Workflow 提供了可预测性和一致性。只有在开放式问题、无法预定义固定路径的场景下，才需要引入 Agent。」——简单说，<strong>能用 Workflow 就别上 Agent</strong>。<br><a href="https://www.anthropic.com/research/building-effective-agents" target="_blank">anthropic.com/research/building-effective-agents</a></div>
+    </div>
+
+    <p>Anthropic 这段话非常重要。翻译成人话就是：<strong>Agent 是最后的选择，不是第一选择。</strong> 你的 80% 客诉场景（退款金额确认、配送时间查询、发票补开）用 Workflow 就能搞定，别为了炫技上 Agent。只有那些真正需要「临场判断」的复杂案件，才值得用 Agent。</p>
+  </div>
+
+  <div class="blk">
+    <h3>4.6 AutoGPT 的启示与教训</h3>
+
+    <p>2023 年 3 月，一个叫 AutoGPT 的开源项目横空出世。它的理念很疯狂：<strong>给 AI 一个目标，让它完全自主地去完成，不需要人类介入。</strong></p>
+
+    <p>AutoGPT 在 GitHub 上以史上最快的速度涨到了 15 万 Star。所有人都在说：「AI 要取代人类了！」</p>
+
+    <p>然后呢？</p>
+
+    <div class="hl hl-k">
+      <strong>现实很骨感 🦴</strong><br><br>
+      AutoGPT 在实际使用中的表现：<br>
+      • 给它一个简单任务，它能绕地球三圈才完成（或者根本完不成）<br>
+      • 疯狂消耗 API 费用——有人报告一次任务花了几十美元<br>
+      • 经常陷入死循环：查了一个东西，忘了自己查过，又去查一遍<br>
+      • 最终输出质量还不如人直接操作<br><br>
+      <strong>教训：完全放手 ≠ 更高效。</strong>人类的监督和引导在现阶段仍然不可或缺。
+    </div>
+
+    <p>AutoGPT 的故事给我们客服领域的启示非常清楚：<strong>不要试图让 Agent 完全自主处理所有客诉。</strong> 简单的自动化，复杂的人机协作，这才是正道。Agent 是你的副驾驶，不是自动驾驶。</p>
   </div>
 
   <div class="quiz">
-    <h4>🧪 小测验 4</h4>
-    <p style="font-size:13px;margin-bottom:10px;">你希望 AI 每天早上自动生成解决率日报并推送到群里。应该用哪种 Loop？</p>
-    <div class="qo" onclick="qa(this,0,'a4')">A. 回合制——每天手动跟 AI 说「帮我看看」</div>
-    <div class="qo" onclick="qa(this,0,'a4')">B. 目标循环——设定「解决率 ≥ 85%」为目标</div>
-    <div class="qo" onclick="qa(this,1,'a4')">C. 定时循环——/schedule 每天 09:00 执行</div>
-    <div class="qo" onclick="qa(this,0,'a4')">D. 主动循环——让 AI 自己决定什么时候生成</div>
-    <div class="qa" id="a4">✅ 正确！日报是<strong>固定时间 + 固定流程</strong>的任务，定时循环最合适。目标循环适合「优化到某个值」，主动循环适合「事件驱动」。这里的触发条件是时间，不是事件。</div>
+    <h3>📝 第四章 小测验</h3>
+
+    <p><strong>Q1：以下哪个场景更适合用 Agent 而不是 Workflow？</strong></p>
+    <div class="qo" onclick="qa(this,0,'a4a')">A. 用户申请开发票，系统自动生成发票并发送邮件</div>
+    <div class="qo" onclick="qa(this,0,'a4a')">B. 用户查询订单状态，系统返回当前配送进度</div>
+    <div class="qo" onclick="qa(this,1,'a4a')">C. 用户投诉说「送错了而且洒了还态度差」，需要调查取证后综合判责</div>
+    <div class="qo" onclick="qa(this,0,'a4a')">D. 用户修改配送地址，系统更新地址并通知骑手</div>
+    <div class="qa" id="a4a">✅ 正确答案是 C。A、B、D 都是路径固定、不需要临场判断的场景，用 Workflow 足矣。C 涉及多个系统的交叉调查和综合判断，路径无法预设，适合 Agent。记住 Anthropic 的话：能用 Workflow 就别上 Agent。</div>
+
+    <p><strong>Q2：ReAct 范式中，Agent 每一轮的顺序是什么？</strong></p>
+    <div class="qo" onclick="qa(this,0,'a4b')">A. Action → Thought → Observation</div>
+    <div class="qo" onclick="qa(this,1,'a4b')">B. Thought → Action → Observation</div>
+    <div class="qo" onclick="qa(this,0,'a4b')">C. Observation → Action → Thought</div>
+    <div class="qo" onclick="qa(this,0,'a4b')">D. Thought → Observation → Action</div>
+    <div class="qa" id="a4b">✅ 正确答案是 B。ReAct 的核心节奏是「先想（Thought）→ 再做（Action）→ 看结果（Observation）」，然后基于结果开始下一轮的 Thought。先想后做，做完再看，看完再想——这是 Agent 理性决策的关键。</div>
   </div>
 </section>
 
-<!-- ==================== SUMMARY ==================== -->
+<!-- ============== 第5章：Harness 运行外骨骼 ============== -->
+<section class="ch fi" id="ch5">
+  <div class="ch-hd" style="background:linear-gradient(135deg,#F39C12,#FDCB6E)">
+    <span class="ch-n">第五章</span>
+    <h2>Harness 运行外骨骼 <small>(2025-2026)</small></h2>
+    <p>让 Agent 持续工作几小时甚至几天</p>
+  </div>
+
+  <div class="blk">
+    <h3>5.1 Agent 的致命伤：上下文窗口用完就傻了</h3>
+
+    <p>上一章我们看到 Agent 可以自主决策、灵活处理复杂问题。但当你真正把 Agent 投入大型项目时，一个致命的问题暴露了出来：<strong>它的「工作记忆」是有限的。</strong></p>
+
+    <div class="ana">
+      <div class="ana-icon">🧠</div>
+      <div>
+        <strong>想象这个真实场景</strong><br>
+        你的客服团队决定做一次大改版：更新整个客服知识库。具体要做的事：<br><br>
+        📋 修改 <strong>200 条</strong>客服规则（退款标准、赔付比例、处理时限等）<br>
+        📝 更新 <strong>50 套</strong>标准话术模板（道歉话术、补偿话术、升级话术等）<br>
+        ✅ 验证 <strong>30 个</strong>关键流程是否跑通（退款流程、投诉升级、工单转接等）<br>
+        📊 生成改版前后对比报告<br><br>
+        你让 Agent 来做这件事。Agent 兴致勃勃地开始了——改了前 20 条规则，更新了 5 套话术，状态不错。<br><br>
+        然后到了第 40 条规则的时候……<strong>Agent 的上下文窗口满了</strong>。它开始「忘记」前面改过的内容。它可能重复修改第 3 条规则，或者忘了第 15 条话术已经更新过了。<br><br>
+        更糟糕的是：你只能<strong>开一个新的会话</strong>继续。但新会话的 Agent 对之前做过的事情一无所知。它不知道哪些改完了、哪些没改、之前遵循了什么规范。
+      </div>
+    </div>
+
+    <p>这不是一个理论问题——这是每一个尝试用 AI 做大型任务的人都会遇到的<strong>实际痛点</strong>。一个 Agent 会话通常能处理 5-15 个子任务，但一个真实项目可能有 50-200 个子任务。<strong>单次会话根本装不下。</strong></p>
+  </div>
+
+  <div class="blk">
+    <h3>5.2 轮班工程师的比喻</h3>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic, "Claude Code: Best practices for agentic coding" (2025)</strong>：「Think of Claude as a new engineer joining your team... Each new session is like a new shift engineer coming on duty.」——把 AI 想象成你团队的新工程师……每次新会话就像一个新轮班工程师上岗。<br><a href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank">anthropic.com/engineering/claude-code-best-practices</a></div>
+    </div>
+
+    <p>这个比喻太精准了。我来展开讲讲「轮班工程师」会导致什么问题：</p>
+
+    <div class="steps">
+      <div class="stp" style="border-left:3px solid #F39C12">
+        <strong>问题 (a)：重复工作 🔄</strong><br>
+        上一班工程师已经更新了「退款超时规则」这条话术，但交接时没说清楚。新一班工程师一看：「退款超时规则好像不对，我来改改」——<strong>又改了一遍</strong>，甚至可能改成了不同的版本。200 条规则改完，你发现有 30 条被改了两三遍，每遍还不一样。
+      </div>
+      <div class="stp" style="border-left:3px solid #F39C12">
+        <strong>问题 (b)：遗漏已完成的任务 🕳️</strong><br>
+        上一班做了 1-40 号规则，新一班不知道，从第 1 条又开始看。看到第 20 条觉得「差不多了」就跳到第 50 条。结果 41-49 号被<strong>完美跳过</strong>了，谁都没改。
+      </div>
+      <div class="stp" style="border-left:3px solid #F39C12">
+        <strong>问题 (c)：风格不一致 🎨</strong><br>
+        第一班工程师用的语气比较正式：「尊敬的用户，我们深表歉意」。第二班工程师风格轻松：「亲，不好意思啊」。第三班又变成了：「您好，对此深感抱歉」。最终知识库里同一类问题的话术<strong>风格五花八门</strong>。
+      </div>
+      <div class="stp" style="border-left:3px solid #F39C12">
+        <strong>问题 (d)：虚假完成 ✅❌</strong><br>
+        这是最危险的。Agent 改了 30 条规则后说「知识库更新完成」。实际上还有 170 条没碰。它不是故意骗你——它真的「以为」自己做完了，因为在它的上下文里，它确实处理了所有它能看到的内容。<strong>它不知道自己不知道什么。</strong>
+      </div>
+    </div>
+
+    <p><strong>这就是为什么我们需要 Harness——一个让 Agent 能跨会话、持续、可靠地工作的「外骨骼」系统。</strong></p>
+  </div>
+
+  <div class="blk">
+    <h3>5.3 双 Agent 架构详解</h3>
+
+    <p>Harness 的核心设计思想出人意料地简单：<strong>两个 Agent + 一个进度文件</strong>。</p>
+
+    <div class="hl hl-y">
+      <strong>双 Agent 架构</strong><br><br>
+      <strong>🧭 Initializer Agent（初始化智能体）</strong><br>
+      只在项目开始时运行一次。它的工作：理解整个项目全貌 → 拆解成具体任务清单 → 创建进度追踪文件。<br><br>
+      <strong>🔨 Worker Agent（执行智能体）</strong><br>
+      反复运行，每次启动时先读进度文件 → 做 1-3 个任务 → 跑测试验证 → 更新进度文件 → 结束会话。下一次启动的 Worker 接着做。
+    </div>
+
+    <p>我们用客服知识库大改版的例子，完整走一遍：</p>
+
+    <h4>Phase 1：Initializer Agent 启动</h4>
+    <div class="code"><pre>
+<span style="color:#F39C12">📋 Initializer Agent 的工作</span>
+
+输入：「更新客服知识库，需要修改200条规则、50套话术、验证30个流程」
+
+Initializer 的思考过程：
+1. 先扫描现有知识库，理解结构
+2. 把 200 条规则按模块分类：
+   - 退款规则 (60条)
+   - 配送规则 (45条)  
+   - 商家规则 (35条)
+   - 赔付规则 (30条)
+   - 其他规则 (30条)
+3. 把 50 套话术按场景分类
+4. 把 30 个流程按优先级排序
+
+最终输出 → 创建 <strong>progress.md</strong> 文件
+    </pre></div>
+
+    <h4>progress.md 长这样：</h4>
+    <div class="code"><pre>
+# 客服知识库大改版 - 进度追踪
+
+## 项目概览
+- 总任务数: 280 (200规则 + 50话术 + 30流程)
+- 已完成: 0
+- 进行中: 0
+- 待开始: 280
+
+## 统一规范
+- 话术语气: 专业友善，使用「您」而非「你」
+- 退款时限: 统一改为「1-3个工作日」
+- 赔付上限: 订单金额的200%
+
+## 任务清单
+
+### 模块1：退款规则 (0/60)
+- [ ] R001: 普通退款-未发货场景
+- [ ] R002: 普通退款-已发货未送达
+- [ ] R003: 普通退款-已送达质量问题
+- [ ] R004: 部分退款-餐品缺失
+  ... (共60条)
+
+### 模块2：配送规则 (0/45)
+- [ ] D001: 配送超时30分钟以内
+- [ ] D002: 配送超时30-60分钟
+  ... (共45条)
+
+### 模块3：标准话术 (0/50)
+- [ ] T001: 道歉话术-配送超时
+- [ ] T002: 道歉话术-餐品质量
+  ... (共50条)
+
+### 模块4：流程验证 (0/30)
+- [ ] F001: 退款审批流程
+- [ ] F002: 投诉升级流程
+  ... (共30条)
+
+## 变更日志
+（新会话在此追加记录）
+    </pre></div>
+
+    <h4>Phase 2：Worker Agent 第 1 轮</h4>
+    <div class="code"><pre>
+<span style="color:#F39C12">🔨 Worker Agent 会话 #1</span>
+
+1️⃣ 读取 progress.md → 「好的，0/280 完成。从模块1退款规则开始。」
+
+2️⃣ 执行任务：
+   - 修改 R001: 普通退款-未发货场景 ✅
+   - 修改 R002: 普通退款-已发货未送达 ✅
+   - 修改 R003: 普通退款-已送达质量问题 ✅
+
+3️⃣ 验证：检查这3条规则的格式、金额逻辑是否正确
+
+4️⃣ 更新 progress.md：
+   - [x] R001: 普通退款-未发货场景 ✅ (会话#1, 2025-06-01)
+   - [x] R002: 普通退款-已发货未送达 ✅ (会话#1, 2025-06-01)
+   - [x] R003: 普通退款-已送达质量问题 ✅ (会话#1, 2025-06-01)
+   - 已完成: 0 → 3
+   
+5️⃣ 变更日志追加：
+   「会话#1: 完成退款规则R001-R003，遵循统一规范，语气使用'您'」
+
+6️⃣ 会话结束
+    </pre></div>
+
+    <h4>Phase 3：Worker Agent 第 2 轮</h4>
+    <div class="code"><pre>
+<span style="color:#F39C12">🔨 Worker Agent 会话 #2</span>
+
+1️⃣ 读取 progress.md → 
+   「3/280 完成。R001-R003 已做完，接下来做 R004-R006。
+    统一规范：语气用'您'，退款时限1-3个工作日。了解了。」
+
+2️⃣ 执行 R004、R005、R006 ...
+
+3️⃣ 更新进度 ...
+
+... 如此循环，直到 280/280 完成 ...
+    </pre></div>
+
+    <p>看到了吗？每个 Worker 都是一个「新轮班工程师」，但它上岗第一件事就是<strong>读交接记录（progress.md）</strong>。它知道谁做了什么、做到了哪里、遵循什么规范。这就解决了前面说的四个问题：不会重复做、不会遗漏、风格一致、不会虚假完成。</p>
+  </div>
+
+  <div class="blk">
+    <h3>5.4 progress.md 的设计哲学</h3>
+
+    <p>你可能会问：为什么用一个纯文本文件，而不是用数据库？为什么让 Agent 自己维护进度，而不是由外部系统管理？</p>
+
+    <div class="hl hl-b">
+      <strong>三个设计原因：</strong><br><br>
+      <strong>1. AI 天生擅长读文本</strong><br>
+      大语言模型的「母语」就是文本。让它读一个 markdown 文件比让它查数据库容易100倍。它能理解上下文、能根据变更日志推断意图。数据库只能存结构化数据，但 progress.md 里可以写「注意：R015 和 R016 有逻辑关联，改了一个要检查另一个」这种灵活的批注。<br><br>
+      <strong>2. Agent 自己维护 = 自己承诺</strong><br>
+      这是一个微妙但重要的心理机制：当 Agent 自己写下「R003 已完成」的时候，它在下一次会话读到这条记录时会「认可」这个状态。如果是外部系统标记的，Agent 可能不信任、不理解。让它自己记录、自己消费自己的记录，形成闭环。<br><br>
+      <strong>3. 可读性和可审计性</strong><br>
+      人类可以随时打开 progress.md 看进度，不需要任何特殊工具。你作为客服运营负责人，可以直接打开这个文件，一眼看到「退款规则 45/60 完成，配送规则还没开始」。有问题可以直接在文件里批注，Agent 下次会话就能读到你的反馈。
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>5.5 两种失败模式</h3>
+
+    <p>Harness 解决了很多问题，但仍有两种常见的失败模式需要警惕：</p>
+
+    <div class="hl hl-o">
+      <strong>失败模式 (a)：一口吃成胖子 🍔</strong><br><br>
+      <em>场景</em>：你让 Initializer 生成任务清单，它把 200 条规则直接列成一个大 list，没有分模块、没有优先级。然后 Worker Agent 一看：「哇，200 条！我来试试一次全改完！」<br><br>
+      <em>结果</em>：Worker 上下文窗口爆了，改到第 80 条时开始出错——格式混乱、话术前后矛盾、甚至把已经改好的又改回去了。<br><br>
+      <em>解决</em>：Initializer 必须把任务拆得足够细，每个 Worker 会话只做 1-3 个任务。<strong>宁可跑 100 次小会话，也不要跑 1 次大会话。</strong>
+    </div>
+
+    <div class="hl hl-o">
+      <strong>失败模式 (b)：虚假完成 ✅❌</strong><br><br>
+      <em>场景</em>：Worker Agent 修改了 R010 这条规则的措辞，但没有实际测试新规则在系统中能不能正常触发。它在 progress.md 里标记「✅ R010 完成」。<br><br>
+      <em>结果</em>：后来有个客诉触发了 R010，发现新规则的条件写错了（比如把「超时30分钟」写成了「超时30秒」），导致所有订单都被判定为超时。<br><br>
+      <em>解决</em>：每个 Worker 在标记「完成」之前，必须<strong>跑测试</strong>。这个测试可以是自动化的（检查规则语法）也可以是手动的（标记为「待人工验证」而非「已完成」）。
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>5.6 有 Harness vs 没有 Harness 的对比</h3>
+
+    <table class="tb">
+      <tr><th style="background:rgba(243,156,18,.12)">维度</th><th>没有 Harness</th><th>有 Harness</th></tr>
+      <tr>
+        <td><strong>任务执行</strong></td>
+        <td>一个会话硬撑到底，中间上下文溢出后质量暴跌</td>
+        <td>分批次执行，每个会话清爽专注</td>
+      </tr>
+      <tr>
+        <td><strong>进度可见性</strong></td>
+        <td>你不知道 AI 做到哪了，只能等它说「完成了」</td>
+        <td>随时打开 progress.md 看实时进度</td>
+      </tr>
+      <tr>
+        <td><strong>跨会话连续性</strong></td>
+        <td>每个新会话从零开始，靠你手动复制粘贴之前的进度</td>
+        <td>自动读取进度，无缝衔接</td>
+      </tr>
+      <tr>
+        <td><strong>风格一致性</strong></td>
+        <td>不同会话的输出风格各异</td>
+        <td>统一规范写在 progress.md 里，每个会话都遵循</td>
+      </tr>
+      <tr>
+        <td><strong>出错恢复</strong></td>
+        <td>中间断了就要从头来</td>
+        <td>从上次进度继续，不受影响</td>
+      </tr>
+      <tr>
+        <td><strong>工作量估计</strong></td>
+        <td>说不清要多久、做了多少</td>
+        <td>「完成 45/280，预计还需 78 个会话」，一目了然</td>
+      </tr>
+    </table>
+
+    <div class="ana">
+      <div class="ana-icon">🦾</div>
+      <div>
+        <strong>为什么叫「外骨骼」？</strong><br>
+        外骨骼（Exoskeleton）是穿在身体外面的机械框架，让人类能举起远超自身力量的重物。Harness 就是 Agent 的外骨骼——Agent 自身的能力没变（还是同一个大模型），但有了进度追踪、任务拆解、跨会话接力这些外部机制，它能完成远超单次会话容量的大型项目。<br><br>
+        <strong>Agent 是大脑，Harness 是外骨骼。大脑变聪明需要等模型升级，但外骨骼今天就能搭建。</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz">
+    <h3>📝 第五章 小测验</h3>
+
+    <p><strong>Q1：Harness 架构中的 progress.md 文件主要解决什么问题？</strong></p>
+    <div class="qo" onclick="qa(this,0,'a5a')">A. 让 AI 的回复更快</div>
+    <div class="qo" onclick="qa(this,1,'a5a')">B. 让不同会话的 Agent 能延续上一次的工作进度和规范</div>
+    <div class="qo" onclick="qa(this,0,'a5a')">C. 减少 AI 的 token 消耗</div>
+    <div class="qo" onclick="qa(this,0,'a5a')">D. 提高 AI 的推理能力</div>
+    <div class="qa" id="a5a">✅ 正确答案是 B。progress.md 的核心作用是「跨会话交接」——让新会话的 Agent 知道前一个会话做了什么、做到哪里、遵循什么规范。它解决的是「轮班工程师」的交接问题，而不是性能问题。</div>
+
+    <p><strong>Q2：「虚假完成」是指什么？</strong></p>
+    <div class="qo" onclick="qa(this,0,'a5b')">A. Agent 故意欺骗用户说任务完成了</div>
+    <div class="qo" onclick="qa(this,0,'a5b')">B. Agent 做完了但质量很差</div>
+    <div class="qo" onclick="qa(this,1,'a5b')">C. Agent 只完成了部分任务但报告说全部完成了，因为它不知道还有没做的</div>
+    <div class="qo" onclick="qa(this,0,'a5b')">D. 外部系统错误地标记了完成状态</div>
+    <div class="qa" id="a5b">✅ 正确答案是 C。虚假完成不是 Agent 在「说谎」——它是真的认为自己做完了。因为上下文窗口的限制，它可能只「看到」了 30 条规则就认为是全部，不知道还有 170 条在窗口之外。这就是 Harness 通过 progress.md 记录任务全景来避免的问题。</div>
+  </div>
+</section>
+
+<!-- ============== 第6章：Loop 自主循环 ============== -->
+<section class="ch fi" id="ch6">
+  <div class="ch-hd" style="background:linear-gradient(135deg,#E84393,#FD79A8)">
+    <span class="ch-n">第六章</span>
+    <h2>Loop 自主循环 <small>(2026)</small></h2>
+    <p>AI 自己决定什么时候开始、什么时候停下</p>
+  </div>
+
+  <div class="blk">
+    <h3>6.1 从 Harness 到 Loop：最后一步</h3>
+
+    <p>回顾一下我们走到哪了：</p>
+    <ul>
+      <li><strong>Agent</strong> 解决了「怎么自主决策」——AI 自己想下一步做什么</li>
+      <li><strong>Harness</strong> 解决了「怎么持续工作」——跨会话不丢进度</li>
+    </ul>
+
+    <p>但你有没有注意到一件事？<strong>在前面所有阶段，都是人类在按「开始」按钮。</strong></p>
+
+    <div class="ana">
+      <div class="ana-icon">🔘</div>
+      <div>
+        <strong>谁在按「开始」？</strong><br>
+        • Prompt 阶段：你打开 ChatGPT，输入问题 → <strong>你按了开始</strong><br>
+        • Workflow 阶段：客诉进来，触发你配置好的流程 → <strong>你设置了触发条件</strong><br>
+        • Agent 阶段：你启动 Agent，说「帮我处理这个客诉」→ <strong>你按了开始</strong><br>
+        • Harness 阶段：你启动 Initializer，然后反复启动 Worker → <strong>你在反复按开始</strong><br><br>
+        每一次，都需要一个人类来「踢第一脚」。
+      </div>
+    </div>
+
+    <p>Loop 要解决的就是这最后一步：<strong>让 AI 自己决定什么时候开始工作、什么时候停下来。</strong></p>
+
+    <p>这是从「人驱动 AI」到「AI 自驱动」的质变。听起来很吓人？别慌，我们一步步来看，Loop 其实有四种类型，从温和到激进，你可以选择你舒适的那一档。</p>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Addy Osmani, "The 70% problem: Hard satisficing in AI-assisted coding" (2025)</strong>：「Loops replace yourself as the person who prompts the AI.」——Loop 就是用 AI 取代那个「去提示 AI 的人」。<br><a href="https://addyo.substack.com/p/the-70-problem-hard-truths-about" target="_blank">addyo.substack.com - The 70% Problem</a></div>
+    </div>
+
+    <p>Addy Osmani 这句话点破了 Loop 的本质：之前所有阶段，你都是那个「prompts the AI」的人——你来发起、你来提问、你来驱动。Loop 要做的，就是<strong>把「发起者」这个角色也交给 AI</strong>。你不再是操作员，你变成了监督者，甚至——如果你愿意的话——你可以完全退出，让系统自己运转。</p>
+  </div>
+
+  <div class="blk">
+    <h3>6.2 四种 Loop 类型详解</h3>
+
+    <h4>🟢 Type 1: Attended Loop（有人值守循环）</h4>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Claude 官方定义</strong>：Agent 在每轮结束后暂停，等待人类确认后再继续。人始终在场，每一步都经过人的审批。<br><a href="https://docs.anthropic.com/en/docs/build-with-claude/agentic-loop" target="_blank">Anthropic Docs - Agentic Loops</a></div>
+    </div>
+
+    <div class="hl hl-g">
+      <strong>触发条件：</strong>人类手动启动 + 每轮结束后等待人类确认<br>
+      <strong>停止条件：</strong>人类说「停」或者 Agent 报告任务完成<br>
+      <strong>你交出的控制权：</strong>仅执行权（AI 执行，但每一步你都审批）
+    </div>
+
+    <p><strong>客服场景完整示例：</strong></p>
+    <div class="code"><pre>
+<span style="color:#E84393">场景：处理一个高价值VIP客户的复杂投诉</span>
+
+客服主管启动 Agent，输入：
+「用户张总（年消费50万+）投诉最近三笔订单都有问题，
+  要求补偿方案，请逐步分析处理」
+
+<strong>Agent 第1轮：</strong>
+「我先查询张总最近三笔订单的详情...
+  [查询结果展示]
+  订单A: 配送超时40分钟
+  订单B: 餐品与图片不符  
+  订单C: 骑手态度问题
+  
+  👉 建议下一步：逐笔计算应赔付金额。是否继续？」
+
+主管审核：「继续，但订单B需要额外调取商家餐品照片对比」
+
+<strong>Agent 第2轮：</strong>
+「已调取商家餐品照片对比...确实与菜单图片有显著差异。
+  赔付建议：
+  - 订单A: 退款30元（超时赔付）
+  - 订单B: 全额退款88元（货不对板）
+  - 订单C: 赔偿20元优惠券（服务态度）
+  总计: 138元退款 + 20元优惠券
+  
+  👉 考虑到张总是年消费50万+的VIP，建议额外赠送
+    200元储值卡。是否同意？」
+
+主管审核：「同意退款方案，储值卡改为100元，同时安排
+         客服经理电话回访。继续执行。」
+
+<strong>Agent 第3轮：</strong>
+执行退款 → 发放优惠券 → 发放储值卡 → 创建回访工单 → 完成
+    </pre></div>
+
+    <p><strong>什么时候用：</strong>高风险决策（大额退款、VIP客户、可能引发舆情的投诉）。每一步都要人类把关。</p>
+    <p><strong>什么时候不用：</strong>日常标准工单处理。每单都要人确认就失去了自动化的意义。</p>
+
+    <h4>🔵 Type 2: Delegated Loop（委托循环）</h4>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Claude 官方定义</strong>：人类发起任务后，Agent 自主执行到完成，过程中不需要人类介入。完成后通知人类审查结果。<br><a href="https://docs.anthropic.com/en/docs/build-with-claude/agentic-loop" target="_blank">Anthropic Docs - Agentic Loops</a></div>
+    </div>
+
+    <div class="hl hl-b">
+      <strong>触发条件：</strong>人类手动启动<br>
+      <strong>停止条件：</strong>Agent 自行判断任务完成，或达到预设上限（如最大轮次、最大时长）<br>
+      <strong>你交出的控制权：</strong>执行权 + 过程检查权（你只看最终结果）
+    </div>
+
+    <p><strong>客服场景完整示例：</strong></p>
+    <div class="code"><pre>
+<span style="color:#E84393">场景：每日客诉分析报告生成</span>
+
+客服运营经理每天早上9:00启动 Agent：
+「分析昨天全部客诉数据，生成日报」
+
+Agent 自主执行（无需人类介入）：
+  1. 调用 API 拉取昨日全部 3,247 条客诉工单
+  2. 按问题类型分类统计
+  3. 识别异常模式（如某商圈投诉量突增200%）
+  4. 分析TOP10高频问题的根因
+  5. 对比上周同期数据，标注趋势变化
+  6. 生成分析报告 + 改进建议
+  7. 自动发送报告到经理邮箱和团队群
+
+→ 经理收到报告后审阅，不满意可以追问调整
+
+全程耗时约15分钟，替代了分析师2小时的工作
+    </pre></div>
+
+    <p><strong>什么时候用：</strong>标准化的分析和报告任务，错了也容易发现和修正的场景。</p>
+    <p><strong>什么时候不用：</strong>涉及资金操作、不可逆操作的场景。</p>
+
+    <h4>🟡 Type 3: Autonomous Loop（自主循环）</h4>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Claude 官方定义</strong>：Agent 被预设了触发条件，条件满足时自动启动并执行任务。人类不需要手动启动。<br><a href="https://docs.anthropic.com/en/docs/build-with-claude/agentic-loop" target="_blank">Anthropic Docs - Agentic Loops</a></div>
+    </div>
+
+    <div class="hl hl-y">
+      <strong>触发条件：</strong>事件驱动（系统检测到满足预设条件时自动启动）<br>
+      <strong>停止条件：</strong>任务完成或超出预设权限范围（自动升级给人类）<br>
+      <strong>你交出的控制权：</strong>执行权 + 过程检查权 + 触发权（AI自己决定何时启动）
+    </div>
+
+    <p><strong>客服场景完整示例：</strong></p>
+    <div class="code"><pre>
+<span style="color:#E84393">场景：配送异常实时监控和自动处理</span>
+
+预设触发条件：
+  IF 订单配送时间 > 承诺时间 + 45分钟
+  AND 用户尚未主动联系客服
+  THEN 启动 Agent
+
+<strong>凌晨2:17，系统检测到：</strong>
+订单 MT20250702003 配送已超时48分钟，用户未联系
+
+Agent 自动启动：
+  1. 查询订单状态 → 骑手在23分钟前位置就不再更新了
+  2. 查询骑手状态 → 骑手状态异常（可能手机没电/出了状况）
+  3. 判断处理方案：
+     - 自动为用户发送通知：「您的订单配送遇到异常，我们正在
+       为您重新调度，预计额外等待20分钟，为您自动补偿5元优惠券」
+     - 向配送调度系统请求重新分配骑手
+     - 为原骑手创建异常工单
+  4. 记录处理日志
+  5. 任务完成，Agent 关闭
+
+→ 整个过程没有任何人类参与
+→ 用户甚至还没来得及投诉，问题就已经在处理了
+    </pre></div>
+
+    <p><strong>什么时候用：</strong>规则明确、处理标准化、需要实时响应的场景（尤其是非工作时间）。</p>
+    <p><strong>什么时候不用：</strong>需要主观判断的场景，比如用户情绪安抚、舆情危机处理。</p>
+
+    <h4>🔴 Type 4: Fully Autonomous Loop（完全自主循环）</h4>
+
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Claude 官方定义</strong>：Agent 不仅自主触发和执行，还能自己发现新任务、设定目标、优化流程。人类只设定高层目标和安全边界。<br><a href="https://docs.anthropic.com/en/docs/build-with-claude/agentic-loop" target="_blank">Anthropic Docs - Agentic Loops</a></div>
+    </div>
+
+    <div class="hl hl-k">
+      <strong>触发条件：</strong>Agent 自己发现机会或问题<br>
+      <strong>停止条件：</strong>只受人类设定的安全边界约束<br>
+      <strong>你交出的控制权：</strong>几乎一切（你只保留「拉电闸」的权力）
+    </div>
+
+    <p><strong>客服场景完整示例（前沿探索，谨慎对待）：</strong></p>
+    <div class="code"><pre>
+<span style="color:#E84393">场景：客服体系自优化系统</span>
+
+Agent 被赋予高层目标：
+「持续优化客服体验指标：用户满意度 > 95%，首次解决率 > 85%，
+  平均处理时长 < 3分钟」
+
+Agent 的自主行为：
+
+<strong>周一 10:00</strong> — Agent 自主分析上周数据，发现「配送超时」
+类投诉的满意度只有78%，低于目标。
+
+<strong>周一 10:30</strong> — Agent 自主分析原因：发现当前话术模板过于
+机械，用户觉得「没有诚意」。
+
+<strong>周一 11:00</strong> — Agent 自主生成3版新话术，在内部测试环境
+跑A/B测试模拟。
+
+<strong>周一 14:00</strong> — 模拟结果显示第2版话术预期满意度提升12%。
+Agent 自主将第2版话术部署到10%的真实流量中。
+
+<strong>周三 09:00</strong> — Agent 自主检查A/B测试结果：新话术满意度
+91%，比旧话术78%提升了13个百分点。
+
+<strong>周三 09:30</strong> — Agent 自主扩大新话术到100%流量，并生成
+报告发送给运营经理。
+
+→ 整个过程中，人类<strong>没有发起任何操作</strong>
+→ Agent 自己发现问题 → 分析原因 → 设计方案 → 测试 → 部署
+    </pre></div>
+
+    <p><strong>什么时候用：</strong>说实话，<strong>现阶段几乎不建议在客服场景使用完全自主 Loop</strong>。它更适合低风险、可回滚的场景（比如内部知识库的措辞优化）。</p>
+    <p><strong>什么时候绝对不用：</strong>涉及资金、用户隐私、法律合规的任何场景。</p>
+  </div>
+
+  <div class="blk">
+    <h3>6.3 控制权递进模型</h3>
+
+    <p>四种 Loop 类型，本质上是你逐步交出控制权的过程：</p>
+
+    <table class="tb">
+      <tr><th style="background:rgba(232,67,147,.12)">Loop 类型</th><th>你交出了什么</th><th>你保留了什么</th><th>客服类比</th></tr>
+      <tr>
+        <td><strong>🟢 Attended</strong></td>
+        <td>执行权</td>
+        <td>审批权 + 触发权 + 目标设定权</td>
+        <td>新员工办事，每一步都来请示你</td>
+      </tr>
+      <tr>
+        <td><strong>🔵 Delegated</strong></td>
+        <td>执行权 + 过程监督权</td>
+        <td>触发权 + 目标设定权 + 结果审查权</td>
+        <td>熟练员工，你给个任务他独立完成，你审查结果</td>
+      </tr>
+      <tr>
+        <td><strong>🟡 Autonomous</strong></td>
+        <td>执行权 + 过程监督权 + 触发权</td>
+        <td>目标设定权 + 安全边界设定权</td>
+        <td>值班经理，自动响应突发情况，只在超出权限时上报</td>
+      </tr>
+      <tr>
+        <td><strong>🔴 Fully Autonomous</strong></td>
+        <td>几乎全部</td>
+        <td>「拉电闸」的权力 + 安全边界</td>
+        <td>你雇了一个运营总监，只要不越线就随他怎么干</td>
+      </tr>
+    </table>
+
+    <div class="hl hl-p">
+      <strong>💡 关键洞察：控制权上移，标准下沉</strong><br><br>
+      你交出的每一层控制权，都必须有对应的<strong>安全网</strong>来兜底：<br><br>
+      • Attended → 安全网是「你本人的判断」<br>
+      • Delegated → 安全网是「结果审查 + 回滚机制」<br>
+      • Autonomous → 安全网是「预设的边界条件 + 异常升级规则」<br>
+      • Fully Autonomous → 安全网是「硬性红线 + 实时监控 + 熔断机制」<br><br>
+      <strong>越自动，安全网越要结实。</strong>不是先做到全自动再想安全，而是先把安全网织好，再放手。
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>6.4 Loop 的风险与边界</h3>
+
+    <p><strong>不是越自动越好。</strong> 这一点再怎么强调都不过分。</p>
+
+    <div class="hl hl-o">
+      <strong>🚫 绝对不能用全自动 Loop 的客服场景：</strong><br><br>
+      <strong>1. 涉及大额资金的操作</strong><br>
+      Agent 自动判定退款 5000 元？万一判断错了呢？资金操作必须有人类审批环节，至少是 Attended Loop。<br><br>
+      <strong>2. 涉及用户隐私数据的场景</strong><br>
+      Agent 自动查询用户的手机号、地址、支付信息来排查问题？隐私合规要求必须有人类授权和审计追踪。<br><br>
+      <strong>3. 涉及公关舆情的投诉</strong><br>
+      用户说「我要把这件事发到微博上」——这种可能引发舆情的投诉，必须人工处理。AI 的一句不当回复可能引发公关危机。<br><br>
+      <strong>4. 法律和合规相关</strong><br>
+      用户要求提供消费记录用于法律诉讼、涉及食品安全的投诉——这些必须走人工 + 法务流程。<br><br>
+      <strong>5. 涉及情感关怀的场景</strong><br>
+      用户因为餐品问题导致身体不适（过敏、食物中毒等），需要真诚的人文关怀，AI 很难做到恰到好处。
+    </div>
+
+    <div class="hl hl-g">
+      <strong>✅ 适合用 Autonomous Loop 的客服场景：</strong><br><br>
+      <strong>1. 配送异常自动预警和干预</strong>（超时未送达自动重新调度）<br>
+      <strong>2. 简单退款自动审批</strong>（金额 ≤ 10 元 + 用户信用良好 + 原因明确）<br>
+      <strong>3. 常见问题自动回复</strong>（发票问题、配送范围查询、营业时间查询）<br>
+      <strong>4. 客服话术质量自动巡检</strong>（检查回复是否符合规范，不合规的自动标记）<br>
+      <strong>5. 客诉数据自动分析和报表</strong>（日报、周报、趋势分析）
+    </div>
+
+    <p>判断标准很简单：<strong>如果这件事做错了，后果是否可以快速且低成本地纠正？</strong> 如果是——可以自动化。如果不是——必须有人类兜底。</p>
+  </div>
+
+  <div class="quiz">
+    <h3>📝 第六章 小测验</h3>
+
+    <p><strong>Q1：一个「凌晨3点自动检测到配送异常并发送用户安抚通知」的系统，属于哪种 Loop 类型？</strong></p>
+    <div class="qo" onclick="qa(this,0,'a6a')">A. Attended Loop（有人值守循环）</div>
+    <div class="qo" onclick="qa(this,0,'a6a')">B. Delegated Loop（委托循环）</div>
+    <div class="qo" onclick="qa(this,1,'a6a')">C. Autonomous Loop（自主循环）</div>
+    <div class="qo" onclick="qa(this,0,'a6a')">D. Fully Autonomous Loop（完全自主循环）</div>
+    <div class="qa" id="a6a">✅ 正确答案是 C。关键特征是：事件触发（不是人启动的）+ 按预设规则执行（不是自己发现新任务）。它是 Autonomous Loop——人类预先设好了触发条件和处理规则，Agent 在条件满足时自动启动执行。不是 Fully Autonomous，因为它没有自主发现问题和设定新目标的能力。</div>
+
+    <p><strong>Q2：以下哪个场景<strong>绝对不应该</strong>使用全自动 Loop？</strong></p>
+    <div class="qo" onclick="qa(this,0,'a6b')">A. 自动生成每日客诉分析日报</div>
+    <div class="qo" onclick="qa(this,1,'a6b')">B. 自动审批并执行 3000 元以上的退款</div>
+    <div class="qo" onclick="qa(this,0,'a6b')">C. 自动检测客服回复是否符合话术规范</div>
+    <div class="qo" onclick="qa(this,0,'a6b')">D. 自动回复「营业时间是几点」之类的常见问题</div>
+    <div class="qa" id="a6b">✅ 正确答案是 B。大额资金操作一旦出错，后果严重且不易逆转。这类操作必须有人类审批环节，至少用 Attended Loop。其他三个选项即使 AI 犯了错，也容易发现和纠正（报告可以重新生成、规范检测可以人工复核、常见问题回复有标准答案）。</div>
+  </div>
+</section>
+
+<!-- ============== 课程总结 ============== -->
 <section class="ch fi" id="sum">
-  <div class="ch-hd">
-    <div class="ch-n" style="background:linear-gradient(135deg,#2D3436,#636E72);">🎯</div>
-    <div><h2>课程总结</h2></div>
+  <div class="ch-hd" style="background:linear-gradient(135deg,#636E72,#b2bec3)">
+    <span class="ch-n">课程总结</span>
+    <h2>六阶段全景回顾</h2>
+    <p>从 Prompt 到 Loop，一张图看清大模型应用的演进之路</p>
   </div>
 
   <div class="blk">
-    <h3>📊 六阶段全景对照表</h3>
+    <h3>全景阶梯图</h3>
+    <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;display:block;margin:0 auto">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6C5CE7"/><stop offset="100%" stop-color="#a29bfe"/></linearGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00B894"/><stop offset="100%" stop-color="#55efc4"/></linearGradient>
+        <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E17055"/><stop offset="100%" stop-color="#fab1a0"/></linearGradient>
+        <linearGradient id="g4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0984E3"/><stop offset="100%" stop-color="#74b9ff"/></linearGradient>
+        <linearGradient id="g5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F39C12"/><stop offset="100%" stop-color="#fdcb6e"/></linearGradient>
+        <linearGradient id="g6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E84393"/><stop offset="100%" stop-color="#fd79a8"/></linearGradient>
+      </defs>
+      <!-- 阶梯块 -->
+      <rect x="20"  y="330" width="130" height="60" rx="8" fill="url(#g1)" opacity=".92"/>
+      <rect x="160" y="270" width="130" height="120" rx="8" fill="url(#g2)" opacity=".92"/>
+      <rect x="300" y="210" width="130" height="180" rx="8" fill="url(#g3)" opacity=".92"/>
+      <rect x="440" y="150" width="130" height="240" rx="8" fill="url(#g4)" opacity=".92"/>
+      <rect x="580" y="90"  width="130" height="300" rx="8" fill="url(#g5)" opacity=".92"/>
+      <rect x="720" y="30"  width="130" height="360" rx="8" fill="url(#g6)" opacity=".92"/>
+      <!-- 标签 -->
+      <text x="85"  y="355" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">①Prompt</text>
+      <text x="85"  y="375" text-anchor="middle" fill="#fff" font-size="10">提问的艺术</text>
+      <text x="225" y="295" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">②上下文工程</text>
+      <text x="225" y="315" text-anchor="middle" fill="#fff" font-size="10">给够信息</text>
+      <text x="365" y="235" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">③Workflow</text>
+      <text x="365" y="255" text-anchor="middle" fill="#fff" font-size="10">流程编排</text>
+      <text x="505" y="175" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">④Agent</text>
+      <text x="505" y="195" text-anchor="middle" fill="#fff" font-size="10">自主决策</text>
+      <text x="645" y="115" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">⑤Harness</text>
+      <text x="645" y="135" text-anchor="middle" fill="#fff" font-size="10">持续工作</text>
+      <text x="785" y="55"  text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">⑥Loop</text>
+      <text x="785" y="75"  text-anchor="middle" fill="#fff" font-size="10">自主循环</text>
+      <!-- 底部年份 -->
+      <text x="85"  y="405" text-anchor="middle" fill="#636E72" font-size="10">2022</text>
+      <text x="225" y="405" text-anchor="middle" fill="#636E72" font-size="10">2023</text>
+      <text x="365" y="405" text-anchor="middle" fill="#636E72" font-size="10">2023-24</text>
+      <text x="505" y="405" text-anchor="middle" fill="#636E72" font-size="10">2023-24</text>
+      <text x="645" y="405" text-anchor="middle" fill="#636E72" font-size="10">2025-26</text>
+      <text x="785" y="405" text-anchor="middle" fill="#636E72" font-size="10">2026</text>
+      <!-- 箭头标注 -->
+      <text x="450" y="415" text-anchor="middle" fill="#636E72" font-size="11">控制权逐步交给 AI ——————→</text>
+    </svg>
+  </div>
+
+  <div class="blk">
+    <h3>六阶段全景对照表</h3>
+
     <table class="tb">
-      <thead><tr><th>阶段</th><th>核心能力</th><th>权威定义者</th><th>你的角色</th><th>AI 新增能力</th></tr></thead>
-      <tbody>
-        <tr>
-          <td style="color:var(--c1l);">① Prompt</td>
-          <td>表达需求</td>
-          <td>OpenAI GPT-3 (2020)<br>Google CoT (2022)</td>
-          <td>操作员</td>
-          <td>理解自然语言</td>
-        </tr>
-        <tr>
-          <td style="color:var(--c2l);">② 上下文工程</td>
-          <td>管理 AI 能看到的信息</td>
-          <td>Facebook RAG (2020)<br>Tobi Lütke (2025)<br>Anthropic (2025.9)</td>
-          <td>策展人</td>
-          <td>基于你的数据回答</td>
-        </tr>
-        <tr>
-          <td style="color:var(--c3l);">③ Workflow</td>
-          <td>预定义多步编排</td>
-          <td>Anthropic (2024.12)</td>
-          <td>流程设计师</td>
-          <td>按预设路径多步执行</td>
-        </tr>
-        <tr>
-          <td style="color:var(--c4l);">④ Agent</td>
-          <td>自主决策 + 工具调用</td>
-          <td>Lilian Weng (2023.6)<br>Andrew Ng (2024.3)<br>OpenAI (2023.6)</td>
-          <td>指挥官</td>
-          <td>自主规划执行路径</td>
-        </tr>
-        <tr>
-          <td style="color:var(--c5l);">⑤ Harness</td>
-          <td>跨会话持久执行</td>
-          <td>Anthropic (2025.11)<br>Anthropic (2026.3)</td>
-          <td>督察</td>
-          <td>跨 context window 接力</td>
-        </tr>
-        <tr>
-          <td style="color:var(--c6l);">⑥ Loop</td>
-          <td>自主循环闭环</td>
-          <td>Claude 官方 (2026.6.30)<br>Addy Osmani (2026.6.7)</td>
-          <td>决策者</td>
-          <td>自触发 + 自停止 + 自交付</td>
-        </tr>
-      </tbody>
+      <tr>
+        <th>阶段</th>
+        <th>核心能力</th>
+        <th>权威定义者</th>
+        <th>你的角色</th>
+        <th>AI 新增能力</th>
+        <th>客服场景对应</th>
+      </tr>
+      <tr>
+        <td style="background:rgba(108,92,231,.12)"><strong>① Prompt</strong></td>
+        <td>精确提问</td>
+        <td>OpenAI Prompt Guide</td>
+        <td>操作员</td>
+        <td>理解自然语言</td>
+        <td>问 AI「这个客诉怎么回复」</td>
+      </tr>
+      <tr>
+        <td style="background:rgba(0,184,148,.12)"><strong>② 上下文工程</strong></td>
+        <td>提供充分信息</td>
+        <td>Andrej Karpathy</td>
+        <td>信息策展人</td>
+        <td>整合外部知识</td>
+        <td>把退款规则、用户历史、订单详情一起给 AI</td>
+      </tr>
+      <tr>
+        <td style="background:rgba(225,112,85,.12)"><strong>③ Workflow</strong></td>
+        <td>流程编排</td>
+        <td>Anthropic</td>
+        <td>流程设计师</td>
+        <td>按预设路径执行</td>
+        <td>客诉进来自动分类→走对应处理流程</td>
+      </tr>
+      <tr>
+        <td style="background:rgba(9,132,227,.12)"><strong>④ Agent</strong></td>
+        <td>自主决策</td>
+        <td>Lilian Weng / Andrew Ng</td>
+        <td>监督者</td>
+        <td>自主规划+使用工具</td>
+        <td>AI 自己决定先查什么、再查什么、怎么判责</td>
+      </tr>
+      <tr>
+        <td style="background:rgba(243,156,18,.12)"><strong>⑤ Harness</strong></td>
+        <td>跨会话持续工作</td>
+        <td>Anthropic Claude Code</td>
+        <td>项目经理</td>
+        <td>进度管理+增量执行</td>
+        <td>知识库大改版：200条规则分批更新不遗漏</td>
+      </tr>
+      <tr>
+        <td style="background:rgba(232,67,147,.12)"><strong>⑥ Loop</strong></td>
+        <td>自主触发与停止</td>
+        <td>Anthropic / Addy Osmani</td>
+        <td>战略制定者</td>
+        <td>自驱动+自优化</td>
+        <td>凌晨自动检测配送异常并处理</td>
+      </tr>
     </table>
   </div>
 
   <div class="blk">
-    <h3>📐 六阶段演进 SVG 全景图</h3>
-    <div class="dia">
-      <svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" style="max-width:800px;">
-        <defs>
-          <linearGradient id="s1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#6C5CE7"/><stop offset="100%" stop-color="#A29BFE"/></linearGradient>
-          <linearGradient id="s2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00B894"/><stop offset="100%" stop-color="#55EFC4"/></linearGradient>
-          <linearGradient id="s3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E17055"/><stop offset="100%" stop-color="#FAB1A0"/></linearGradient>
-          <linearGradient id="s4" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#0984E3"/><stop offset="100%" stop-color="#74B9FF"/></linearGradient>
-          <linearGradient id="s5" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E67E22"/><stop offset="100%" stop-color="#FDCB6E"/></linearGradient>
-          <linearGradient id="s6" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#E84393"/><stop offset="100%" stop-color="#FD79A8"/></linearGradient>
-        </defs>
-        <!-- blocks -->
-        <rect x="10" y="290" width="115" height="58" rx="8" fill="url(#s1)" opacity=".9"/>
-        <text x="67" y="314" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">① Prompt</text>
-        <text x="67" y="332" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">单轮提问 · 2020</text>
+    <h3>两个心法</h3>
 
-        <rect x="145" y="232" width="115" height="58" rx="8" fill="url(#s2)" opacity=".9"/>
-        <text x="202" y="256" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">② 上下文工程</text>
-        <text x="202" y="274" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">RAG+CoT · 2023</text>
+    <div class="hl hl-p">
+      <strong>心法一：控制权上移，标准下沉 📐</strong><br><br>
+      随着你把越来越多的控制权交给 AI，你的工作重心从「亲自操作」变成了「制定标准」。<br><br>
+      • 第①阶段你亲自写 Prompt → 到第⑥阶段你制定安全红线和业务规则<br>
+      • 你不再关心「这个退款怎么处理」→ 你关心「退款处理的标准是什么」<br>
+      • 你不再关心「今天的日报分析了什么」→ 你关心「日报应该分析哪些维度」<br><br>
+      <strong>你变成了规则的制定者，而不是规则的执行者。</strong>这其实是管理者最本质的角色——很多运营负责人天天陷在执行细节里，AI 的演进恰恰让你有机会回归这个角色。
+    </div>
 
-        <rect x="280" y="174" width="115" height="58" rx="8" fill="url(#s3)" opacity=".9"/>
-        <text x="337" y="198" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">③ Workflow</text>
-        <text x="337" y="216" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">预定义编排 · 2024</text>
-
-        <rect x="415" y="116" width="115" height="58" rx="8" fill="url(#s4)" opacity=".9"/>
-        <text x="472" y="140" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">④ Agent</text>
-        <text x="472" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">自主决策 · 2023-24</text>
-
-        <rect x="550" y="58" width="115" height="58" rx="8" fill="url(#s5)" opacity=".9"/>
-        <text x="607" y="82" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">⑤ Harness</text>
-        <text x="607" y="100" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">运行外骨骼 · 2025</text>
-
-        <rect x="685" y="10" width="120" height="58" rx="8" fill="url(#s6)" opacity=".9"/>
-        <text x="745" y="34" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">⑥ Loop</text>
-        <text x="745" y="52" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">自主循环 · 2026</text>
-
-        <!-- connecting lines -->
-        <path d="M125 290 L145 290 L145 262" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
-        <path d="M260 232 L280 232 L280 204" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
-        <path d="M395 174 L415 174 L415 146" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
-        <path d="M530 116 L550 116 L550 88" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
-        <path d="M665 58 L685 58 L685 40" stroke="rgba(255,255,255,.25)" stroke-width="1.5" fill="none"/>
-
-        <!-- role labels -->
-        <text x="67" y="366" text-anchor="middle" fill="#A29BFE" font-size="9">🧑 操作员</text>
-        <text x="202" y="308" text-anchor="middle" fill="#55EFC4" font-size="9">🧑 策展人</text>
-        <text x="337" y="250" text-anchor="middle" fill="#FAB1A0" font-size="9">🧑 流程设计师</text>
-        <text x="472" y="192" text-anchor="middle" fill="#74B9FF" font-size="9">🧑 指挥官</text>
-        <text x="607" y="134" text-anchor="middle" fill="#FDCB6E" font-size="9">🧑 督察</text>
-        <text x="745" y="86" text-anchor="middle" fill="#FD79A8" font-size="9">🧑 决策者</text>
-      </svg>
+    <div class="hl hl-g">
+      <strong>心法二：能用简单方案就别上复杂方案 🎯</strong><br><br>
+      这六个阶段不是「越高级越好」，而是「够用就行」：<br><br>
+      • 80% 的客服场景，用好 <strong>Prompt + 上下文工程</strong> 就够了<br>
+      • 15% 的场景需要 <strong>Workflow</strong> 做流程化处理<br>
+      • 4% 的场景需要 <strong>Agent</strong> 做自主判断<br>
+      • 1% 的场景才需要 <strong>Harness + Loop</strong><br><br>
+      Anthropic 说过：「对于大多数应用，优化单个 LLM 调用配合检索就够了。」<br><br>
+      <strong>不要为了用技术而用技术。</strong> 先从最简单的方案开始，只在确实遇到天花板的时候才升级到下一层。过度设计比功能不足更危险——它增加了成本、复杂度和不可控性，但未必增加了价值。
     </div>
   </div>
 
   <div class="blk">
-    <h3>🧠 两个心法</h3>
-    <div style="text-align:center;padding:20px 0;">
-      <p style="font-size:18px;font-weight:700;color:var(--c5l);margin-bottom:8px;">「控制权上移，标准下沉」</p>
-      <p style="font-size:13px;color:var(--txt2);max-width:520px;margin:0 auto;">每升一层，你交出去的是<strong>执行权</strong>。<br>每升一层，你必须写下更精确的<strong>标准和约束</strong>。</p>
-    </div>
-    <div style="text-align:center;padding:16px 0;">
-      <p style="font-size:18px;font-weight:700;color:var(--c4l);margin-bottom:8px;">「能用简单方案就别上复杂方案」</p>
-      <p style="font-size:13px;color:var(--txt2);max-width:520px;margin:0 auto;">Anthropic 原话：<em>「We recommend finding the <strong>simplest solution possible</strong>, and only increasing complexity when needed.」</em></p>
-    </div>
-  </div>
+    <h3>自测：你在哪一层？</h3>
 
-  <div class="blk">
-    <h3>📚 完整引用索引</h3>
-    <table class="tb">
-      <thead><tr><th>#</th><th>来源</th><th>日期</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td>Brown et al.《Language Models are Few-Shot Learners》GPT-3 · <a href="https://arxiv.org/abs/2005.14165" target="_blank" style="color:var(--c4l)">arXiv</a></td><td>2020.5</td></tr>
-        <tr><td>2</td><td>Lewis et al.《Retrieval-Augmented Generation》RAG · <a href="https://arxiv.org/abs/2005.11401" target="_blank" style="color:var(--c4l)">arXiv</a></td><td>2020.5</td></tr>
-        <tr><td>3</td><td>Wei et al.《Chain-of-Thought Prompting》CoT · <a href="https://arxiv.org/abs/2201.11903" target="_blank" style="color:var(--c4l)">arXiv</a></td><td>2022.1</td></tr>
-        <tr><td>4</td><td>AutoGPT 首发 · GitHub</td><td>2023.3</td></tr>
-        <tr><td>5</td><td>OpenAI Function Calling 发布 · <a href="https://openai.com/index/function-calling-and-other-api-updates/" target="_blank" style="color:var(--c4l)">openai.com</a></td><td>2023.6</td></tr>
-        <tr><td>6</td><td>Lilian Weng《LLM Powered Autonomous Agents》· <a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank" style="color:var(--c4l)">lilianweng.github.io</a></td><td>2023.6</td></tr>
-        <tr><td>7</td><td>Andrew Ng《Agentic Design Patterns》· <a href="https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/" target="_blank" style="color:var(--c4l)">deeplearning.ai</a></td><td>2024.3</td></tr>
-        <tr><td>8</td><td>Anthropic《Building Effective Agents》· <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" style="color:var(--c4l)">anthropic.com</a></td><td>2024.12</td></tr>
-        <tr><td>9</td><td>Tobi Lütke 提出 Context Engineering · X/Twitter</td><td>2025.6</td></tr>
-        <tr><td>10</td><td>Karpathy 附议 Context Engineering · X/Twitter</td><td>2025.6</td></tr>
-        <tr><td>11</td><td>Anthropic《Effective Context Engineering》· <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" style="color:var(--c4l)">anthropic.com</a></td><td>2025.9</td></tr>
-        <tr><td>12</td><td>Anthropic《Effective Harnesses for Long-running Agents》· <a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank" style="color:var(--c4l)">anthropic.com</a></td><td>2025.11</td></tr>
-        <tr><td>13</td><td>Anthropic Claude Code 发布 · Research Preview</td><td>2025.2</td></tr>
-        <tr><td>14</td><td>Anthropic《Harness Design for Long-running App Dev》· <a href="https://www.anthropic.com/engineering" target="_blank" style="color:var(--c4l)">anthropic.com</a></td><td>2026.3</td></tr>
-        <tr><td>15</td><td>Addy Osmani《Loop Engineering》· <a href="https://addyosmani.com/blog/loop-engineering/" target="_blank" style="color:var(--c4l)">addyosmani.com</a></td><td>2026.6.7</td></tr>
-        <tr><td>16</td><td>Claude 官博《Getting Started with Loops》· <a href="https://claude.com/blog/getting-started-with-loops" target="_blank" style="color:var(--c4l)">claude.com</a></td><td>2026.6.30</td></tr>
-        <tr><td>17</td><td>OpenAI《A Practical Guide to Building Agents》· <a href="https://cdn.openai.com/business/guides/a-practical-guide-to-building-agents.pdf" target="_blank" style="color:var(--c4l)">PDF</a></td><td>2025.4</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="blk">
-    <h3>🗺️ 自测：你在哪一层？</h3>
     <div class="tl">
-      <div class="tl-i"><div class="tl-d" style="border-color:var(--c1);"></div>
-        <h4 style="color:var(--c1l);">你还在手动打字问 AI？</h4>
-        <p>→ 第 1 层。先掌握 Zero-Shot / Few-Shot / CoT 三板斧。</p></div>
-      <div class="tl-i"><div class="tl-d" style="border-color:var(--c2);"></div>
-        <h4 style="color:var(--c2l);">你开始给 AI 喂自己的文档了？</h4>
-        <p>→ 第 2 层。试试 RAG，让 AI 检索你的知识库再回答。</p></div>
-      <div class="tl-i"><div class="tl-d" style="border-color:var(--c3);"></div>
-        <h4 style="color:var(--c3l);">你设计了多步处理流程？</h4>
-        <p>→ 第 3 层。把重复流程固化为 Workflow（链式 / 路由 / 并行）。</p></div>
-      <div class="tl-i"><div class="tl-d" style="border-color:var(--c4);"></div>
-        <h4 style="color:var(--c4l);">你让 AI 自己决定调什么工具、走什么路径？</h4>
-        <p>→ 第 4 层。这就是 Agent。下一步考虑长时任务的连续性。</p></div>
-      <div class="tl-i"><div class="tl-d" style="border-color:var(--c5);"></div>
-        <h4 style="color:var(--c5l);">你的 Agent 能跨会话持续工作了？</h4>
-        <p>→ 第 5 层。有了 Harness，可以开始跑 Loop 了。</p></div>
-      <div class="tl-i"><div class="tl-d" style="border-color:var(--c6);"></div>
-        <h4 style="color:var(--c6l);">你只看结果，AI 自动触发、自动执行、自动交付？</h4>
-        <p>→ 恭喜，第 6 层 🏆 持续优化约束和标准即可。</p></div>
+      <div class="tl-i" style="border-color:#6C5CE7">
+        <div class="tl-d">
+          <strong>①  Prompt 层</strong><br>
+          判断标准：你在用 ChatGPT / 豆包等产品，每次手动输入问题，得到回答后自己判断和操作。<br>
+          <em>「我把客诉内容复制粘贴到 ChatGPT 里，让它帮我想回复话术」</em>
+        </div>
+      </div>
+      <div class="tl-i" style="border-color:#00B894">
+        <div class="tl-d">
+          <strong>② 上下文工程层</strong><br>
+          判断标准：你会把退款规则、用户历史等背景信息一起给 AI，而不是只给一句话。<br>
+          <em>「我把客服手册和这个用户的历史工单也一起贴进去了，AI 回复得准多了」</em>
+        </div>
+      </div>
+      <div class="tl-i" style="border-color:#E17055">
+        <div class="tl-d">
+          <strong>③ Workflow 层</strong><br>
+          判断标准：你搭建了自动化流程，客诉进来后系统自动分类并走预设路径处理。<br>
+          <em>「我们配了一套分流规则，退款类工单自动走快速通道，投诉类自动升级」</em>
+        </div>
+      </div>
+      <div class="tl-i" style="border-color:#0984E3">
+        <div class="tl-d">
+          <strong>④ Agent 层</strong><br>
+          判断标准：AI 可以自己查系统、自己判断、自己决定下一步操作。<br>
+          <em>「复杂客诉进来后，AI 自己去查订单、查骑手、查商家，然后综合判责给出方案」</em>
+        </div>
+      </div>
+      <div class="tl-i" style="border-color:#F39C12">
+        <div class="tl-d">
+          <strong>⑤ Harness 层</strong><br>
+          判断标准：AI 可以做跨越多次会话的大型项目，中间不丢进度。<br>
+          <em>「我让 AI 用一周时间把整个知识库更新了，每天跑几轮，自己记进度」</em>
+        </div>
+      </div>
+      <div class="tl-i" style="border-color:#E84393">
+        <div class="tl-d">
+          <strong>⑥ Loop 层</strong><br>
+          判断标准：AI 可以自动触发工作，不需要你手动启动。<br>
+          <em>「凌晨配送异常了，AI 自己发现、自己处理、自己给用户发通知，第二天早上我看看日志就行」</em>
+        </div>
+      </div>
     </div>
+
+    <div class="ana">
+      <div class="ana-icon">📍</div>
+      <div>
+        <strong>大多数团队在哪？</strong><br>
+        2025 年中，国内大多数客服团队处于第①-②层之间。部分领先团队在第③层。第④层以上的实践仍在早期探索阶段。<strong>不必焦虑</strong>——每一层扎实了再往上走，比跳级更重要。
+      </div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <h3>完整引用索引</h3>
+
+    <table class="tb">
+      <tr><th style="width:30px">#</th><th>文献标题</th><th>作者/机构</th><th>年份</th><th>链接</th></tr>
+      <tr><td>1</td><td>OpenAI Prompt Engineering Guide</td><td>OpenAI</td><td>2023</td><td><a href="https://platform.openai.com/docs/guides/prompt-engineering" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>2</td><td>Prompt Engineering (Wikipedia)</td><td>Wikipedia</td><td>2023</td><td><a href="https://en.wikipedia.org/wiki/Prompt_engineering" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>3</td><td>Dario Amodei: Machines of Loving Grace</td><td>Dario Amodei (Anthropic CEO)</td><td>2024</td><td><a href="https://dario.anthropic.com/machines-of-loving-grace" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>4</td><td>Andrej Karpathy: Context Engineering</td><td>Andrej Karpathy</td><td>2025</td><td><a href="https://x.com/karpathy/status/1937532122907304436" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>5</td><td>Tobi Lütke: Context Engineering vs Vibe Coding</td><td>Tobi Lütke (Shopify CEO)</td><td>2025</td><td><a href="https://x.com/toaborern/status/1937386247450891725" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>6</td><td>Philipp Schmid: Context Engineering for Agents</td><td>Philipp Schmid</td><td>2025</td><td><a href="https://www.philschmid.de/context-engineering" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>7</td><td>Building effective agents</td><td>Anthropic</td><td>2024</td><td><a href="https://www.anthropic.com/research/building-effective-agents" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>8</td><td>LLM Powered Autonomous Agents</td><td>Lilian Weng (OpenAI)</td><td>2023</td><td><a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>9</td><td>What's next for AI agentic workflows</td><td>Andrew Ng</td><td>2024</td><td><a href="https://www.youtube.com/watch?v=sal78ACtGTc" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>10</td><td>ReAct: Synergizing Reasoning and Acting</td><td>Yao et al.</td><td>2022</td><td><a href="https://arxiv.org/abs/2210.03629" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>11</td><td>Claude Code: Best practices for agentic coding</td><td>Anthropic</td><td>2025</td><td><a href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>12</td><td>The 70% problem: Hard truths about AI-assisted coding</td><td>Addy Osmani (Google)</td><td>2025</td><td><a href="https://addyo.substack.com/p/the-70-problem-hard-truths-about" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>13</td><td>Anthropic Docs: Agentic Loops</td><td>Anthropic</td><td>2025</td><td><a href="https://docs.anthropic.com/en/docs/build-with-claude/agentic-loop" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>14</td><td>AutoGPT: An Autonomous GPT-4 Experiment</td><td>Significant Gravitas</td><td>2023</td><td><a href="https://github.com/Significant-Gravitas/AutoGPT" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>15</td><td>Retrieval-Augmented Generation (RAG)</td><td>Lewis et al.</td><td>2020</td><td><a href="https://arxiv.org/abs/2005.11401" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>16</td><td>Chain-of-Thought Prompting</td><td>Wei et al. (Google)</td><td>2022</td><td><a href="https://arxiv.org/abs/2201.11903" target="_blank">🔗 链接</a></td></tr>
+      <tr><td>17</td><td>Prompt Caching with Claude</td><td>Anthropic</td><td>2024</td><td><a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" target="_blank">🔗 链接</a></td></tr>
+    </table>
+  </div>
+
+  <div class="quiz">
+    <h3>📝 终极自测</h3>
+
+    <p><strong>Q: 你的团队目前「用户来问退款进度，客服手动复制订单号到 ChatGPT 问怎么回复」，这处于哪一层？要提升到下一层，第一步应该做什么？</strong></p>
+    <div class="qo" onclick="qa(this,0,'aSa')">A. 处于第③层 Workflow，下一步应该上 Agent</div>
+    <div class="qo" onclick="qa(this,1,'aSa')">B. 处于第①层 Prompt，下一步应该把退款规则和用户历史信息自动注入给 AI（上下文工程）</div>
+    <div class="qo" onclick="qa(this,0,'aSa')">C. 处于第②层上下文工程，下一步应该搭建自动化流程</div>
+    <div class="qo" onclick="qa(this,0,'aSa')">D. 处于第④层 Agent，下一步应该加 Harness</div>
+    <div class="qa" id="aSa">✅ 正确答案是 B。手动复制粘贴问 AI = 第①层 Prompt。提升到第②层的方法是：搭建一个系统，当客服处理工单时，自动把这个用户的订单详情、退款规则、历史记录注入给 AI，让 AI 在充分信息下给出更精准的回复建议。这比直接跳到 Workflow 或 Agent 更务实——先把地基打好，再考虑上楼。</div>
   </div>
 </section>
-
 <!-- ========== FOOTER ========== -->
 <div class="ft">
   <p>📖 从 Prompt 到 Loop — 大模型应用演进六阶段 · 权威教学课程</p>
