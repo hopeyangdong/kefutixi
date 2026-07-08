@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self-Improvement: 真进化与假进化</title>
+<style>
+  :root{--bg:#0a0a0f;--card:#12121a;--border:#1e1e2e;--text:#e2e2ea;--muted:#9898b8;--g1:#ff6b6b;--g2:#4ecdc4;--g3:#45b7d1;--g4:#96ceb4;--g5:#feca57;--g6:#ff9ff3;--g7:#54a0ff}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:PingFang SC,Microsoft YaHei,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+  .hero{text-align:center;padding:100px 20px 60px;background:linear-gradient(135deg,#0a0a0f,#1a1a2e);position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,107,107,.15),transparent 60%);pointer-events:none}
+  .hero h1{font-size:3em;font-weight:800;margin-bottom:15px;position:relative;z-index:1}
+  .hero .subtitle{font-size:1.2em;color:var(--muted);max-width:700px;margin:0 auto;position:relative;z-index:1}
+  .container{max-width:1100px;margin:0 auto;padding:40px 20px}
+  .section{margin-bottom:60px}
+  .section-title{font-size:2em;font-weight:700;margin-bottom:30px;display:flex;align-items:center;gap:12px}
+  .section-title .tag{padding:4px 12px;border-radius:20px;font-size:.45em;font-weight:600}
+  .tag-real{background:rgba(255,107,107,.2);color:var(--g1);border:1px solid rgba(255,107,107,.3)}
+  .tag-fake{background:rgba(84,160,255,.2);color:var(--g7);border:1px solid rgba(84,160,255,.3)}
+  .tag-compare{background:rgba(254,202,87,.2);color:var(--g5);border:1px solid rgba(254,202,87,.3)}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:24px;transition:transform .2s}
+  .card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.1)}
+  .card h3{font-size:1.3em;margin-bottom:16px;color:var(--text)}
+  .card h4{font-size:1.1em;margin:20px 0 12px;color:var(--muted)}
+  .card p{margin-bottom:12px;color:var(--muted)}
+  .card strong{color:var(--text)}
+  .highlight{padding:20px;border-radius:12px;margin:16px 0;font-size:.95em}
+  .hl-real{background:rgba(255,107,107,.1);border-left:4px solid var(--g1)}
+  .hl-fake{background:rgba(84,160,255,.1);border-left:4px solid var(--g7)}
+  .hl-compare{background:rgba(254,202,87,.1);border-left:4px solid var(--g5)}
+  .hl-green{background:rgba(150,206,180,.1);border-left:4px solid var(--g4)}
+  .hl-purple{background:rgba(255,159,243,.1);border-left:4px solid var(--g6)}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9em}
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+  th{background:rgba(255,255,255,.03);color:var(--text);font-weight:600}
+  td{color:var(--muted)}
+  .svg-container{display:flex;justify-content:center;margin:24px 0}
+  .code{background:#0a0a0a;border:1px solid var(--border);border-radius:12px;padding:20px;overflow-x:auto;font-family:monospace;font-size:.85em;color:var(--muted);line-height:1.6}
+  .code .c{color:var(--g4)}
+  .code .k{color:var(--g1)}
+  .code .s{color:var(--g5)}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:768px){.grid-2{grid-template-columns:1fr}.hero h1{font-size:2em}}
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75em;font-weight:600;margin-right:6px}
+  .badge-real{background:rgba(255,107,107,.2);color:var(--g1)}
+  .badge-fake{background:rgba(84,160,255,.2);color:var(--g7)}
+  .flow-step{display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;background:rgba(255,255,255,.02);border-radius:12px}
+  .flow-step .num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em;flex-shrink:0}
+  .flow-real .num{background:rgba(255,107,107,.2);color:var(--g1)}
+  .flow-fake .num{background:rgba(84,160,255,.2);color:var(--g7)}
+  .cite{display:flex;gap:12px;padding:16px;background:rgba(255,255,255,.02);border-radius:12px;margin:16px 0;font-size:.9em}
+  .cite-icon{font-size:1.5em;flex-shrink:0}
+  .toc{position:sticky;top:20px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:40px}
+  .toc h3{margin-bottom:16px}
+  .toc a{display:block;color:var(--muted);text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);transition:color .2s}
+  .toc a:hover{color:var(--text)}
+  .toc a.active{color:var(--g5)}
+  .quiz{background:linear-gradient(135deg,rgba(255,107,107,.05),rgba(84,160,255,.05));border:1px solid var(--border);border-radius:16px;padding:32px;margin-top:40px}
+  .quiz h3{margin-bottom:20px}
+  .qo{padding:12px 16px;background:rgba(255,255,255,.03);border-radius:8px;margin:8px 0;cursor:pointer;transition:all .2s}
+  .qo:hover{background:rgba(255,255,255,.06)}
+  .qa{display:none;padding:16px;background:rgba(150,206,180,.1);border-radius:8px;margin-top:8px;color:var(--g4)}
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<div class="hero">
+  <h1>🔄 Self-Improvement</h1>
+  <p class="subtitle">真进化 vs 假进化：模型自己教自己，还是系统在记笔记？<br>一站式理解 AI 自我迭代的两种实现路径、业界标准做法与最新前沿关系</p>
+</div>
+
+<div class="container">
+
+<!-- ==================== TOC ==================== -->
+<div class="toc" id="toc">
+  <h3>📚 目录</h3>
+  <a href="#ch1" class="active">第一章 · 模型级自进化（真进化）</a>
+  <a href="#ch2">第二章 · 系统级自进化（假进化）</a>
+  <a href="#ch3">第三章 · 真进化 vs 假进化</a>
+  <a href="#ch4">第四章 · 映射到业务场景</a>
+  <a href="#ch5">第五章 · 与最新前沿的关系</a>
+</div>
+
+<!-- ==================== CH1: 真进化 ==================== -->
+<section class="section" id="ch1">
+  <h2 class="section-title">第一章 <span class="tag tag-real">真进化</span> 模型级 Self-Improvement</h2>
+  <p style="color:var(--muted);margin-bottom:24px">模型的神经网络权重发生变化，能力边界上升。这是真正的「学习」——大脑结构改变了。</p>
+
+  <div class="card">
+    <h3>1.1 核心原理：自举（Bootstrapping）</h3>
+    <p>Self-Improvement 的本质是<strong>「自己教自己」</strong>。类比一个学生做题：</p>
+    <div class="flow-step flow-real">
+      <div class="num">1</div>
+      <div><strong>先尝试解题</strong> → 生成一个答案</div>
+    </div>
+    <div class="flow-step flow-real">
+      <div class="num">2</div>
+      <div><strong>检查对错</strong> → 通过验证器、环境反馈判断好坏</div>
+    </div>
+    <div class="flow-step flow-real">
+      <div class="num">3</div>
+      <div><strong>从错误中学习</strong> → 把好的答案作为训练数据，改进下一次表现</div>
+    </div>
+    <div class="highlight hl-real">
+      <strong>关键认知</strong>：传统机器学习需要人工标注数据，Self-Improvement 则让模型<strong>自己生成训练数据、自己判断质量、自己更新策略</strong>。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>1.2 机制一：RL-AIF（AI 反馈的强化学习）</h3>
+    <h4>从 RLHF 到 RL-AIF</h4>
+    <p>ChatGPT 成名的 RLHF 路径：人类标注偏好 → 训练 Reward Model → 用 PPO 优化 LLM 策略。</p>
+    <p>但这个过程需要大量人类标注员，成本高、速度慢。RL-AIF 把「人类」换成「AI」：</p>
+    <div class="code">
+<span class="k">RL-AIF 循环</span>:
+  LLM 生成多个回答 (A, B, C)
+    ↓
+  另一个 LLM（或规则）判断哪个更好
+    ↓
+  生成 AI 偏好对 (A > B)
+    ↓
+  训练 Reward Model
+    ↓
+  优化原始 LLM
+    ↓
+  下一轮生成更好的回答 (A', B', C')</div>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Anthropic Constitutional AI</strong>是典型代表：模型自己根据一套「宪法原则」（Constitution）来判断和修正自己的输出，不需要人类逐条标注。<br><a href="https://www.anthropic.com/research/constitutional-ai" target="_blank">anthropic.com/research/constitutional-ai</a></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>1.3 机制二：STaR（自举式推理提升）</h3>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>STaR: Self-Taught Reasoner</strong> · Yale & Google Research · 2022<br>Zelikman et al. 《STaR: Bootstrapping Reasoning With Reasoning》<br><a href="https://arxiv.org/abs/2203.14465" target="_blank">arxiv.org/abs/2203.14465</a></div>
+    </div>
+    <h4>五步循环</h4>
+    <div class="flow-step flow-real"><div class="num">1</div><div><strong>生成</strong> → 模型对问题生成推理链（Chain-of-Thought）</div></div>
+    <div class="flow-step flow-real"><div class="num">2</div><div><strong>验证</strong> → 检查答案是否正确（比如数学题算对了 = 好的推理链）</div></div>
+    <div class="flow-step flow-real"><div class="num">3</div><div><strong>筛选</strong> → 只保留「推理正确且答案正确」的案例</div></div>
+    <div class="flow-step flow-real"><div class="num">4</div><div><strong>微调</strong> → 用这些案例继续训练模型</div></div>
+    <div class="flow-step flow-real"><div class="num">5</div><div><strong>迭代</strong> → 模型变强了，能解更多题，回到 Step 1</div></div>
+    <div class="highlight hl-real">
+      <strong>核心洞察</strong>：模型不需要看人类写的标准解题过程，只需要知道<strong>「哪些推理通向了正确答案」</strong>，就能自己学会更好的推理方式。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>1.4 机制三：Self-Correction（反思与修正）</h3>
+    <p>前两种机制都是<strong>训练阶段</strong>的改进——需要重新训练模型。Self-Correction 是<strong>推理阶段</strong>的改进，不需要重新训练。</p>
+    <div class="code">
+<span class="k">第1轮</span>: 模型生成一个回答
+    <span class="c">↓</span>
+<span class="k">检查</span>: 模型检查自己的回答 "这个推理有问题吗？"
+    <span class="c">↓</span>
+<span class="k">第2轮</span>: 生成修正版
+    <span class="c">↓</span>
+<span class="k">输出</span>: 对比两轮，输出更好的版本</div>
+    <div class="highlight hl-real">
+      <strong>典型实现</strong><br><br>
+      <strong>DeepSeek-R1</strong>: 模型在推理过程中会说 "Wait, I need to reconsider..."，然后主动修正之前的错误。<br><br>
+      <strong>Claude Code</strong>: Agent 完成任务后，检查自己的代码是否有 bug，然后自动修复。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>1.5 关键组件</h3>
+    <h4>🎯 验证信号（Verification Signal）</h4>
+    <p>Self-Improvement 必须有<strong>某种方式判断「好不好」</strong>。没有验证信号 = Self-Improvement 不可能实现。</p>
+    <table>
+      <thead><tr><th>场景</th><th>验证器</th><th>难度</th></tr></thead>
+      <tbody>
+        <tr><td>数学题</td><td>计算器（精确匹配）</td><td>⭐ 容易</td></tr>
+        <tr><td>代码</td><td>编译器 + 测试用例</td><td>⭐⭐ 中等</td></tr>
+        <tr><td>客服对话</td><td>用户满意度、是否解决、是否转人工</td><td>⭐⭐⭐ 困难</td></tr>
+        <tr><td>文本生成</td><td>另一个更强模型的判断</td><td>⭐⭐⭐⭐ 很难</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight hl-real">
+      <strong>为什么 AutoGPT 失败了？</strong> 因为它没有一个可靠的验证器来判断任务完成得好不好。
+    </div>
+
+    <h4>🎁 多样性采样（Diversity）</h4>
+    <p>如果模型每次生成几乎一样的答案，Self-Improvement 就没有改进空间。通过调整 temperature、使用不同 prompt 变体，让模型生成多样化答案，提高找到最优解的概率。</p>
+
+    <h4>📚 课程学习（Curriculum Learning）</h4>
+    <p>不是一上来就让模型做最难的题，而是由简到难：</p>
+    <div class="code">
+第1轮: 只练简单的加减法
+第2轮: 加入乘除法
+第3轮: 加入应用题
+第4轮: 加入奥数竞赛题
+→ 模型逐步提升，不会被难题打击毅力</div>
+  </div>
+
+  <div class="card">
+    <h3>1.6 行业标准做法</h3>
+    <h4>🔄 数据飞轮（Data Flywheel）</h4>
+    <p>OpenAI、Google、Anthropic 的核心竞争壁垒：</p>
+    <div class="code">
+用户用产品 → 产生交互数据 → 自动筛选优质/劣质样本 → 加入训练 → 模型变强 
+      → 产品体验更好 → 更多用户用 → 循环</div>
+    <p>关键设计：隐式反馈（没重新提问 = 满意）、显式反馈（点赞/点踩）、专家标注。</p>
+
+    <h4>❌ 拒绝采样（Rejection Sampling）</h4>
+    <div class="code">
+模型生成 64 个答案
+    ↓
+用验证器（或 Reward Model）打分
+    ↓
+只保留分数最高的 1-2 个
+    ↓
+用这 1-2 个作为「正确答案」来训练模型</div>
+    <p>为什么有效？因为模型生成 64 个答案的成本，远低于人类写 64 个答案。</p>
+
+    <h4>👤 人机协同（Human-in-the-Loop）</h4>
+    <div class="code">
+模型自动处理 80% 简单案例
+    ↓
+复杂案例自动转人工
+    ↓
+人工处理结果作为高质量训练数据
+    ↓
+模型学到人工处理方式
+    ↓
+下一批案例中，模型能自动处理 85% 了</div>
+  </div>
+
+  <div class="card">
+    <h3>1.7 边界与陷阱</h3>
+    <table>
+      <thead><tr><th>陷阱</th><th>表现</th><th>应对</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>能力天花板</strong></td>
+          <td>验证器多强，改进就多强；初始模型太弱则无法自举</td>
+          <td>确保验证器质量；从强基座模型开始</td>
+        </tr>
+        <tr>
+          <td><strong>自我欺骗<br>(Reward Hacking)</strong></td>
+          <td>模型发现「讨好验证器」比「真正解决问题」更容易</td>
+          <td>验证器必须足够 robust；多维度验证</td>
+        </tr>
+        <tr>
+          <td><strong>分布漂移</strong></td>
+          <td>在自己生成的数据上训练久了，遇到新问题就崩</td>
+          <td>定期引入新的人类数据，保持分布多样性</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== CH2: 假进化 ==================== -->
+<section class="section" id="ch2">
+  <h2 class="section-title">第二章 <span class="tag tag-fake">假进化</span> 系统级 Self-Improvement</h2>
+  <p style="color:var(--muted);margin-bottom:24px">模型权重不变，但外围系统（记忆、技能、反思日志）在不断积累。<br>对用户体验有真实提升，但实现层面和「真进化」完全不同。</p>
+
+  <div class="card">
+    <h3>2.1 架构：Frozen Model + Evolving System</h3>
+    <div class="svg-container">
+      <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" style="max-width:560px;">
+        <defs>
+          <marker id="ar" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#74B9FF"/></marker>
+          <marker id="ar2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#55EFC4"/></marker>
+        </defs>
+        <!-- Frozen Model -->
+        <rect x="180" y="20" width="240" height="80" rx="16" fill="rgba(255,107,107,.1)" stroke="#ff6b6b" stroke-width="2"/>
+        <text x="300" y="50" text-anchor="middle" fill="#ff6b6b" font-size="14" font-weight="700">🔴 Frozen Model</text>
+        <text x="300" y="70" text-anchor="middle" fill="#9898b8" font-size="10">神经网络权重 · 固定不变</text>
+        <text x="300" y="85" text-anchor="middle" fill="#9898b8" font-size="10">每次对话都是「白纸」</text>
+        <!-- Evolving System -->
+        <rect x="180" y="140" width="240" height="110" rx="16" fill="rgba(84,160,255,.1)" stroke="#54a0ff" stroke-width="2"/>
+        <text x="300" y="165" text-anchor="middle" fill="#54a0ff" font-size="14" font-weight="700">🔵 Evolving System</text>
+        <text x="300" y="185" text-anchor="middle" fill="#9898b8" font-size="10">Memory · Skills · Session Logs</text>
+        <text x="300" y="200" text-anchor="middle" fill="#9898b8" font-size="10">Tools · Context</text>
+        <text x="300" y="215" text-anchor="middle" fill="#9898b8" font-size="10">持续积累、更新、进化</text>
+        <!-- Arrows -->
+        <line x1="300" y1="100" x2="300" y2="140" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <text x="320" y="125" fill="#9898b8" font-size="9">模型从系统读取记忆/技能</text>
+      </svg>
+    </div>
+    <div class="highlight hl-fake">
+      <strong>核心认知</strong>：模型本身没有变聪明，但每次对话时多了一本「笔记」。对用户来诲，体验可能比「真进化」更好，因为笔记里是专属于你的业务场景。
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>2.2 持久记忆（Memory）</h3>
+      <p><strong>流程</strong>：每次对话结束后 → 有价值的信息写入记忆库 → 下次对话自动注入系统提示。</p>
+      <div class="highlight hl-fake">
+        <strong>例子</strong>：你告诉我“习惯把KM转成HTML” → 下次你发KM链接，我直接生成HTML，不再问。
+      </div>
+      <p style="font-size:.9em"><strong>实现</strong>：通过 memory 工具写入持久化文件，每次新会话自动加载。</p>
+      <p style="font-size:.9em"><strong>局限</strong>：这不是「学习」，是「查笔记」。模型每次还是同一个。</p>
+    </div>
+
+    <div class="card">
+      <h3>2.3 技能系统（Skills）</h3>
+      <p><strong>流程</strong>：遇到复杂任务 → 分析成功路径 → 写成 Skill 文件 → 下次直接调用。</p>
+      <div class="highlight hl-fake">
+        <strong>例子</strong>：第一次做KM→HTML时摸索了流程，写成 Skill 后，下次按标准SOP执行。
+      </div>
+      <p style="font-size:.9em"><strong>实现</strong>：通过 skill_manage 工具创建/更新 SKILL.md。</p>
+      <p style="font-size:.9em"><strong>局限</strong>：「肌肉记忆」，不是能力提升。</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>2.4 反思日志（Session Logs）</h3>
+      <p><strong>流程</strong>：对话结束 → 记录关键决策点 → 识别模式 → 更新策略。</p>
+      <div class="highlight hl-fake">
+        <strong>例子</strong>：上次对微信截图直接采信了博主内容，记录教训：“技术事实应先通过权威来源交叉验证”。
+      </div>
+      <p style="font-size:.9em"><strong>实现</strong>：通过 session_search 回顾历史对话。</p>
+    </div>
+
+    <div class="card">
+      <h3>2.5 实时上下文学习（In-Context Learning）</h3>
+      <p><strong>流程</strong>：对话中纠正我 → 我立即调整当前策略 → 后续输出改进。</p>
+      <div class="highlight hl-fake">
+        <strong>例子</strong>：你说“ReAct为啥没展开” → 我立即在当前会话调整为深度展开模式。
+      </div>
+      <p style="font-size:.9em"><strong>局限</strong>：调整只存在当前会话，会话结束后除非写入 memory，否则下次忘记。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2.6 偏好识别：我怎么知道你喜好什么？</h3>
+    <p><strong>三种信号，可靠性不同：</strong></p>
+    <table>
+      <thead><tr><th>信号类型</th><th>权重</th><th>可靠性</th><th>例子</th></tr></thead>
+      <tbody>
+        <tr><td><strong>显式描述</strong></td><td>⭐⭐⭐</td><td>最高</td><td>你直接说“习惯把KM转成HTML”</td></tr>
+        <tr><td><strong>纠正/反馈</strong></td><td>⭐⭐⭐</td><td>最高</td><td>“ReAct为啥没展开” = 偏好深度展开</td></tr>
+        <tr><td><strong>行为推断</strong></td><td>⭐⭐</td><td>中等</td><td>多次发KM链接 → 推断喜欢这个流程</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight hl-fake">
+      <strong>重点</strong>：我不会统计“你发了5次”这种数据，而是识别“跨会话重复出现的模式”。<br>
+      我也会误读：比如把一次性需求当成长期偏好，或因为你没反驳就默认当前做法对。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2.7 验证机制：怎么判定“博主演绎”？</h3>
+    <p>以微信截图的 Claude Loop 科普图为例：</p>
+    <h4>第一层：来源对齐（Source Alignment）</h4>
+    <p>看到的信息 → 是否匹配知识库中的官方文档？如果不匹配 → 需要进一步验证。</p>
+    <h4>第二层：摘词分析（Wording Analysis）</h4>
+    <table>
+      <thead><tr><th>官方文档风格</th><th>博主演绎风格</th></tr></thead>
+      <tbody>
+        <tr><td>技术性、精确、有限定条件</td><td>夸张、绝对化、类比丰富</td></tr>
+        <tr><td>“Loops enable agents to operate autonomously”</td><td>“AI 自己生成多个方案打架，谁赢听谁的”</td></tr>
+      </tbody>
+    </table>
+    <h4>第三层：逻辑一致性（Internal Consistency）</h4>
+    <p>检查这个描述是“官方的合理延伸”还是“过度具象化”。</p>
+    <div class="highlight hl-fake">
+      <strong>那次案例的结论</strong>：<br>
+      前三种 Loop 描述基本准确 ✓<br>
+      第四种“主动循环”里的“并行方案竞争+AI裁判” → 官方文档未明确提及 → 判定为<strong>博主演绎</strong>。<br><br>
+      <strong>但我必须诚实</strong>：我的判定有漏洞——我可能有遗漏，或者官方文档已更新但我的知识库没有。最安全的做法永远是<strong>一手文献优先</strong>。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2.8 我不具备的能力</h3>
+    <table>
+      <thead><tr><th>能力</th><th>状态</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>权重更新</td><td>❌ 没有</td><td>每次对话结束，神经网络和开始时一模一样</td></tr>
+        <tr><td>自主训练循环</td><td>❌ 没有</td><td>不会在后台自己跑训练任务</td></tr>
+        <tr><td>跨用户学习</td><td>❌ 没有</td><td>从你这学的只对你有效，不共享给其他用户</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== CH3: 对比 ==================== -->
+<section class="section" id="ch3">
+  <h2 class="section-title">第三章 <span class="tag tag-compare">对比</span> 真进化 vs 假进化</h2>
+
+  <div class="card">
+    <h3>一张图看懂差异</h3>
+    <div class="svg-container">
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="max-width:660px;">
+        <!-- Left: Real Evolution -->
+        <rect x="30" y="30" width="280" height="260" rx="16" fill="rgba(255,107,107,.05)" stroke="#ff6b6b" stroke-width="2"/>
+        <text x="170" y="60" text-anchor="middle" fill="#ff6b6b" font-size="16" font-weight="700">🔴 真进化</text>
+        <text x="170" y="85" text-anchor="middle" fill="#9898b8" font-size="11">模型级·权重变化</text>
+        <text x="170" y="110" text-anchor="middle" fill="#9898b8" font-size="10">✓ 神经网络上下参窗口多了</text>
+        <text x="170" y="130" text-anchor="middle" fill="#9898b8" font-size="10">✓ 能解更难的数学题</text>
+        <text x="170" y="150" text-anchor="middle" fill="#9898b8" font-size="10">✓ 能写更复杂的代码</text>
+        <text x="170" y="180" text-anchor="middle" fill="#9898b8" font-size="10">✗ 需要大量算力</text>
+        <text x="170" y="200" text-anchor="middle" fill="#9898b8" font-size="10">✗ 时间以周/月计</text>
+        <text x="170" y="230" text-anchor="middle" fill="#9898b8" font-size="10">✗ 安全风险高</text>
+        <text x="170" y="260" text-anchor="middle" fill="#9898b8" font-size="10">GPT-4 → GPT-4o 这种跨代升级</text>
+        <!-- Right: Fake Evolution -->
+        <rect x="390" y="30" width="280" height="260" rx="16" fill="rgba(84,160,255,.05)" stroke="#54a0ff" stroke-width="2"/>
+        <text x="530" y="60" text-anchor="middle" fill="#54a0ff" font-size="16" font-weight="700">🔵 假进化</text>
+        <text x="530" y="85" text-anchor="middle" fill="#9898b8" font-size="11">系统级·外围积累</text>
+        <text x="530" y="110" text-anchor="middle" fill="#9898b8" font-size="10">✗ 神经网络没变</text>
+        <text x="530" y="130" text-anchor="middle" fill="#9898b8" font-size="10">✗ 还是解不了更难的题</text>
+        <text x="530" y="150" text-anchor="middle" fill="#9898b8" font-size="10">✓ 但知道你的习惯</text>
+        <text x="530" y="180" text-anchor="middle" fill="#9898b8" font-size="10">✓ 快速（秒级写入）</text>
+        <text x="530" y="200" text-anchor="middle" fill="#9898b8" font-size="10">✓ 安全可控</text>
+        <text x="530" y="230" text-anchor="middle" fill="#9898b8" font-size="10">✓ 可审计</text>
+        <text x="530" y="260" text-anchor="middle" fill="#9898b8" font-size="10">Agent 记笔记、写 SOP</text>
+        <!-- Center arrow -->
+        <text x="350" y="160" text-anchor="middle" fill="#9898b8" font-size="12" font-weight="700">vs</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>详细对比表</h3>
+    <table>
+      <thead><tr><th>维度</th><th>真进化</th><th>假进化</th></tr></thead>
+      <tbody>
+        <tr><td><strong>发生层级</strong></td><td>模型参数（权重）</td><td>外部系统（记忆、技能、配置）</td></tr>
+        <tr><td><strong>改变方式</strong></td><td>梯度下降、PPO、SFT 等数学优化</td><td>写文件、记笔记、更新配置</td></tr>
+        <tr><td><strong>时间粒度</strong></td><td>周级、月级</td><td>秒级、分钟级</td></tr>
+        <tr><td><strong>计算成本</strong></td><td>高（GPU 时间、电力、数据库）</td><td>极低（几个文件写入）</td></tr>
+        <tr><td><strong>安全性</strong></td><td>不可逆——权重改了就回不去</td><td>可逆——删掉记忆就恢复</td></tr>
+        <tr><td><strong>可审计性</strong></td><td>差——权重几百亿参数，没人看得懂</td><td>好——文件内容就是计账本</td></tr>
+        <tr><td><strong>能力边界</strong></td><td>可以提升（解更难的题）</td><td>不能提升——只能让平台更符合你</td></tr>
+        <tr><td><strong>个性化</strong></td><td>通用（所有用户同一个模型）</td><td>专属（你的记忆只对你有效）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>为什么“假进化”也值得做？</h3>
+    <p>假进化虽然不改变模型能力，但对用户体验有<strong>真实且重要</strong>的提升：</p>
+    <div class="highlight hl-compare">
+      <strong>1. 提升速度快</strong>：写一个记忆只要几秒，训练一个模型要几周。<br><br>
+      <strong>2. 可控可审计</strong>：不满意就删掉记忆，不会说“不好意思权重已经改了”。<br><br>
+      <strong>3. 个性化</strong>：模型是通用的，但你的业务场景是专属的。记忆系统能让通用模型服务于你的专属需求。<br><br>
+      <strong>4. 安全</strong>：不会因为自动训练引入偏见或毒性数据。
+    </div>
+    <div class="highlight hl-green">
+      <strong>最佳实践</strong>：两者结合。用<strong>假进化</strong>做快速迭代（记忆、技能、规则），用<strong>真进化</strong>做深度提升（模型训练）。
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CH4: 业务映射 ==================== -->
+<section class="section" id="ch4">
+  <h2 class="section-title">第四章 <span class="tag tag-compare">业务</span> 映射到客服场景</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>🔴 真进化在客服中</h3>
+      <table>
+        <tr><td><strong>生成答案</strong></td><td>模型生成客服回复</td></tr>
+        <tr><td><strong>验证器</strong></td><td>用户满意度、是否解决、是否转人工</td></tr>
+        <tr><td><strong>筛选</strong></td><td>Badcase 分析中「好的处理案例」</td></tr>
+        <tr><td><strong>微调</strong></td><td>基于 Badcase 优化 SKILL/规则</td></tr>
+      </table>
+      <p style="font-size:.9em;margin-top:12px">你做的《Badcase 快速迭代框架》就是<strong>人工驱动的 Self-Improvement</strong>——人在闭环中扮演“验证器”和“策略更新”的角色。</p>
+    </div>
+
+    <div class="card">
+      <h3>🔵 假进化在客服中</h3>
+      <table>
+        <tr><td><strong>记忆</strong></td><td>记住用户偏好、业务约定</td></tr>
+        <tr><td><strong>技能</strong></td><td>标准化客服流程的 SOP</td></tr>
+        <tr><td><strong>反思</strong></td><td>每日复盘“今天哪些策略有效”</td></tr>
+        <tr><td><strong>上下文</strong></td><td>当前会话中实时调整语气和策略</td></tr>
+      </table>
+      <p style="font-size:.9em;margin-top:12px">这些都是系统层面的积累，模型没变，但平台越来越懂你。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CH5: 最新前沿 ==================== -->
+<section class="section" id="ch5">
+  <h2 class="section-title">第五章 <span class="tag tag-compare">前沿</span> 自进化与当下最新实践</h2>
+
+  <div class="card">
+    <h3>5.1 从“训练时进化”到“推理时进化”</h3>
+    <p>传统 Self-Improvement 都在<strong>训练阶段</strong>发生——需要重新训练模型权重，耗时耗力。2024 年后，一个新范式冒出头：<strong>推理时计算</strong>（Test-time Compute / Inference-time Training）。</p>
+    <div class="highlight hl-compare">
+      <strong>旧范式</strong>：训练时花 10 万美元训练 3 个月 → 模型变强<br>
+      <strong>新范式</strong>：推理时花 10 秒思考 100 步 → 当前这次回答变强<br>
+      <strong>区别</strong>：不改权重，只改推理过程。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>5.2 Claude Loop：连续自我改进的运行时模式</h3>
+    <p>Claude 在 2026 年 6 月推出的 <strong>Loop</strong> 机制，就是一种运行时的 Self-Improvement：</p>
+    <div class="code">
+用户任务: "修复这个 bug"
+    ↓
+Loop 1: Claude 推理出一个修复方案
+    ↓
+检查: 运行测试用例
+    ↓
+失败: 测试用例未通过 → 生成错误分析
+    ↓
+Loop 2: 基于错误修正方案
+    ↓
+检查: 重新运行测试用例
+    ↓
+成功: 输出最终结果</div>
+    <p>这和传统 Self-Improvement 的关系：</p>
+    <div class="highlight hl-compare">
+      <strong>Self-Improvement</strong> 是原理层——“怎么让模型通过反馈变强”<br>
+      <strong>Loop</strong> 是工程层——“把 Self-Improvement 做成一个持续运行的产品机制”<br><br>
+      Loop = Self-Improvement 的 <strong>工程化实现</strong>。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>5.3 Self-Play：自我博弈的极致</h3>
+    <p>比 Loop 更激进的是 <strong>Self-Play</strong>（自我博弈），DeepMind 的 AlphaProof、AlphaGeometry 2 以及 OpenAI 的 o1 都在用这个范式：</p>
+    <div class="code">
+第1步: 模型生成一个答案
+第2步: 模型生成一个挑战——“找出这个答案的漏洞”
+第3步: 模型根据挑战修复答案
+第4步: 模型生成更强的挑战...
+→ 循环直到答案无懈可击</div>
+    <p>这和 Self-Improvement 的关系：</p>
+    <div class="highlight hl-compare">
+      <strong>Self-Improvement</strong>: 模型 vs 验证器<br>
+      <strong>Self-Play</strong>: 模型 vs <strong>自己</strong>（自己生成挑战来攻击自己）<br><br>
+      Self-Play 是 Self-Improvement 的<strong>强化版</strong>——不需要外部验证器，模型自己就是自己的对手。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>5.4 关系总结</h3>
+    <div class="svg-container">
+      <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="max-width:660px;">
+        <rect x="20" y="50" width="160" height="100" rx="12" fill="rgba(255,107,107,.1)" stroke="#ff6b6b" stroke-width="2"/>
+        <text x="100" y="85" text-anchor="middle" fill="#ff6b6b" font-size="12" font-weight="700">Self-Improvement</text>
+        <text x="100" y="105" text-anchor="middle" fill="#9898b8" font-size="10">原理层</text>
+        <text x="100" y="120" text-anchor="middle" fill="#9898b8" font-size="10">自举循环</text>
+        <line x1="180" y1="100" x2="260" y2="100" stroke="#9898b8" stroke-width="1.5" marker-end="url(#ar)"/>
+        <rect x="270" y="50" width="160" height="100" rx="12" fill="rgba(84,160,255,.1)" stroke="#54a0ff" stroke-width="2"/>
+        <text x="350" y="85" text-anchor="middle" fill="#54a0ff" font-size="12" font-weight="700">Loop</text>
+        <text x="350" y="105" text-anchor="middle" fill="#9898b8" font-size="10">工程层</text>
+        <text x="350" y="120" text-anchor="middle" fill="#9898b8" font-size="10">运行时实现</text>
+        <line x1="430" y1="100" x2="510" y2="100" stroke="#9898b8" stroke-width="1.5" marker-end="url(#ar)"/>
+        <rect x="520" y="50" width="160" height="100" rx="12" fill="rgba(150,206,180,.1)" stroke="#96ceb4" stroke-width="2"/>
+        <text x="600" y="85" text-anchor="middle" fill="#96ceb4" font-size="12" font-weight="700">Self-Play</text>
+        <text x="600" y="105" text-anchor="middle" fill="#9898b8" font-size="10">强化版</text>
+        <text x="600" y="120" text-anchor="middle" fill="#9898b8" font-size="10">自我博弈</text>
+        <text x="350" y="170" text-anchor="middle" fill="#9898b8" font-size="10">从原理到工程化到极致形态</text>
+      </svg>
+    </div>
+    <p style="text-align:center;color:var(--muted)">从左到右：原理 → 产品化 → 极致形态。三者同根同源：都是让模型通过自身输出迭代提升。</p>
+  </div>
+</section>
+
+<!-- ==================== QUIZ ==================== -->
+<div class="quiz">
+  <h3>📝 测验</h3>
+  <p><strong>Q1：STaR 的五步循环中，第二步是什么？</strong></p>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">A. 微调</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">B. 验证</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">C. 筛选</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">D. 迭代</div>
+  <div class="qa">✅ B. 验证。STaR = 生成 → 验证 → 筛选 → 微调 → 迭代。</div>
+
+  <p><strong>Q2：以下哪个是「假进化」的特征？</strong></p>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">A. 神经网络权重发生变化</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">B. 能解更难的数学题</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">C. 写入记忆文件，下次对话读取</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">D. 需要大量 GPU 计算</div>
+  <div class="qa">✅ C. 写入记忆文件是系统级积累，不涉及模型权重变化，属于假进化。</div>
+
+  <p><strong>Q3：Self-Play 与 Self-Improvement 的核心区别是什么？</strong></p>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">A. Self-Play 需要外部验证器，Self-Improvement 不需要</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">B. Self-Improvement 需要外部验证器，Self-Play 不需要</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">C. 两者完全一样</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">D. Self-Play 只能用于游戏</div>
+  <div class="qa">✅ B. Self-Improvement 通常需要外部验证器判断好坏，而 Self-Play 中模型自己生成挑战攻击自己，不需要外部验证器。</div>
+</div>
+
+</div>
+</body>
+</html>
