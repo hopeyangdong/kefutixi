@@ -82,6 +82,7 @@
   <a href="#ch4">第四章 · 映射到业务场景</a>
   <a href="#ch5">第五章 · 与最新前沿的关系</a>
   <a href="#ch6">第六章 · 自动化在「路」上的位置</a>
+  <a href="#ch7">第七章 · 从用户视角看自进化</a>
 </div>
 
 <!-- ==================== CH1: 真进化 ==================== -->
@@ -720,6 +721,371 @@ Loop 2: 基于错误修正方案
   </div>
 </section>
 
+<!-- ==================== CH7: 从用户视角看自进化 ==================== -->
+<style>.tag-user{background:rgba(255,159,243,.2);color:var(--g6);border:1px solid rgba(255,159,243,.3)}</style>
+<section class="section" id="ch7">
+  <h2 class="section-title">第七章 <span class="tag tag-user">用户视角</span> 从用户视角看自进化</h2>
+  <p style="color:var(--muted);margin-bottom:24px">前六章回答了「AI 怎么进化」——真进化改权重，假进化改系统。<br>这一章翻转镜头：<strong>用户自己怎么和 AI 共同进化？</strong> 引入 Prompt 四象限模型，把「人的认知」也纳入飞轮。</p>
+
+  <!-- 7.1 背景 -->
+  <div class="card">
+    <h3>7.1 背景：从 AI 视角到用户视角</h3>
+    <p>前六章的视角始终聚焦在 AI 侧：真进化关心模型权重如何迭代，假进化关心外围系统如何积累，自动化七阶段关心人机分工如何演变。但有一个关键角色被忽略了——<strong>用户自身的认知状态</strong>。</p>
+    <p>同一个 AI 系统，给一个新手客服用和给一个资深运营用，效果截然不同。差异不在模型，而在<strong>用户知道什么、不知道什么、能不能说清楚自己知道什么</strong>。</p>
+    <p>Anthropic 研究员 Amanda Johansson 在 2025 WAIC 分享了一个框架：<strong>Prompt 四象限模型</strong>——借鉴 Johari Window（周哈里窗）的结构，把用户与 AI 的协作空间分成四个象限，每个象限对应不同的协作策略。</p>
+    <div class="cite">
+      <div class="cite-icon">📄</div>
+      <div><strong>Amanda Johansson, Anthropic</strong> · WAIC 2025 演讲<br>基于 Johari Window 改编的 Prompt 四象限框架，用于分析用户-AI 协作模式。<br>核心观点：用户的认知边界决定了 AI 能发挥的最大价值。</div>
+    </div>
+  </div>
+
+  <!-- 7.2 四象限模型 -->
+  <div class="card">
+    <h3>7.2 Prompt 四象限模型</h3>
+    <p>根据用户<strong>「能否描述需求」</strong>和<strong>「能否判断结果」</strong>两个维度，将协作空间分为四个象限：</p>
+    <div class="svg-container">
+      <svg viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg" style="max-width:660px;">
+        <!-- Axis labels -->
+        <text x="350" y="25" text-anchor="middle" fill="#e2e2ea" font-size="13" font-weight="700">Prompt 四象限模型</text>
+        <text x="350" y="48" text-anchor="middle" fill="#9898b8" font-size="10">能否描述需求 →</text>
+        <text x="32" y="260" text-anchor="middle" fill="#9898b8" font-size="10" transform="rotate(-90, 32, 260)">能否判断结果 →</text>
+        <!-- Axis lines -->
+        <line x1="80" y1="70" x2="680" y2="70" stroke="#9898b8" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="80" y1="260" x2="680" y2="260" stroke="#9898b8" stroke-width="1.5"/>
+        <line x1="380" y1="70" x2="380" y2="450" stroke="#9898b8" stroke-width="1.5"/>
+        <line x1="80" y1="450" x2="680" y2="450" stroke="#9898b8" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- Axis end labels -->
+        <text x="230" y="62" text-anchor="middle" fill="#9898b8" font-size="10">✅ 能描述</text>
+        <text x="530" y="62" text-anchor="middle" fill="#9898b8" font-size="10">❌ 不能描述</text>
+        <text x="55" y="165" text-anchor="middle" fill="#9898b8" font-size="10" transform="rotate(-90, 55, 165)">✅ 能判断</text>
+        <text x="55" y="355" text-anchor="middle" fill="#9898b8" font-size="10" transform="rotate(-90, 55, 355)">❌ 不能判断</text>
+        <!-- Q1: Known Knowns (top-left) -->
+        <rect x="95" y="80" width="270" height="165" rx="14" fill="rgba(150,206,180,.08)" stroke="#96ceb4" stroke-width="2"/>
+        <text x="230" y="108" text-anchor="middle" fill="#96ceb4" font-size="15" font-weight="700">已知已知</text>
+        <text x="230" y="128" text-anchor="middle" fill="#96ceb4" font-size="11">Known Knowns</text>
+        <text x="230" y="152" text-anchor="middle" fill="#9898b8" font-size="10">能描述需求 + 能判断结果</text>
+        <text x="230" y="172" text-anchor="middle" fill="#9898b8" font-size="10">→ 直接交给 AI 执行</text>
+        <text x="230" y="198" text-anchor="middle" fill="#96ceb4" font-size="9">📦 积累：上下文库</text>
+        <text x="230" y="218" text-anchor="middle" fill="#9898b8" font-size="9">例：退款金额&lt;50 自动退</text>
+        <!-- Q2: Unknown Knowns (top-right) -->
+        <rect x="395" y="80" width="270" height="165" rx="14" fill="rgba(255,159,243,.08)" stroke="#ff9ff3" stroke-width="2"/>
+        <text x="530" y="108" text-anchor="middle" fill="#ff9ff3" font-size="15" font-weight="700">未知已知</text>
+        <text x="530" y="128" text-anchor="middle" fill="#ff9ff3" font-size="11">Unknown Knowns</text>
+        <text x="530" y="152" text-anchor="middle" fill="#9898b8" font-size="10">不能描述 + 能判断结果</text>
+        <text x="530" y="172" text-anchor="middle" fill="#9898b8" font-size="10">→ 与 AI 迭代，显化隐性标准</text>
+        <text x="530" y="198" text-anchor="middle" fill="#ff9ff3" font-size="9">📐 积累：规则/偏好库</text>
+        <text x="530" y="218" text-anchor="middle" fill="#9898b8" font-size="9">例：话术不对但说不清哪里不对</text>
+        <!-- Q3: Known Unknowns (bottom-left) -->
+        <rect x="95" y="275" width="270" height="165" rx="14" fill="rgba(84,160,255,.08)" stroke="#54a0ff" stroke-width="2"/>
+        <text x="230" y="303" text-anchor="middle" fill="#54a0ff" font-size="15" font-weight="700">已知未知</text>
+        <text x="230" y="323" text-anchor="middle" fill="#54a0ff" font-size="11">Known Unknowns</text>
+        <text x="230" y="347" text-anchor="middle" fill="#9898b8" font-size="10">能描述知识缺口 + 不能判断结果</text>
+        <text x="230" y="367" text-anchor="middle" fill="#9898b8" font-size="10">→ AI 提供决策框架，人做选择</text>
+        <text x="230" y="393" text-anchor="middle" fill="#54a0ff" font-size="9">📊 积累：决策库</text>
+        <text x="230" y="413" text-anchor="middle" fill="#9898b8" font-size="9">例：骑手超时投诉最优处理方案？</text>
+        <!-- Q4: Unknown Unknowns (bottom-right) -->
+        <rect x="395" y="275" width="270" height="165" rx="14" fill="rgba(255,107,107,.08)" stroke="#ff6b6b" stroke-width="2"/>
+        <text x="530" y="303" text-anchor="middle" fill="#ff6b6b" font-size="15" font-weight="700">未知未知</text>
+        <text x="530" y="323" text-anchor="middle" fill="#ff6b6b" font-size="11">Unknown Unknowns</text>
+        <text x="530" y="347" text-anchor="middle" fill="#9898b8" font-size="10">不能描述 + 不能判断</text>
+        <text x="530" y="367" text-anchor="middle" fill="#9898b8" font-size="10">→ AI 主动探索、发现盲区</text>
+        <text x="530" y="393" text-anchor="middle" fill="#ff6b6b" font-size="9">🗺️ 积累：盲区地图</text>
+        <text x="530" y="413" text-anchor="middle" fill="#9898b8" font-size="9">例：新品类出现从未见过的投诉模式</text>
+        <!-- Center arrow: compound interest direction -->
+        <text x="350" y="470" text-anchor="middle" fill="#feca57" font-size="11" font-weight="600">⭐ 核心目标：持续把知识迁移到「已知已知」象限 → 复利效应</text>
+      </svg>
+    </div>
+    <div class="highlight hl-purple">
+      <strong>核心理解</strong>：四个象限不是固定标签，而是<strong>动态流动</strong>的。每次成功的人机协作，都在把知识从右下角（未知未知）推向左上角（已知已知）。这个迁移过程本身，就是「用户端的自进化」。
+    </div>
+  </div>
+
+  <!-- 7.3 四象限 × 假进化 -->
+  <div class="card">
+    <h3>7.3 四象限 × 假进化：精确映射</h3>
+    <p>四象限不是空中楼阁——它和第二章的假进化四层架构<strong>精确对应</strong>。每个象限的积累物，正好对应假进化的一个存储层：</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="color:#ff9ff3">象限</th>
+          <th style="color:#54a0ff">假进化层</th>
+          <th style="color:#feca57">积累物</th>
+          <th style="color:#96ceb4">机制</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>已知已知</strong><br>→ 上下文库</td>
+          <td>记忆层（Memory）</td>
+          <td>System Prompt、项目背景、用户偏好 → 写入文件</td>
+          <td>用户清楚需求，直接沉淀为<strong>可复用上下文</strong>，下次 AI 自动加载</td>
+        </tr>
+        <tr>
+          <td><strong>已知未知</strong><br>→ 决策库</td>
+          <td>技能层（Skills）</td>
+          <td>决策框架、方案对比模板、trade-off 清单</td>
+          <td>用户知道缺什么，AI 提供<strong>可复用决策 SOP</strong>，沉淀为 Skill 文件</td>
+        </tr>
+        <tr>
+          <td><strong>未知已知</strong><br>→ 规则/偏好库</td>
+          <td>反思日志（Reflection）</td>
+          <td>隐性标准 → 显性规则，偏好模式识别</td>
+          <td>对应第二章<strong>「偏好识别三层信号」</strong>——显式描述、纠正反馈、行为推断</td>
+        </tr>
+        <tr>
+          <td><strong>未知未知</strong><br>→ 盲区地图</td>
+          <td>第五章推理时进化 + Loop</td>
+          <td>AI 自主探索发现的新问题、新模式</td>
+          <td>AI 主动执行<strong>探索任务</strong>，人无法预设指令，依赖 Agent/Loop 自主发现</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="grid-2">
+      <div class="highlight hl-fake">
+        <strong>左半区（能描述）</strong><br><br>
+        用户能用语言表达 → AI 按指令执行<br>
+        沉淀方向：<strong>写文件</strong>（Memory、Skill）<br>
+        对应假进化的「<strong>显式积累</strong>」
+      </div>
+      <div class="highlight hl-real">
+        <strong>右半区（不能描述）</strong><br><br>
+        用户说不清楚 → AI 需要推理/探索<br>
+        沉淀方向：<strong>挖规则</strong>（反思、盲区发现）<br>
+        对应假进化的「<strong>隐式挖掘</strong>」
+      </div>
+    </div>
+  </div>
+
+  <!-- 7.4 四象限 × 自动化阶段 -->
+  <div class="card">
+    <h3>7.4 四象限 × 自动化阶段：用户认知决定自动化深度</h3>
+    <p>第六章的自动化七阶段并非技术限制——<strong>真正的瓶颈是用户的认知状态</strong>。你在哪个象限，就只能用到对应深度的自动化：</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="color:#ff9ff3">象限</th>
+          <th style="color:#54a0ff">对应自动化阶段</th>
+          <th style="color:#feca57">为什么</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>已知已知</strong></td>
+          <td>Stage 1-2：传统自动化 / Workflow</td>
+          <td>规则清楚，流程明确，<strong>直接编排执行</strong>，不需要 AI 推理</td>
+        </tr>
+        <tr>
+          <td><strong>已知未知</strong></td>
+          <td>Stage 3：Prompt + Human Review</td>
+          <td>用户知道缺口在哪，AI 填补能力空白，<strong>人做最终决策</strong></td>
+        </tr>
+        <tr>
+          <td><strong>未知已知</strong></td>
+          <td>Stage 4-5：Agent / Loop</td>
+          <td>用户说不清标准但能判好坏，需要 AI <strong>通过迭代学习你的标准</strong></td>
+        </tr>
+        <tr>
+          <td><strong>未知未知</strong></td>
+          <td>Stage 6-7：Harness / Self-Improvement</td>
+          <td>超出用户认知边界，需要 AI <strong>自主发现并解决新问题</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight hl-compare">
+      <strong>关键洞察</strong>：很多团队急着上 Agent/Loop（Stage 5-7），但用户连自己的业务规则都没梳理清楚（还停在「已知未知」象限）。<br><br>
+      <strong>正确路径</strong>：先在已知象限把上下文库和决策库建扎实 → 自然地支撑更深层的自动化。<br>
+      认知成熟度 = 自动化的天花板。
+    </div>
+  </div>
+
+  <!-- 7.5 三维飞轮 -->
+  <div class="card">
+    <h3>7.5 三维飞轮：改模型 × 改系统 × 改人</h3>
+    <p>第一章介绍了<strong>数据飞轮</strong>（Data Flywheel）——用户使用 → 产生数据 → 训练模型 → 模型变强 → 更多用户用。现在我们把飞轮从一维扩展到<strong>三维</strong>：</p>
+    <div class="svg-container">
+      <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" style="max-width:660px;">
+        <defs>
+          <marker id="arw" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#9898b8"/></marker>
+        </defs>
+        <text x="350" y="25" text-anchor="middle" fill="#e2e2ea" font-size="14" font-weight="700">三维飞轮模型</text>
+        <!-- Flywheel 1: 真进化 -->
+        <rect x="30" y="55" width="190" height="200" rx="16" fill="rgba(255,107,107,.06)" stroke="#ff6b6b" stroke-width="2"/>
+        <text x="125" y="82" text-anchor="middle" fill="#ff6b6b" font-size="13" font-weight="700">🔴 真进化飞轮</text>
+        <text x="125" y="102" text-anchor="middle" fill="#ff6b6b" font-size="10">改模型</text>
+        <text x="125" y="127" text-anchor="middle" fill="#9898b8" font-size="10">用户交互数据</text>
+        <text x="125" y="142" text-anchor="middle" fill="#9898b8" font-size="10">↓</text>
+        <text x="125" y="157" text-anchor="middle" fill="#9898b8" font-size="10">筛选 + 训练</text>
+        <text x="125" y="172" text-anchor="middle" fill="#9898b8" font-size="10">↓</text>
+        <text x="125" y="187" text-anchor="middle" fill="#9898b8" font-size="10">模型权重更新</text>
+        <text x="125" y="202" text-anchor="middle" fill="#9898b8" font-size="10">↓</text>
+        <text x="125" y="217" text-anchor="middle" fill="#9898b8" font-size="10">能力边界上升</text>
+        <text x="125" y="240" text-anchor="middle" fill="#ff6b6b" font-size="9">沉淀物：参数权重</text>
+        <!-- Flywheel 2: 假进化 -->
+        <rect x="255" y="55" width="190" height="200" rx="16" fill="rgba(84,160,255,.06)" stroke="#54a0ff" stroke-width="2"/>
+        <text x="350" y="82" text-anchor="middle" fill="#54a0ff" font-size="13" font-weight="700">🔵 假进化飞轮</text>
+        <text x="350" y="102" text-anchor="middle" fill="#54a0ff" font-size="10">改系统</text>
+        <text x="350" y="127" text-anchor="middle" fill="#9898b8" font-size="10">对话经验</text>
+        <text x="350" y="142" text-anchor="middle" fill="#9898b8" font-size="10">↓</text>
+        <text x="350" y="157" text-anchor="middle" fill="#9898b8" font-size="10">Memory / Skill 更新</text>
+        <text x="350" y="172" text-anchor="middle" fill="#9898b8" font-size="10">↓</text>
+        <text x="350" y="187" text-anchor="middle" fill="#9898b8" font-size="10">系统上下文增厚</text>
+        <text x="350" y="202" text-anchor="middle" fill="#9898b8" font-size="10">↓</text>
+        <text x="350" y="217" text-anchor="middle" fill="#9898b8" font-size="10">下次对话更精准</text>
+        <text x="350" y="240" text-anchor="middle" fill="#54a0ff" font-size="9">沉淀物：文件 / 配置</text>
+        <!-- Flywheel 3: 用户进化 -->
+        <rect x="480" y="55" width="190" height="200" rx="16" fill="rgba(255,159,243,.06)" stroke="#ff9ff3" stroke-width="2"/>
+        <text x="575" y="82" text-anchor="middle" fill="#ff9ff3" font-size="13" font-weight="700">🟣 用户进化飞轮</text>
+        <text x="575" y="102" text-anchor="middle" fill="#ff9ff3" font-size="10">改人</text>
+        <text x="575" y="127" text-anchor="middle" fill="#9898b8" font-size="10">协作中发现盲区</text>
+        <text x="575" y="142" text-anchor="middle" fill="#9898b8" font-size="10">↓</text>
+        <text x="575" y="157" text-anchor="middle" fill="#9898b8" font-size="10">未知 → 已知迁移</text>
+        <text x="575" y="172" text-anchor="middle" fill="#9898b8" font-size="10">↓</text>
+        <text x="575" y="187" text-anchor="middle" fill="#9898b8" font-size="10">认知地图扩展</text>
+        <text x="575" y="202" text-anchor="middle" fill="#9898b8" font-size="10">↓</text>
+        <text x="575" y="217" text-anchor="middle" fill="#9898b8" font-size="10">能提更好的 Prompt</text>
+        <text x="575" y="240" text-anchor="middle" fill="#ff9ff3" font-size="9">沉淀物：认知地图</text>
+        <!-- Connecting arrows -->
+        <line x1="220" y1="155" x2="255" y2="155" stroke="#9898b8" stroke-width="1.5" marker-end="url(#arw)"/>
+        <line x1="445" y1="155" x2="480" y2="155" stroke="#9898b8" stroke-width="1.5" marker-end="url(#arw)"/>
+        <!-- Bottom synthesis -->
+        <rect x="120" y="290" width="460" height="70" rx="14" fill="rgba(254,202,87,.06)" stroke="#feca57" stroke-width="2"/>
+        <text x="350" y="315" text-anchor="middle" fill="#feca57" font-size="12" font-weight="700">⭐ 复利效应 = 三个飞轮同时转</text>
+        <text x="350" y="338" text-anchor="middle" fill="#9898b8" font-size="10">已知知识厚度 ↑ · AI 调用成本 ↓ · 人机协作效率指数级增长</text>
+        <!-- Arrows to bottom -->
+        <line x1="125" y1="255" x2="200" y2="290" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="350" y1="255" x2="350" y2="290" stroke="#54a0ff" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="575" y1="255" x2="500" y2="290" stroke="#ff9ff3" stroke-width="1" stroke-dasharray="4,3"/>
+      </svg>
+    </div>
+    <div class="highlight hl-purple">
+      <strong>第三维飞轮（改人）的关键度量</strong><br><br>
+      📈 <strong>已知知识厚度</strong>：你能清晰描述的业务规则数量持续增加<br>
+      📉 <strong>AI 调用成本</strong>：同类任务需要的 prompt 长度和纠正次数持续下降<br>
+      🗺️ <strong>认知地图</strong>：个人 + AI 共同构建的领域认知越来越完整<br><br>
+      前六章只有两个飞轮。加上第三维后，<strong>进化不再只是 AI 的事——用户本身也在进化</strong>。
+    </div>
+  </div>
+
+  <!-- 7.6 客服场景实践 -->
+  <div class="card">
+    <h3>7.6 客服场景实践：四象限落地</h3>
+    <p>把四象限模型映射到真实客服场景，看每个象限的协作模式有何不同：</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3><span class="badge" style="background:rgba(150,206,180,.2);color:#96ceb4">已知已知</span> 退款金额 &lt; 50 自动退</h3>
+      <h4>场景</h4>
+      <p>业务规则明确：退款金额低于 50 元，无需审批，系统直接退款。客服知道规则，能判断执行是否正确。</p>
+      <h4>协作方式</h4>
+      <div class="flow-step flow-fake">
+        <div class="num">1</div>
+        <div>把规则写入 System Prompt / Context 文件</div>
+      </div>
+      <div class="flow-step flow-fake">
+        <div class="num">2</div>
+        <div>AI 每次自动加载，按规则执行</div>
+      </div>
+      <div class="flow-step flow-fake">
+        <div class="num">3</div>
+        <div>用户只需验证执行结果是否合规</div>
+      </div>
+      <h4>沉淀物</h4>
+      <p><strong>上下文库</strong>：退款规则文档、金额阈值配置、自动审批条件清单</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="badge" style="background:rgba(84,160,255,.2);color:#54a0ff">已知未知</span> 骑手超时投诉最优处理？</h3>
+      <h4>场景</h4>
+      <p>客服主管知道「骑手超时投诉处理不好」（能描述问题），但不知道最优方案是什么（不能判断好坏）。需要 AI 提供决策框架。</p>
+      <h4>协作方式</h4>
+      <div class="flow-step flow-fake">
+        <div class="num">1</div>
+        <div>用户描述问题域：「超时投诉如何分级处理？」</div>
+      </div>
+      <div class="flow-step flow-fake">
+        <div class="num">2</div>
+        <div>AI 输出方案对比表（补偿券 vs 退款 vs 优先配送）</div>
+      </div>
+      <div class="flow-step flow-fake">
+        <div class="num">3</div>
+        <div>用户选择方案 → 沉淀为决策 SOP</div>
+      </div>
+      <h4>沉淀物</h4>
+      <p><strong>决策库</strong>：超时投诉分级处理框架、方案 trade-off 模板、历史决策记录</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3><span class="badge" style="background:rgba(255,159,243,.2);color:#ff9ff3">未知已知</span> 话术不对但说不清哪里不对</h3>
+      <h4>场景</h4>
+      <p>客服质检员看到一条回复，直觉觉得「不对」，但无法用规则描述哪里有问题。这是典型的隐性知识——<strong>能判断，不能描述</strong>。</p>
+      <h4>协作方式</h4>
+      <div class="flow-step flow-fake">
+        <div class="num">1</div>
+        <div>AI 生成 3 个版本的回复话术</div>
+      </div>
+      <div class="flow-step flow-fake">
+        <div class="num">2</div>
+        <div>用户逐个判断：「这个好」「这个不行」</div>
+      </div>
+      <div class="flow-step flow-fake">
+        <div class="num">3</div>
+        <div>AI 反向分析差异：「你偏好的版本都有共性——开头先共情、避免机械模板感、用口语化表达」</div>
+      </div>
+      <div class="flow-step flow-fake">
+        <div class="num">4</div>
+        <div>显化为规则 → 写入偏好库</div>
+      </div>
+      <h4>沉淀物</h4>
+      <p><strong>规则/偏好库</strong>：话术质量标准（从隐性 → 显性）、回复风格偏好模型</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="badge badge-real">未知未知</span> 新品类出现未知投诉模式</h3>
+      <h4>场景</h4>
+      <p>平台上线了新品类（如鲜花配送），运营团队根本没预见到「花束到了但花瓣散了」这种投诉类型。<strong>既不能描述，也不能判断</strong>——因为认知边界外的东西连提问都不会。</p>
+      <h4>协作方式</h4>
+      <div class="flow-step flow-real">
+        <div class="num">1</div>
+        <div>AI 自动扫描新品类投诉数据，聚类分析</div>
+      </div>
+      <div class="flow-step flow-real">
+        <div class="num">2</div>
+        <div>发现异常模式：「鲜花品类中 43% 投诉涉及外观损坏而非缺件」</div>
+      </div>
+      <div class="flow-step flow-real">
+        <div class="num">3</div>
+        <div>主动通知运营：「发现新投诉模式，建议新增处理规则」</div>
+      </div>
+      <div class="flow-step flow-real">
+        <div class="num">4</div>
+        <div>运营确认 → 从「未知未知」迁移到「已知已知」</div>
+      </div>
+      <h4>沉淀物</h4>
+      <p><strong>盲区地图</strong>：新品类风险清单、异常模式发现记录、自动巡检规则</p>
+    </div>
+  </div>
+
+  <!-- 7.7 核心认知 -->
+  <div class="card">
+    <h3>7.7 核心认知</h3>
+    <div class="highlight hl-green">
+      <strong>第七章一句话</strong><br><br>
+      前六章回答了「AI 怎么进化」：真进化<strong>改权重</strong>，假进化<strong>改系统</strong>。<br>
+      第七章补上了缺失的第三维：用户通过四象限模型<strong>改认知</strong>。<br><br>
+      <strong>三维飞轮同时转</strong>，才是完整的自进化图景：<br><br>
+      🔴 真进化飞轮 → 沉淀到模型权重 → AI 的能力在变<br>
+      🔵 假进化飞轮 → 沉淀到记忆/技能/规则文件 → AI 的系统在变<br>
+      🟣 用户进化飞轮 → 沉淀到认知地图 → <strong>人在变</strong><br><br>
+      未知 → 已知的迁移速度 = 你的「AI 使用复利率」。<br>
+      <strong>最终目标不是 AI 越来越强，而是人 + AI 这个整体越来越强</strong>。
+    </div>
+  </div>
+
+</section>
+
 <!-- ==================== QUIZ ==================== -->
 <div class="quiz">
   <h3>📝 测验</h3>
@@ -743,6 +1109,20 @@ Loop 2: 基于错误修正方案
   <div class="qo" onclick="this.nextElementSibling.style.display='block'">C. 两者完全一样</div>
   <div class="qo" onclick="this.nextElementSibling.style.display='block'">D. Self-Play 只能用于游戏</div>
   <div class="qa">✅ B. Self-Improvement 通常需要外部验证器判断好坏，而 Self-Play 中模型自己生成挑战攻击自己，不需要外部验证器。</div>
+
+  <p><strong>Q4：Prompt 四象限模型中，「未知已知」象限的协作策略是什么？</strong></p>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">A. 直接交给 AI 执行</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">B. AI 提供决策框架，人做选择</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">C. 与 AI 迭代，通过反馈显化隐性标准</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">D. AI 主动探索发现盲区</div>
+  <div class="qa">✅ C. 未知已知 = 能判断但说不清楚。通过与 AI 迭代，把隐性知识（如话术偏好）变成显性规则，对应假进化的反思日志层。</div>
+
+  <p><strong>Q5：「三维飞轮」中，第三维飞轮的沉淀物是什么？</strong></p>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">A. 模型权重</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">B. 记忆/技能文件</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">C. 用户的认知地图</div>
+  <div class="qo" onclick="this.nextElementSibling.style.display='block'">D. 训练数据集</div>
+  <div class="qa">✅ C. 第三维飞轮是「改人」——沉淀到用户的认知地图。真进化沉淀权重（改模型），假进化沉淀文件（改系统），第三维沉淀认知（改人）。</div>
 </div>
 
 </div>
