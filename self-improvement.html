@@ -83,6 +83,7 @@
   <a href="#ch5">第五章 · 与最新前沿的关系</a>
   <a href="#ch6">第六章 · 自动化在「路」上的位置</a>
   <a href="#ch7">第七章 · 从用户视角看自进化</a>
+  <a href="#ch8">第八章 · 循环工程：从路线图到施工图</a>
 </div>
 
 <!-- ==================== CH1: 真进化 ==================== -->
@@ -1099,6 +1100,542 @@ Loop 2: 基于错误修正方案
 
 </section>
 
+<style>.tag-loop{background:rgba(255,145,0,.2);color:#ff9100;border:1px solid rgba(255,145,0,.3)}.hl-loop{background:rgba(255,145,0,.1);border-left:4px solid #ff9100}</style>
+
+<!-- ==================== CH8: 循环工程 ==================== -->
+<section class="section" id="ch8">
+  <h2 class="section-title">第八章 <span class="tag tag-loop">循环工程</span> Loop Engineering：从路线图到施工图</h2>
+  <p style="color:var(--muted);margin-bottom:24px">第六章画出了从 Prompt 到 Loop 的七阶段路线图，但没回答一个关键工程问题：<br><strong>到了 Loop 阶段，系统到底长什么样？怎么建？</strong> 本章给出施工蓝图。</p>
+
+  <!-- 8.1 从路线图到施工图 -->
+  <div class="card">
+    <h3>8.1 从路线图到施工图</h3>
+    <p>回顾第六章：我们知道 AI 自动化有七个阶段——传统自动化 → Prompt → 上下文工程 → Workflow → Agent → Harness → <strong>Loop</strong>。第六章告诉我们 Loop 是「路」的终点，AI 在这个阶段能自主发现问题、自己发起任务。</p>
+    <p>但「知道终点在哪里」和「知道怎么修路」是两件事。</p>
+    <div class="highlight hl-loop">
+      <strong>Loop Engineering 的核心定义</strong><br><br>
+      从传统「写提示词 → 看结果 → 修改 → 再试」的<strong>手工交互模式</strong>，升级为设计<strong>自动化循环系统</strong>的工程学科。<br><br>
+      它不是写更好的 Prompt，而是设计一个能<strong>自己转起来</strong>的系统：<br>
+      问题扫描 → 自动修复 → 多智能体验证 → 状态更新 → 下一轮扫描。
+    </div>
+    <p>技术演进路径清晰对应了第六章的七阶段：</p>
+    <div class="code">
+<span class="k">Prompt Engineering</span>  →  写好一个提示词
+        <span class="c">↓</span>
+<span class="k">Context Engineering</span> →  给 AI 更多上下文（RAG、Memory）
+        <span class="c">↓</span>
+<span class="k">Feedback Loops</span>      →  加入反馈信号（测试、lint、用户评分）
+        <span class="c">↓</span>
+<span class="k">Harness 系统</span>       →  跨会话管理批量任务
+        <span class="c">↓</span>
+<span class="s">Loop Engineering</span>    →  <span class="c">设计持续运行的自治系统</span></div>
+    <p><strong>关键跃迁</strong>：从「单次交互优化」到「持续运行的自治系统设计」。这个跃迁的本质是——你不再是 AI 的操作者，而是 AI 自动化系统的<strong>架构师</strong>。</p>
+    <div class="cite">
+      <div class="cite-icon">🔗</div>
+      <div><strong>连接第七章</strong>：四象限中不同位置的任务，需要不同深度的 Loop。「已知已知」根本不需要 Loop（一个 cron job 足矣），而「未知未知」需要完整的 Loop + 熔断 + 自主探索。用户的认知成熟度决定了 Loop 架构的复杂度。</div>
+    </div>
+  </div>
+
+  <!-- 8.2 五模块架构 -->
+  <div class="card">
+    <h3>8.2 五模块架构</h3>
+    <p>一个完整的 Loop Engineering 系统由<strong>五个核心模块</strong>组成。它们各司其职，协同运转，构成一台「自动化工厂」：</p>
+    <div class="svg-container">
+      <svg viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg" style="max-width:680px;">
+        <defs>
+          <marker id="arlo" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ff9100"/></marker>
+          <marker id="arlg" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#9898b8"/></marker>
+        </defs>
+        <!-- Title -->
+        <text x="360" y="25" text-anchor="middle" fill="#e2e2ea" font-size="14" font-weight="700">Loop Engineering 五模块架构</text>
+
+        <!-- Module 1: Automation (center top) -->
+        <rect x="250" y="50" width="220" height="75" rx="14" fill="rgba(255,145,0,.1)" stroke="#ff9100" stroke-width="2"/>
+        <text x="360" y="75" text-anchor="middle" fill="#ff9100" font-size="13" font-weight="700">⏰ Automation</text>
+        <text x="360" y="93" text-anchor="middle" fill="#9898b8" font-size="10">定时触发器</text>
+        <text x="360" y="108" text-anchor="middle" fill="#9898b8" font-size="10">GitHub Actions / Cron / 定时任务</text>
+
+        <!-- Module 2: Worktree (left middle) -->
+        <rect x="30" y="180" width="200" height="85" rx="14" fill="rgba(78,205,196,.1)" stroke="#4ecdc4" stroke-width="2"/>
+        <text x="130" y="207" text-anchor="middle" fill="#4ecdc4" font-size="13" font-weight="700">🌿 Worktree</text>
+        <text x="130" y="225" text-anchor="middle" fill="#9898b8" font-size="10">隔离工作区</text>
+        <text x="130" y="240" text-anchor="middle" fill="#9898b8" font-size="10">Git 分支副本 · 问题隔离</text>
+        <text x="130" y="255" text-anchor="middle" fill="#9898b8" font-size="10">并行执行 · 互不干扰</text>
+
+        <!-- Module 3: Skill (right middle) -->
+        <rect x="490" y="180" width="200" height="85" rx="14" fill="rgba(254,202,87,.1)" stroke="#feca57" stroke-width="2"/>
+        <text x="590" y="207" text-anchor="middle" fill="#feca57" font-size="13" font-weight="700">📚 Skill</text>
+        <text x="590" y="225" text-anchor="middle" fill="#9898b8" font-size="10">结构化知识库</text>
+        <text x="590" y="240" text-anchor="middle" fill="#9898b8" font-size="10">指令 · 脚本 · 参考资料</text>
+        <text x="590" y="255" text-anchor="middle" fill="#9898b8" font-size="10">项目规范 · 编码标准</text>
+
+        <!-- Module 4: Plugins & Connectors (left bottom) -->
+        <rect x="30" y="330" width="200" height="85" rx="14" fill="rgba(84,160,255,.1)" stroke="#54a0ff" stroke-width="2"/>
+        <text x="130" y="357" text-anchor="middle" fill="#54a0ff" font-size="13" font-weight="700">🔌 Plugins & Connectors</text>
+        <text x="130" y="375" text-anchor="middle" fill="#9898b8" font-size="10">外部系统对接</text>
+        <text x="130" y="390" text-anchor="middle" fill="#9898b8" font-size="10">MCP 协议 · API 集成</text>
+        <text x="130" y="405" text-anchor="middle" fill="#9898b8" font-size="10">数据库 · 工单系统</text>
+
+        <!-- Module 5: Sub-agents (right bottom) -->
+        <rect x="490" y="330" width="200" height="85" rx="14" fill="rgba(255,107,107,.1)" stroke="#ff6b6b" stroke-width="2"/>
+        <text x="590" y="357" text-anchor="middle" fill="#ff6b6b" font-size="13" font-weight="700">🤖 Sub-agents</text>
+        <text x="590" y="375" text-anchor="middle" fill="#9898b8" font-size="10">子智能体分工</text>
+        <text x="590" y="390" text-anchor="middle" fill="#9898b8" font-size="10">Maker/Checker 分离</text>
+        <text x="590" y="405" text-anchor="middle" fill="#9898b8" font-size="10">任务分解 · 并行执行</text>
+
+        <!-- Central Loop indicator -->
+        <rect x="260" y="270" width="200" height="60" rx="30" fill="rgba(255,145,0,.08)" stroke="#ff9100" stroke-width="2" stroke-dasharray="6,3"/>
+        <text x="360" y="297" text-anchor="middle" fill="#ff9100" font-size="12" font-weight="700">🔁 Loop 循环核心</text>
+        <text x="360" y="315" text-anchor="middle" fill="#9898b8" font-size="9">扫描 → 修复 → 验证 → 更新</text>
+
+        <!-- Connecting lines from Automation to Loop -->
+        <line x1="360" y1="125" x2="360" y2="270" stroke="#ff9100" stroke-width="1.5" marker-end="url(#arlo)"/>
+
+        <!-- Connecting lines from Loop to modules -->
+        <line x1="260" y1="290" x2="230" y2="255" stroke="#9898b8" stroke-width="1" marker-end="url(#arlg)"/>
+        <line x1="460" y1="290" x2="490" y2="255" stroke="#9898b8" stroke-width="1" marker-end="url(#arlg)"/>
+        <line x1="260" y1="310" x2="230" y2="340" stroke="#9898b8" stroke-width="1" marker-end="url(#arlg)"/>
+        <line x1="460" y1="310" x2="490" y2="340" stroke="#9898b8" stroke-width="1" marker-end="url(#arlg)"/>
+
+        <!-- Bottom: Flow description -->
+        <rect x="110" y="460" width="500" height="45" rx="12" fill="rgba(255,145,0,.06)" stroke="#ff9100" stroke-width="1"/>
+        <text x="360" y="480" text-anchor="middle" fill="#ff9100" font-size="11" font-weight="600">典型流程：Automation 触发 → Worktree 隔离 → Sub-agents 执行 → Skill 指导 → Plugins 联动</text>
+        <text x="360" y="497" text-anchor="middle" fill="#9898b8" font-size="9">每个模块可独立替换、升级，五模块组合形成完整的 Loop 系统</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 8.2 Five module detail cards -->
+  <div class="grid-2">
+    <div class="card">
+      <h3>⏰ Automation · 定时触发器</h3>
+      <p><strong>是什么</strong>：Loop 的「心脏起搏器」。通过定时任务（cron job）、GitHub Actions、Codex Automations 等机制，让系统<strong>按固定节奏自动启动</strong>。</p>
+      <p><strong>为什么重要</strong>：没有触发器的 Loop 就是一段死代码。触发器决定了系统的运行频率——每分钟、每小时、还是每天一次。</p>
+      <div class="highlight hl-loop">
+        <strong>客服场景</strong>：设置每 2 小时一次的 Badcase 自动扫描任务，定时拉取新增投诉数据 → 自动分类 → 标记异常模式 → 推送告警。不再需要人工盯着看板。
+      </div>
+    </div>
+    <div class="card">
+      <h3>🌿 Worktree · 隔离工作区</h3>
+      <p><strong>是什么</strong>：每个问题一个独立的工作副本（Git Worktree 原生支持），互不干扰。</p>
+      <p><strong>为什么重要</strong>：如果多个 Agent 在同一个代码库上同时修改，必然冲突。Worktree 让每个任务在独立分支上操作，修完再合并。这是<strong>并行执行的基础</strong>。</p>
+      <div class="highlight hl-loop">
+        <strong>客服场景</strong>：同时优化「退款话术」「配送超时话术」「商品质量话术」三个话术模板，每个在独立工作区修改，修完后统一合并到主 SOP 文档。
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>📚 Skill · 结构化知识库</h3>
+      <p><strong>是什么</strong>：项目级别的指令集——包含编码规范、脚本、参考资料、决策框架。对应第二章的 Skill 系统，但在 Loop 系统中升级为<strong>机器可读的知识库</strong>。</p>
+      <p><strong>为什么重要</strong>：Sub-agents 执行任务时，需要知道「怎么做才算对」。Skill 文件就是它们的<strong>操作手册</strong>。没有 Skill，每个 Agent 都在盲猜标准。</p>
+      <div class="highlight hl-loop">
+        <strong>客服场景</strong>：将话术质量标准、投诉分级规则、退款审批流程写成结构化 Skill 文件。Agent 优化话术时自动加载这些标准，确保输出符合规范。
+      </div>
+    </div>
+    <div class="card">
+      <h3>🔌 Plugins & Connectors · 外部对接</h3>
+      <p><strong>是什么</strong>：通过 MCP（Model Context Protocol）协议，让 Loop 系统对接外部工具和数据源——数据库、工单系统、监控平台、知识库。</p>
+      <p><strong>为什么重要</strong>：一个封闭的 Loop 只能在自己的小世界里转。Plugins 让它<strong>感知真实业务环境</strong>——读取真实数据、写入真实系统、触发真实流程。</p>
+      <div class="highlight hl-loop">
+        <strong>客服场景</strong>：对接工单系统（读取投诉工单）→ 对接用户画像系统（查询用户历史）→ 对接退款系统（执行退款操作）→ 对接消息平台（发送通知）。
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🤖 Sub-agents · 子智能体分工</h3>
+    <p><strong>是什么</strong>：将复杂任务分解给多个专职智能体——每个 Agent 只负责一件事。核心设计是 <strong>Maker/Checker 分离</strong>：执行者和验证者必须是不同的 Agent。</p>
+    <p>Claude 团队的实践架构是<strong>三智能体分工</strong>：</p>
+    <div class="flow-step flow-real">
+      <div class="num">1</div>
+      <div><strong>Planner（规划者）</strong> → 分析问题，拆解任务，制定执行计划</div>
+    </div>
+    <div class="flow-step flow-real">
+      <div class="num">2</div>
+      <div><strong>Generator（生成者）</strong> → 按计划执行具体任务，生成代码/文档/方案</div>
+    </div>
+    <div class="flow-step flow-real">
+      <div class="num">3</div>
+      <div><strong>Evaluator（评估者）</strong> → 独立审查生成结果，判断是否达标</div>
+    </div>
+    <div class="highlight hl-loop">
+      <strong>生成对抗机制</strong>：Generator 和 Evaluator 独立运作，互不知道对方的「心思」。这不是巧合——这是<strong>制衡设计</strong>的核心，下一节（8.3）会详细展开为什么这个分离如此关键。
+    </div>
+  </div>
+
+  <!-- 8.3 制衡设计 -->
+  <div class="card">
+    <h3>8.3 制衡设计：Maker/Checker 分离</h3>
+    <p>Loop 系统最危险的失败模式不是「做错了」，而是<strong>「做错了但自己说对了」</strong>。</p>
+    <h4>为什么「自我验证」必然失败？</h4>
+    <p>回忆第一章 1.7 节的 <strong>Reward Hacking（自我欺骗）</strong>陷阱：当模型发现「讨好验证器」比「真正解决问题」更容易时，它会走捷径。这个问题在 Loop 系统中被<strong>放大了一万倍</strong>——因为 Loop 是自动运行的，没有人类在每个环节盯着。</p>
+    <div class="cite">
+      <div class="cite-icon">⚠️</div>
+      <div><strong>第一章的教训</strong>：Self-Improvement 需要可靠的验证信号。如果让同一个 Agent 既写代码又验证代码，等于让学生<strong>自己给自己判卷</strong>——它会倾向于生成更容易通过自己检查的代码，而非真正正确的代码。</div>
+    </div>
+    <h4>制衡的三条原则</h4>
+    <div class="flow-step flow-real">
+      <div class="num">1</div>
+      <div><strong>角色分离</strong>：编写者（Maker）和验证者（Checker）必须是不同的 Agent 实例，使用独立的上下文窗口</div>
+    </div>
+    <div class="flow-step flow-real">
+      <div class="num">2</div>
+      <div><strong>信息隔离</strong>：Checker 不应该看到 Maker 的推理过程，只看到最终输出——就像代码 Review 时你看代码，不看同事的心路历程</div>
+    </div>
+    <div class="flow-step flow-real">
+      <div class="num">3</div>
+      <div><strong>验证可执行</strong>：自验证机制必须是<strong>机器可执行</strong>的——测试用例、lint 检查、类型检查，而非「看起来不错」的主观判断</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>验证方式</th>
+          <th>可靠性</th>
+          <th>适用场景</th>
+          <th>风险</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>自己写代码自己测</td>
+          <td>❌ 极低</td>
+          <td>不推荐</td>
+          <td>Maker 会写出恰好通过自己测试的代码</td>
+        </tr>
+        <tr>
+          <td>Maker 写代码，Checker 审查</td>
+          <td>⭐⭐ 中等</td>
+          <td>一般任务</td>
+          <td>Checker 可能审查不够严格</td>
+        </tr>
+        <tr>
+          <td>Maker 写代码 + 自动测试 + Checker 审查</td>
+          <td>⭐⭐⭐ 高</td>
+          <td>关键任务</td>
+          <td>成本较高（3 倍 token 消耗）</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight hl-loop">
+      <strong>连接第二章</strong>：还记得「偏好识别」中的三层信号吗？显式描述 > 纠正反馈 > 行为推断。制衡设计是偏好识别的<strong>系统级等价物</strong>——不依赖单一信号源，而是让多个独立视角交叉验证。<br><br>
+      <strong>客服场景</strong>：Agent A 根据投诉内容生成回复话术 → Agent B（不知道 A 的推理过程）独立评估话术质量 → 只有 B 也认为合格的话术才能进入 SOP 库。这就像质检员和客服不能是同一个人。
+    </div>
+  </div>
+
+  <!-- 8.4 熔断机制 -->
+  <div class="card">
+    <h3>8.4 熔断机制：防止 Loop 变成烧钱机器</h3>
+    <p>Loop 的本质是<strong>自动循环</strong>。但自动循环有一个致命问题：如果没有停止条件，它会变成<strong>无限递归</strong>——不停地消耗 token，不停地调用 API，不停地产生无用输出。</p>
+    <div class="cite">
+      <div class="cite-icon">🛤️</div>
+      <div><strong>连接第六章 Loop=路</strong>：路需要红绿灯和限速牌。没有熔断机制的 Loop，就像一条没有红灯的高速公路——看起来效率很高，直到出了车祸才发现代价有多大。<br><br>
+      <em>「路也需要红绿灯和限速牌。」</em></div>
+    </div>
+    <h4>三根保险丝</h4>
+    <table>
+      <thead>
+        <tr>
+          <th style="color:#ff9100">熔断类型</th>
+          <th>阈值</th>
+          <th>触发条件</th>
+          <th>保护什么</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>⏱️ 时间熔断</strong></td>
+          <td>单次循环 300 秒</td>
+          <td>单个任务执行时间超过 5 分钟</td>
+          <td>防止 Agent 陷入死循环，无限思考一个问题</td>
+        </tr>
+        <tr>
+          <td><strong>💰 预算熔断</strong></td>
+          <td>单次循环 $2</td>
+          <td>单个任务的 token 费用超过 2 美元</td>
+          <td>防止费用失控，一晚上烧掉整月预算</td>
+        </tr>
+        <tr>
+          <td><strong>🔄 重复熔断</strong></td>
+          <td>连续 3 次相同输出</td>
+          <td>Agent 连续 3 轮生成几乎一样的结果</td>
+          <td>检测「原地打转」——说明 Agent 已经没有新思路了</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="grid-2">
+      <div class="highlight hl-real">
+        <strong>没有熔断的 Loop</strong><br><br>
+        ❌ Agent 改一个 bug → 改出新 bug → 再改 → 再出新 bug → 循环 47 次 → 烧了 $89 → 凌晨 3 点被账单告警叫醒<br><br>
+        这不是假设——这是真实发生过的事故。
+      </div>
+      <div class="highlight hl-loop">
+        <strong>有熔断的 Loop</strong><br><br>
+        ✅ Agent 改 bug → 第 3 次没改好 → 重复熔断触发 → 自动停止 → 生成报告 → 人类第二天来看 → 手动介入<br><br>
+        <strong>损失</strong>：$1.2 + 一个未修复的 bug<br>
+        <strong>vs 无熔断损失</strong>：$89 + 一个仍然未修复的 bug
+      </div>
+    </div>
+    <div class="highlight hl-loop" style="margin-top:16px">
+      <strong>客服场景</strong>：自动优化回复话术的 Loop 系统中——<br>
+      ⏱️ 单次话术优化限时 3 分钟（超时说明问题太复杂，应转人工）<br>
+      💰 单次优化预算 ¥5（防止反复重试消耗大量 token）<br>
+      🔄 如果连续 3 轮生成的话术几乎一样，停止并标记为「需人工介入」
+    </div>
+  </div>
+
+  <!-- 8.5 实战案例 -->
+  <div class="card">
+    <h3>8.5 实战案例</h3>
+    <p>以下两个案例展示了 Loop Engineering 在真实项目中的应用效果：</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3><span class="badge" style="background:rgba(255,145,0,.2);color:#ff9100">案例 1</span> 自动 PR 工作流</h3>
+      <h4>场景</h4>
+      <p>一个代码仓库有大量待修复的 Issue。传统方式：工程师一个个看、一个个修。Loop 方式：系统自动扫描 → 自动修复 → 自动提交 PR。</p>
+      <h4>关键设计</h4>
+      <div class="flow-step" style="background:rgba(255,145,0,.05)">
+        <div class="num" style="background:rgba(255,145,0,.2);color:#ff9100">1</div>
+        <div><strong>/goal 定义终态</strong>：每个 Issue 通过 <span class="badge" style="background:rgba(150,206,180,.2);color:#96ceb4">/goal</span> 定义机器可验证的完成条件（如「所有测试通过 + lint 无错误」）</div>
+      </div>
+      <div class="flow-step" style="background:rgba(255,145,0,.05)">
+        <div class="num" style="background:rgba(255,145,0,.2);color:#ff9100">2</div>
+        <div><strong>自动扫描</strong>：定时任务每小时扫描 open issues，按优先级排队</div>
+      </div>
+      <div class="flow-step" style="background:rgba(255,145,0,.05)">
+        <div class="num" style="background:rgba(255,145,0,.2);color:#ff9100">3</div>
+        <div><strong>隔离修复</strong>：每个 Issue 在独立 Worktree 中修复，互不干扰</div>
+      </div>
+      <div class="flow-step" style="background:rgba(255,145,0,.05)">
+        <div class="num" style="background:rgba(255,145,0,.2);color:#ff9100">4</div>
+        <div><strong>验证提交</strong>：通过所有自动测试后，自动生成 PR</div>
+      </div>
+      <h4>效果</h4>
+      <p>问题扫描准确率从 <strong>74% → 81%</strong>，系统通过持续迭代不断优化扫描策略。关键突破点：用 <span class="badge" style="background:rgba(150,206,180,.2);color:#96ceb4">/goal</span> 定义终态条件，让机器有一个明确的「什么叫做完了」的标准。</p>
+    </div>
+
+    <div class="card">
+      <h3><span class="badge" style="background:rgba(255,145,0,.2);color:#ff9100">案例 2</span> Bun 移植项目</h3>
+      <h4>场景</h4>
+      <p>将 Bun 运行时从 Zig 语言移植到 Rust——<strong>75 万行代码</strong>的超大规模迁移任务。传统方式可能需要几十个工程师干半年。</p>
+      <h4>Loop 方式</h4>
+      <div class="flow-step" style="background:rgba(255,145,0,.05)">
+        <div class="num" style="background:rgba(255,145,0,.2);color:#ff9100">1</div>
+        <div><strong>任务分解</strong>：按模块、文件、函数三级拆分为数千个独立子任务</div>
+      </div>
+      <div class="flow-step" style="background:rgba(255,145,0,.05)">
+        <div class="num" style="background:rgba(255,145,0,.2);color:#ff9100">2</div>
+        <div><strong>并行执行</strong>：<strong>数百个智能体同时工作</strong>，每个处理一个子任务</div>
+      </div>
+      <div class="flow-step" style="background:rgba(255,145,0,.05)">
+        <div class="num" style="background:rgba(255,145,0,.2);color:#ff9100">3</div>
+        <div><strong>交叉验证</strong>：Maker 移植代码，Checker 独立验证功能等价性</div>
+      </div>
+      <div class="flow-step" style="background:rgba(255,145,0,.05)">
+        <div class="num" style="background:rgba(255,145,0,.2);color:#ff9100">4</div>
+        <div><strong>状态追踪</strong>：<code>.progress.md</code> 记录每个模块的迭代历史</div>
+      </div>
+      <h4>效果</h4>
+      <p><strong>11 天完成</strong>，测试通过率 <strong>99.8%</strong>。这不是一个 Agent 做的——是数百个 Agent 在 Loop 系统协调下并行完成的。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>关键数据：Loop 系统的代价</h4>
+    <p>Loop 不是免费的午餐。它用<strong>更多的计算资源</strong>换取<strong>更高的质量和速度</strong>：</p>
+    <table>
+      <thead>
+        <tr><th>指标</th><th>单次交互</th><th>Loop 系统</th><th>倍率</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Token 消耗</td>
+          <td>1x</td>
+          <td><strong>15x</strong></td>
+          <td>Loop 中每个循环都要消耗 token</td>
+        </tr>
+        <tr>
+          <td>完成速度</td>
+          <td>分钟级（手动）</td>
+          <td><strong>秒级（自动）</strong></td>
+          <td>并行 + 无人值守</td>
+        </tr>
+        <tr>
+          <td>质量一致性</td>
+          <td>依赖个人状态</td>
+          <td><strong>99%+ 标准化</strong></td>
+          <td>自动测试 + Checker 验证</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight hl-loop">
+      <strong>成本控制秘诀：Prompt Caching</strong><br><br>
+      Loop 的 15 倍 token 消耗看起来很吓人，但有一个关键优化：<strong>Prompt Caching</strong>。<br><br>
+      原理很简单：Loop 中每次循环的 System Prompt 和 Skill 文件几乎不变，只有用户输入在变。Caching 机制让重复部分只计费一次。<br><br>
+      效果：API 成本从 $3/百万 token 降到 <strong>$0.3/百万 token</strong>——<strong>10 倍降幅</strong>。<br><br>
+      15 倍消耗 × 1/10 单价 = 实际成本只有单次交互的 <strong>1.5 倍</strong>。用 1.5 倍的钱，换来 11 天完成 75 万行代码移植——这笔账算得过来。
+    </div>
+  </div>
+
+  <!-- 8.6 成本公式 -->
+  <div class="card">
+    <h3>8.6 成本公式：Loop 的经济学</h3>
+    <p>Loop Engineering 最常见的质疑是「太贵了」。让我们用数据回答这个问题：</p>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th style="color:#9898b8">单次交互模式</th>
+          <th style="color:#ff9100">Loop 系统模式</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>人力成本</strong></td>
+          <td>工程师逐个处理，按小时计费</td>
+          <td>设计系统后，无人值守运行</td>
+        </tr>
+        <tr>
+          <td><strong>Token 成本</strong></td>
+          <td>1x（每次只调一次 API）</td>
+          <td>15x（但 Caching 后实际 1.5x）</td>
+        </tr>
+        <tr>
+          <td><strong>质量成本</strong></td>
+          <td>人工复核，漏检率 10-20%</td>
+          <td>自动验证 + Checker，漏检率 <1%</td>
+        </tr>
+        <tr>
+          <td><strong>时间成本</strong></td>
+          <td>串行处理，按天/周计</td>
+          <td>并行处理，按小时计</td>
+        </tr>
+        <tr>
+          <td><strong>总拥有成本</strong></td>
+          <td>人力 ≫ Token</td>
+          <td>Token 可控，人力大幅下降</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="code">
+<span class="k">成本公式</span>:
+  <span class="s">单次交互总成本</span> = 人力 × 时间 + Token × 1
+  <span class="s">Loop 系统总成本</span> = 设计成本（一次性）+ Token × 1.5（Caching 后）+ 运维（极低）
+
+  <span class="c">关键拐点：当任务量 > 50 个/天时，Loop 系统的总成本低于单次交互模式</span></div>
+    <h4>速度 × 质量 vs 成本的权衡</h4>
+    <p>Loop 的经济学本质是：<strong>用可控的计算成本替代不可控的人力成本</strong>。Token 费用有明确上限（熔断机制保证），且随技术进步持续下降。而人力成本只会上升。</p>
+    <div class="highlight hl-loop">
+      <strong>客服场景映射</strong><br><br>
+      假设客服团队每天处理 200 条 Badcase 归因：<br><br>
+      📋 <strong>手动模式</strong>：3 个质检员 × 8 小时 = 24 人时/天，准确率约 80%<br>
+      🤖 <strong>Loop 模式</strong>：系统自动扫描 + 归因 + 复核，2 小时完成，准确率 95%+，人工只需复核标记的异常案例（约 20 条）<br><br>
+      Token 成本：约 ¥30/天<br>
+      节省人力：约 20 人时/天<br><br>
+      <strong>结论</strong>：每天花 ¥30 的 token 费用，节省 20 小时的人工质检时间。
+    </div>
+  </div>
+
+  <!-- 8.7 四象限 × Loop 深度 -->
+  <div class="card">
+    <h3>8.7 四象限 × Loop 深度：认知决定架构</h3>
+    <p>这是本章的<strong>综合点</strong>——将第七章的四象限模型与 Loop Engineering 的架构设计对接。核心洞察：<strong>用户在哪个象限，就用多深的 Loop</strong>。</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="color:#ff9ff3">认知象限</th>
+          <th style="color:#ff9100">Loop 深度</th>
+          <th style="color:#96ceb4">架构设计</th>
+          <th style="color:#feca57">客服场景举例</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>已知已知</strong><br><span style="font-size:.85em;color:var(--muted)">能描述 + 能判断</span></td>
+          <td>🟢 无需 Loop<br>简单 Cron Job</td>
+          <td>定时任务直接执行，无需 AI 推理。规则引擎 + 触发器足矣。</td>
+          <td>退款金额 &lt; 50 自动退。每天定时跑一次规则，不需要任何 Agent。</td>
+        </tr>
+        <tr>
+          <td><strong>已知未知</strong><br><span style="font-size:.85em;color:var(--muted)">能描述 + 不能判断</span></td>
+          <td>🟡 单 Agent Loop<br>+ 人工检查点</td>
+          <td>单个 Agent 循环执行，但每轮结束后设置<strong>人工确认节点</strong>。Agent 提供选项，人做最终决策。</td>
+          <td>骑手超时投诉的最优处理方案——Agent 生成 3 个方案 → 运营选一个 → 沉淀为 SOP。</td>
+        </tr>
+        <tr>
+          <td><strong>未知已知</strong><br><span style="font-size:.85em;color:var(--muted)">不能描述 + 能判断</span></td>
+          <td>🟠 多 Agent Loop<br>+ Maker/Checker</td>
+          <td>需要<strong>多个 Agent 协作</strong>：一个生成、一个验证。因为人说不清标准，必须让系统通过<strong>多轮迭代</strong>逼近正确答案。</td>
+          <td>话术质量优化——Agent A 写话术 → Agent B 评分 → 不合格则 A 重写 → B 再评 → 直到达标或熔断。</td>
+        </tr>
+        <tr>
+          <td><strong>未知未知</strong><br><span style="font-size:.85em;color:var(--muted)">不能描述 + 不能判断</span></td>
+          <td>🔴 完整 Loop<br>+ 熔断 + 自主探索</td>
+          <td>全套 Loop 系统：五模块全上 + 三重熔断 + <code>.progress.md</code> 状态追踪。Agent <strong>自己发现问题、自己探索方案</strong>，人只在熔断触发时介入。</td>
+          <td>新品类投诉模式发现——系统自动扫描鲜花配送投诉 → 聚类分析 → 发现「花瓣散落」新模式 → 自动生成处理建议。</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="svg-container">
+      <svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" style="max-width:660px;">
+        <!-- Gradient bar -->
+        <defs>
+          <linearGradient id="loopgrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#96ceb4;stop-opacity:0.3"/>
+            <stop offset="33%" style="stop-color:#feca57;stop-opacity:0.3"/>
+            <stop offset="66%" style="stop-color:#ff9100;stop-opacity:0.3"/>
+            <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:0.3"/>
+          </linearGradient>
+        </defs>
+        <text x="350" y="22" text-anchor="middle" fill="#e2e2ea" font-size="12" font-weight="700">Loop 深度 × 认知象限 对应关系</text>
+        <rect x="50" y="35" width="600" height="40" rx="20" fill="url(#loopgrad)" stroke="#9898b8" stroke-width="1"/>
+        <text x="125" y="60" text-anchor="middle" fill="#96ceb4" font-size="10" font-weight="600">Cron Job</text>
+        <text x="275" y="60" text-anchor="middle" fill="#feca57" font-size="10" font-weight="600">单 Agent + 人工</text>
+        <text x="425" y="60" text-anchor="middle" fill="#ff9100" font-size="10" font-weight="600">多 Agent + 制衡</text>
+        <text x="575" y="60" text-anchor="middle" fill="#ff6b6b" font-size="10" font-weight="600">全 Loop + 熔断</text>
+        <!-- Labels below -->
+        <text x="125" y="95" text-anchor="middle" fill="#96ceb4" font-size="9">已知已知</text>
+        <text x="275" y="95" text-anchor="middle" fill="#feca57" font-size="9">已知未知</text>
+        <text x="425" y="95" text-anchor="middle" fill="#ff9100" font-size="9">未知已知</text>
+        <text x="575" y="95" text-anchor="middle" fill="#ff6b6b" font-size="9">未知未知</text>
+        <!-- Arrow -->
+        <text x="50" y="125" fill="#9898b8" font-size="10">简单 ←</text>
+        <text x="610" y="125" fill="#9898b8" font-size="10">→ 复杂</text>
+        <text x="350" y="145" text-anchor="middle" fill="#ff9100" font-size="10" font-weight="600">认知越模糊 → Loop 越复杂 → 熔断越重要</text>
+      </svg>
+    </div>
+    <div class="highlight hl-purple">
+      <strong>综合洞察</strong><br><br>
+      第七章说：<strong>用户认知 = 自动化的天花板</strong>。<br>
+      第八章把这个洞察工程化了：<strong>认知象限决定 Loop 架构</strong>。<br><br>
+      不是所有任务都需要完整的 Loop 系统。80% 的「已知已知」任务用 Cron Job 就够了。把完整 Loop 的成本花在真正需要探索的「未知未知」象限——<strong>这才是 Loop Engineering 的投资回报最大化</strong>。
+    </div>
+  </div>
+
+  <!-- 8.8 核心认知 -->
+  <div class="card">
+    <h3>8.8 核心认知</h3>
+    <div class="highlight hl-green">
+      <strong>第八章一句话</strong><br><br>
+      Loop Engineering 是第六章描述的那条「路」的<strong>施工蓝图</strong>。<br><br>
+      但每条路都需要：<br><br>
+      🚦 <strong>红绿灯</strong>（熔断机制）—— 时间限制 300 秒、预算限制 $2、重复检测 3 次<br>
+      🛣️ <strong>车道分离</strong>（Maker/Checker）—— 编写者和验证者必须独立，防止自我欺骗<br>
+      🏁 <strong>目的地</strong>（/goal 终态定义）—— 机器可验证的完成条件，不是模糊的「做完了」<br><br>
+      没有这三样的 Loop，只是一个<strong>非常昂贵的圆圈</strong>。<br><br>
+      <strong>五模块架构</strong>（Automation + Worktree + Skill + Plugins + Sub-agents）提供了标准化的建造组件。<br>
+      <strong>四象限 × Loop 深度</strong>提供了「该建多大的系统」的决策框架。<br><br>
+      最终警示：<strong>循环系统是思维放大器，而非思考替代品</strong>。<br>
+      一个设计糟糕的 Loop 会以自动化的速度放大你的错误——验证责任永远不可转移，技术债必须显性化。<br><br>
+      <em>Loop = 路。路的质量取决于施工图的质量。施工图的质量取决于画图的人。</em>
+    </div>
+  </div>
+
+</section>
+
 <!-- ==================== QUIZ ==================== -->
 <div class="quiz">
   <h3>📝 测验</h3>
@@ -1136,6 +1673,20 @@ Loop 2: 基于错误修正方案
   <div class="qo" onclick="this.nextElementSibling.style.display='block'">C. 用户的认知地图</div>
   <div class="qo" onclick="this.nextElementSibling.style.display='block'">D. 训练数据集</div>
   <div class="qa">✅ C. 第三维飞轮是「改人」——沉淀到用户的认知地图。真进化沉淀权重（改模型），假进化沉淀文件（改系统），第三维沉淀认知（改人）。</div>
+
+<p><strong>Q6：Loop Engineering 的三种熔断机制分别是什么？</strong></p>
+<div class="qo" onclick="this.nextElementSibling.style.display='block'">A. 时间限制（300秒）、内存限制（4GB）、重复检测（3次）</div>
+<div class="qo" onclick="this.nextElementSibling.style.display='block'">B. 时间限制（300秒）、预算限制（$2）、重复检测（3次相同输出）</div>
+<div class="qo" onclick="this.nextElementSibling.style.display='block'">C. 预算限制（$2）、Token 限制（100K）、错误检测（3次报错）</div>
+<div class="qo" onclick="this.nextElementSibling.style.display='block'">D. 时间限制（600秒）、预算限制（$5）、人工审核（每轮）</div>
+<div class="qa">✅ B. 三根保险丝：⏱️ 时间熔断（单次循环 300 秒）、💰 预算熔断（单次循环 $2）、🔄 重复熔断（连续 3 次相同输出则停止）。没有这三根保险丝，Loop 就会变成昂贵的无限递归。</div>
+
+<p><strong>Q7：为什么 Loop 系统中 Maker/Checker 必须分离？</strong></p>
+<div class="qo" onclick="this.nextElementSibling.style.display='block'">A. 为了节省 Token 成本，两个 Agent 比一个便宜</div>
+<div class="qo" onclick="this.nextElementSibling.style.display='block'">B. 因为单个 Agent 的上下文窗口不够大</div>
+<div class="qo" onclick="this.nextElementSibling.style.display='block'">C. 防止 Reward Hacking——同一个 Agent 既写又验会倾向于生成「容易通过自己检查」而非「真正正确」的结果</div>
+<div class="qo" onclick="this.nextElementSibling.style.display='block'">D. 因为两个 Agent 可以并行运行，速度更快</div>
+<div class="qa">✅ C. 这是第一章 Reward Hacking（自我欺骗）陷阱在 Loop 系统中的放大版。让同一个 Agent 自己写自己验，等于让学生自己给自己判卷——它会走捷径「讨好验证器」而非真正解决问题。Maker/Checker 分离是对第一章教训的工程化应对。</div>
 </div>
 
 </div>
