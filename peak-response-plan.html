@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>【预案】智能客服环节峰值应对 V0.1</title>
+<style>
+  :root {
+    --red: #ef4444; --red-light: #fee2e2; --red-bg: #fef2f2;
+    --orange: #f97316; --orange-light: #ffedd5; --orange-bg: #fff7ed;
+    --amber: #f59e0b; --amber-light: #fef3c7; --amber-bg: #fffbeb;
+    --yellow: #eab308; --yellow-light: #fef9c3;
+    --green: #10b981; --green-light: #d1fae5; --green-bg: #ecfdf5;
+    --blue: #3b82f6; --blue-light: #dbeafe; --blue-bg: #eff6ff;
+    --indigo: #6366f1; --indigo-light: #e0e7ff;
+    --purple: #8b5cf6; --purple-light: #ede9fe; --purple-bg: #f5f3ff;
+    --bg: #f8fafc; --card: #fff; --text: #1e293b; --text-sec: #64748b; --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.04);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+
+  /* Hero */
+  .hero { background: linear-gradient(135deg, #7c2d12 0%, #dc2626 40%, #f97316 100%); color:#fff; padding:48px 24px 40px; text-align:center; position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; top:-50%; left:-10%; width:120%; height:200%; background:radial-gradient(circle at 60% 40%, rgba(255,255,255,.08) 0%, transparent 55%); }
+  .hero h1 { font-size:1.9rem; font-weight:800; position:relative; margin-bottom:8px; }
+  .hero .sub { font-size:.92rem; opacity:.85; position:relative; }
+  .hero .meta { margin-top:14px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap; position:relative; }
+  .hero .badge { display:inline-flex; align-items:center; gap:4px; background:rgba(255,255,255,.15); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,.2); border-radius:20px; padding:4px 14px; font-size:.8rem; }
+
+  .container { max-width:1000px; margin:0 auto; padding:28px 16px 60px; }
+
+  /* Card */
+  .card { background:var(--card); border-radius:16px; box-shadow:var(--shadow); padding:28px; margin-bottom:22px; border:1px solid var(--border); }
+  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08), 0 10px 28px rgba(0,0,0,.06); }
+  .card h2 { font-size:1.2rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .card h3 { font-size:1.02rem; font-weight:600; margin:18px 0 10px; color:var(--indigo); }
+  .card h4 { font-size:.92rem; font-weight:600; margin:14px 0 8px; color:var(--text); }
+
+  /* Timeline */
+  .timeline { display:flex; align-items:center; justify-content:center; gap:0; margin:16px 0; flex-wrap:wrap; }
+  .tl-node { text-align:center; padding:14px 18px; border-radius:12px; background:#f1f5f9; border:1px solid var(--border); min-width:100px; }
+  .tl-node .month { font-weight:700; font-size:.95rem; }
+  .tl-node .desc { font-size:.78rem; color:var(--text-sec); margin-top:2px; }
+  .tl-arrow { font-size:1.3rem; color:var(--orange); padding:0 6px; }
+
+  /* Alert level cards */
+  .level-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin:14px 0; }
+  .level-card { border-radius:12px; padding:16px; text-align:center; border:2px solid; }
+  .level-card .lv { font-size:1.8rem; font-weight:900; line-height:1.1; }
+  .level-card .lv-name { font-size:.82rem; font-weight:600; margin-top:4px; }
+  .level-card .lv-val { font-size:.78rem; color:var(--text-sec); margin-top:6px; line-height:1.4; }
+  .lv1 { background:var(--amber-bg); border-color:#fbbf24; } .lv1 .lv { color:#d97706; }
+  .lv2 { background:var(--orange-bg); border-color:var(--orange); } .lv2 .lv { color:var(--orange); }
+  .lv3 { background:var(--red-bg); border-color:var(--red); } .lv3 .lv { color:var(--red); }
+  .lv4 { background:var(--purple-bg); border-color:var(--purple); } .lv4 .lv { color:var(--purple); }
+
+  /* Strategy matrix */
+  .strat-table { overflow-x:auto; margin:14px 0; border-radius:12px; border:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; font-size:.82rem; }
+  thead { background:#f1f5f9; }
+  th, td { padding:10px 12px; text-align:left; border-bottom:1px solid var(--border); vertical-align:top; }
+  th { font-weight:600; color:var(--text-sec); font-size:.75rem; text-transform:uppercase; letter-spacing:.3px; white-space:nowrap; }
+  tr:last-child td { border-bottom:none; }
+  td.enabled { color:var(--green); font-weight:600; }
+  td.disabled { color:var(--text-sec); text-decoration:line-through; }
+
+  /* Tag */
+  .tag { display:inline-block; padding:2px 9px; border-radius:6px; font-size:.75rem; font-weight:600; margin:2px 3px 2px 0; white-space:nowrap; }
+  .tag.green { background:var(--green-light); color:#065f46; }
+  .tag.red { background:var(--red-light); color:#991b1b; }
+  .tag.amber { background:var(--amber-light); color:#92400e; }
+  .tag.blue { background:var(--blue-light); color:#1e40af; }
+  .tag.purple { background:var(--purple-light); color:#5b21b6; }
+  .tag.orange { background:var(--orange-light); color:#9a3412; }
+
+  /* Principle box */
+  .principle { display:flex; align-items:flex-start; gap:10px; padding:14px 16px; border-radius:10px; margin:12px 0; font-size:.88rem; }
+  .principle.info { background:var(--blue-bg); border-left:4px solid var(--blue); }
+  .principle.warn { background:var(--amber-bg); border-left:4px solid var(--amber); }
+  .principle.danger { background:var(--red-bg); border-left:4px solid var(--red); }
+
+  /* Flow diagram */
+  .flow-wrap { display:flex; flex-direction:column; gap:0; margin:14px 0; }
+  .flow-row { display:flex; align-items:stretch; gap:8px; }
+  .flow-col { flex:1; }
+  .flow-box { border-radius:10px; padding:12px 14px; border:1px solid var(--border); font-size:.84rem; line-height:1.5; }
+  .flow-box.header { font-weight:700; text-align:center; padding:10px; font-size:.85rem; }
+  .flow-connector { display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:var(--orange); padding:4px 0; }
+
+  /* Scenario cards */
+  .scenario-grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin:14px 0; }
+  .scenario-card { border-radius:12px; padding:16px; border:1px solid var(--border); }
+  .scenario-card .sc-head { font-weight:700; font-size:.9rem; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .scenario-card ul { list-style:none; padding:0; }
+  .scenario-card li { padding:3px 0 3px 18px; position:relative; font-size:.84rem; line-height:1.5; }
+  .scenario-card li::before { content:'•'; position:absolute; left:0; color:var(--blue); font-weight:700; }
+
+  /* Strategy section */
+  .strat-section { margin:16px 0; padding:18px; border-radius:12px; border:1px solid var(--border); background:#fafafa; }
+  .strat-section .ss-title { font-weight:700; font-size:.92rem; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+
+  /* Highlight row */
+  .hl-row { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap:10px; margin:14px 0; }
+  .hl-card { border-radius:12px; padding:16px; text-align:center; }
+  .hl-card .big { font-size:1.6rem; font-weight:800; line-height:1.2; }
+  .hl-card .label { font-size:.78rem; color:var(--text-sec); margin-top:4px; }
+
+  /* Footer */
+  .footer { text-align:center; padding:20px; color:var(--text-sec); font-size:.78rem; }
+
+  @media (max-width:640px) {
+    .hero h1 { font-size:1.4rem; }
+    .level-grid { grid-template-columns: repeat(2,1fr); }
+    .scenario-grid { grid-template-columns:1fr; }
+    .card { padding:18px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🚨 智能客服环节峰值应对预案</h1>
+  <div class="sub">V0.1 · 即时零售智能客服 · 峰值分级响应与策略矩阵</div>
+  <div class="meta">
+    <span class="badge">📋 所有者：胡晨蕊</span>
+    <span class="badge">📅 更新：2026-06-23</span>
+    <span class="badge">🔒 内部文档</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 计划节奏 -->
+  <div class="card">
+    <h2>📅 计划节奏</h2>
+    <div class="timeline">
+      <div class="tl-node" style="background:var(--amber-bg);border-color:#fbbf24;">
+        <div class="month">6 月底</div>
+        <div class="desc">完成峰值方案储备</div>
+      </div>
+      <div class="tl-arrow">→</div>
+      <div class="tl-node" style="background:var(--blue-bg);border-color:#93c5fd;">
+        <div class="month">7 月中</div>
+        <div class="desc">方案实验效果回收</div>
+      </div>
+      <div class="tl-arrow">→</div>
+      <div class="tl-node" style="background:var(--green-bg);border-color:#6ee7b7;">
+        <div class="month">7 月底</div>
+        <div class="desc">正式上线运行</div>
+      </div>
+    </div>
+    <div class="principle warn">
+      <span>⚠️</span>
+      <span>暂时无法摸清方案影响，需要通过实验验证后确定最终策略参数</span>
+    </div>
+  </div>
+
+  <!-- 三大板块概览 -->
+  <div class="card">
+    <h2>🏗️ 预案三大板块</h2>
+    <div class="hl-row">
+      <div class="hl-card" style="background:var(--blue-bg);">
+        <div class="big" style="color:var(--blue);">📊</div>
+        <div style="font-weight:700;margin-top:6px;">一、订单预测<br>&amp; 人力部署</div>
+        <div class="label">上游信息同步</div>
+      </div>
+      <div class="hl-card" style="background:var(--purple-bg);">
+        <div class="big" style="color:var(--purple);">🤖</div>
+        <div style="font-weight:700;margin-top:6px;">二、大模型<br>资源保障</div>
+        <div class="label">下游做资源储备</div>
+      </div>
+      <div class="hl-card" style="background:var(--red-bg);">
+        <div class="big" style="color:var(--red);">🛡️</div>
+        <div style="font-weight:700;margin-top:6px;">三、峰值应对<br>策略矩阵</div>
+        <div class="label">分级响应 + 精细化策略</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 大模型资源保障 -->
+  <div class="card">
+    <h2>🤖 二、大模型资源保障</h2>
+    <div class="strat-section">
+      <div class="ss-title">📋 资源申请流程</div>
+      <div class="scenario-grid">
+        <div class="scenario-card" style="background:var(--blue-bg);">
+          <div class="sc-head">1️⃣ 提前报备</div>
+          <ul>
+            <li>业务方需提前 <strong>1-2 周</strong>提出需求</li>
+            <li>包括 API 模型和 GPU 卡资源</li>
+            <li>统一找 weidong17 / wanghongyan05</li>
+          </ul>
+        </div>
+        <div class="scenario-card" style="background:var(--green-bg);">
+          <div class="sc-head">2️⃣ 提供信息</div>
+          <ul>
+            <li>拉群并提供涉及的<strong>模型清单</strong></li>
+            <li>预估<strong>扩量系数</strong>（如 1.5 倍）</li>
+            <li>基于当前峰值的倍数计算</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 峰值等级设定 -->
+  <div class="card">
+    <h2>🚦 三、峰值等级设定</h2>
+
+    <h3>① 排队量模型</h3>
+    <div class="level-grid">
+      <div class="level-card lv1">
+        <div class="lv">一级</div>
+        <div class="lv-name">黄色预警</div>
+        <div class="lv-val">排队量 ≥ <strong>90</strong><br>持续 4 分钟触发<br>接通率 &lt; 90%</div>
+      </div>
+      <div class="level-card lv2">
+        <div class="lv">二级</div>
+        <div class="lv-name">橙色预警</div>
+        <div class="lv-val">排队量 ≥ <strong>140</strong><br>持续 4 分钟触发<br>接通率 &lt; 85%</div>
+      </div>
+      <div class="level-card lv3">
+        <div class="lv">三级</div>
+        <div class="lv-name">红色预警</div>
+        <div class="lv-val">排队量 ≥ <strong>220</strong><br>持续 4 分钟触发<br>接通率 &lt; 75%</div>
+      </div>
+      <div class="level-card lv4">
+        <div class="lv">四级</div>
+        <div class="lv-name">紫色预警</div>
+        <div class="lv-val">排队量 ≥ <strong>300</strong><br>持续 4 分钟触发<br>接通率 &lt; 65%</div>
+      </div>
+    </div>
+    <div class="principle info">
+      <span>ℹ️</span>
+      <span><strong>解除条件：</strong>持续 5 分钟低于排队量预警线 / 接通率高于阈值</span>
+    </div>
+  </div>
+
+  <!-- 策略分类 -->
+  <div class="card">
+    <h2>🔧 在线侧策略分类与手段</h2>
+
+    <div class="strat-table">
+      <table>
+        <thead>
+          <tr><th>峰值类型</th><th>分类</th><th>手段</th><th>体验影响（综解）</th><th>成本影响（入队率）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="5"><span class="tag amber">常规峰值</span></td><td>控预期</td><td>公告</td><td><span class="tag red">负向</span></td><td><span class="tag green">正向</span></td></tr>
+          <tr><td rowspan="4">调流量</td><td>转人工召回</td><td><span class="tag red">负向</span></td><td><span class="tag green">正向</span></td></tr>
+          <tr><td>虚拟客服</td><td><span class="tag red">负向</span></td><td><span class="tag green">正向</span></td></tr>
+          <tr><td>❌ 实时引流迟滞</td><td><span class="tag blue">需实验</span></td><td><span class="tag blue">需实验</span></td></tr>
+          <tr><td>❌ 延迟入队</td><td><span class="tag red">负向</span></td><td><span class="tag green">正向</span></td></tr>
+          <tr><td><span class="tag red">突发峰值</span></td><td>加方案</td><td>❌ Skill/知识模型</td><td><span class="tag blue">需实验</span></td><td><span class="tag blue">需实验</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="principle info">
+      <span>📌</span>
+      <span><strong>❌ 标记</strong>代表当前大模型服务暂不具备，预计 6 月底可具备</span>
+    </div>
+  </div>
+
+  <!-- 常规峰值策略 -->
+  <div class="card">
+    <h2>📋 常规峰值：控预期 &amp; 调流量</h2>
+    <div class="principle info">
+      <span>💡</span>
+      <span><strong>核心原则：</strong>支持特定日期/商家/城市等多维度交叉策略。<strong>高价值用户优先保护</strong>，尽量降低对高价值体验的影响。</span>
+    </div>
+
+    <h3>🔹 非高价值用户策略（以秋奶节假日为例）</h3>
+    <div class="strat-table">
+      <table>
+        <thead>
+          <tr><th style="width:15%;">策略</th><th>一级</th><th>二级</th><th>三级</th><th>四级</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>繁忙公告</strong></td>
+            <td><span class="tag green">✅ 启用</span></td>
+            <td><span class="tag green">✅ 启用</span></td>
+            <td><span class="tag green">✅ 启用</span></td>
+            <td><span class="tag green">✅ 启用</span></td>
+          </tr>
+          <tr>
+            <td><strong>转人工召回</strong></td>
+            <td>+1 次</td>
+            <td>+2 次</td>
+            <td>+3 次</td>
+            <td>+3 次</td>
+          </tr>
+          <tr>
+            <td><strong>虚拟客服</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td><span class="tag green">✅ 启用</span></td>
+            <td><span class="tag green">✅ 启用</span></td>
+          </tr>
+          <tr>
+            <td><strong>延迟入队</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td><span class="tag red">❌ 5分钟</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>🔸 高价值用户策略（黑钻/VIP3-5）</h3>
+    <div class="strat-table">
+      <table>
+        <thead>
+          <tr><th style="width:15%;">策略</th><th>一级</th><th>二级</th><th>三级</th><th>四级</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>通用繁忙公告</strong></td>
+            <td><span class="tag green">✅ 启用</span></td>
+            <td><span class="tag green">✅ 启用</span></td>
+            <td><span class="tag green">✅ 启用</span></td>
+            <td><span class="tag green">✅ 启用</span></td>
+          </tr>
+          <tr>
+            <td><strong>转人工召回</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td>+1 次（除投诉外）</td>
+            <td>+2 次（除投诉外）</td>
+          </tr>
+          <tr>
+            <td><strong>虚拟客服</strong></td>
+            <td colspan="4" style="text-align:center;color:var(--text-sec);">🚫 不启用（谨慎使用体验损伤大的策略）</td>
+          </tr>
+          <tr>
+            <td><strong>延迟入队</strong></td>
+            <td colspan="4" style="text-align:center;color:var(--text-sec);">🚫 不启用</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 突发峰值 -->
+  <div class="card">
+    <h2>⚡ 突发峰值：控预期 &amp; 调流量 &amp; 加方案</h2>
+    <div class="principle danger">
+      <span>🔥</span>
+      <span><strong>核心原则：</strong>针对大概率<strong>无法履约</strong>的情况放宽条件；对有履约可能或用户坚持要餐的情况，通过<strong>补偿满减券/余额</strong>补偿体验。</span>
+    </div>
+
+    <h3>场景一：恶劣天气导致无法履约</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card" style="background:var(--red-bg);border-color:#fca5a5;">
+        <div class="sc-head">🌧️ 场景描述</div>
+        <ul>
+          <li>北京地区恶劣天气</li>
+          <li>叠加茶饮连锁免费喝活动</li>
+          <li>商家爆单无法出餐</li>
+          <li>无骑手接单 + 配送超时</li>
+          <li>少送/错送</li>
+        </ul>
+      </div>
+      <div class="scenario-card" style="background:var(--green-bg);border-color:#6ee7b7;">
+        <div class="sc-head">🛡️ 应对策略</div>
+        <ul>
+          <li>加强召回力度 + 繁忙公告</li>
+          <li><strong>放宽退款条件</strong>（按等级递进）</li>
+          <li>一级：下单 &gt;30min 可退</li>
+          <li>四级：下单 &gt;15min 即可退</li>
+          <li>要餐场景：赔付 3-20 元</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>退款条件放宽矩阵（无骑手接单）</h3>
+    <div class="strat-table">
+      <table>
+        <thead>
+          <tr><th>等级</th><th>退款放宽条件</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="tag amber">一级</span></td><td>下单时间 &gt; 30 分钟</td></tr>
+          <tr><td><span class="tag orange">二级</span></td><td>下单时间 &gt; 30 分钟 <strong>+</strong> 20~25 分钟</td></tr>
+          <tr><td><span class="tag red">三级</span></td><td>下单时间 &gt; 30 分钟 <strong>+</strong> 20~25 分钟 <strong>+</strong> 15~20 分钟</td></tr>
+          <tr><td><span class="tag purple">四级</span></td><td>下单时间 &gt; 30 分钟 <strong>+</strong> 25~30 分钟 <strong>+</strong> 20~25 分钟 <strong>+</strong> 15~20 分钟</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>场景二：白名单商家系统故障</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card" style="background:var(--orange-bg);border-color:#fdba74;">
+        <div class="sc-head">⚙️ 场景描述</div>
+        <ul>
+          <li>如六一肯德基内部系统故障</li>
+          <li>商家接单异常 + 无法出餐</li>
+          <li>无法发单配送</li>
+        </ul>
+      </div>
+      <div class="scenario-card" style="background:var(--blue-bg);border-color:#93c5fd;">
+        <div class="sc-head">📋 分级应对</div>
+        <ul>
+          <li><strong>非峰：</strong>不可退，引导联系商家客服</li>
+          <li><strong>三级：</strong>发放平台满减券补偿体验</li>
+          <li><strong>四级：</strong>平台兜底退款，后续与品牌对账</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>场景三：营销活动（免单/神券包）</h3>
+    <div class="strat-section">
+      <div class="ss-title">🎯 目标流量识别 → 独立链路处置</div>
+      <div class="strat-table">
+        <table>
+          <thead>
+            <tr><th>目标流量</th><th>一级</th><th>二级</th><th>三级</th><th>四级</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>红包/券未到账</td>
+              <td colspan="4">
+                <span class="tag green">✅ 启用公告</span> +
+                非高价值召回 +3~5 次 / 高价值 +1~3 次<br>
+                四级时非高价值<span class="tag amber">启用虚拟客服</span>
+              </td>
+            </tr>
+            <tr>
+              <td>无法参与活动</td>
+              <td colspan="4" style="color:var(--text-sec);">方案对齐中</td>
+            </tr>
+            <tr>
+              <td>黑灰产/薅羊毛</td>
+              <td colspan="4">冻结券（恶意用户，不看体验）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 电话侧 -->
+  <div class="card">
+    <h2>📞 电话侧峰值应对策略</h2>
+
+    <h3>分级召回策略</h3>
+    <div class="strat-table">
+      <table>
+        <thead>
+          <tr><th>用户分层</th><th>一级</th><th>二级</th><th>三级</th><th>四级</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag blue">高价值</span></td>
+            <td>—</td>
+            <td>—</td>
+            <td>除投诉外 +1 次</td>
+            <td>除投诉外 +2 次</td>
+          </tr>
+          <tr>
+            <td><span class="tag amber">非高价值</span></td>
+            <td>+1 次</td>
+            <td>+2 次</td>
+            <td>+3 次</td>
+            <td>+4 次</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>极端情况：紫色+ 预警</h3>
+    <div class="principle danger">
+      <span>🚨</span>
+      <span><strong>紫色预警持续超过 30 分钟时：</strong>对非高价值用户<strong>下线在线→电话入口</strong>，关闭在线常驻转电话入口，仅保留高价值用户通道。</span>
+    </div>
+  </div>
+
+  <!-- 高价值用户保护原则 -->
+  <div class="card">
+    <h2>👑 高价值用户保护原则（贯穿全案）</h2>
+    <div class="scenario-grid">
+      <div class="scenario-card" style="background:var(--green-bg);border-color:#6ee7b7;">
+        <div class="sc-head">✅ 执行要点</div>
+        <ul>
+          <li>优先保护高价值用户（黑钻/VIP3-5）</li>
+          <li>低等级峰值：不对高价值启用召回</li>
+          <li>三级以上峰值：逐步加强，但力度远小于非高价值</li>
+          <li>投诉场景永远不启用召回</li>
+        </ul>
+      </div>
+      <div class="scenario-card" style="background:var(--red-bg);border-color:#fca5a5;">
+        <div class="sc-head">🚫 红线策略</div>
+        <ul>
+          <li>虚拟客服 — 不对高价值用户启用</li>
+          <li>延迟入队 — 不对高价值用户启用</li>
+          <li>下线电话入口 — 仅在紫色+针对非高价值</li>
+          <li>以上策略体验损伤大，高价值严格禁用</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 话术模板 -->
+  <div class="card">
+    <h2>💬 话术模板（示例）</h2>
+    <div class="strat-table">
+      <table>
+        <thead>
+          <tr><th>场景</th><th>话术</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag amber">节假日峰值</span></td>
+            <td>当前六一订单高峰，人工服务繁忙，团团会尽力帮您解决问题的。<em>${原话术内容}</em></td>
+          </tr>
+          <tr>
+            <td><span class="tag red">恶劣天气</span></td>
+            <td>北京局部暴雨红色预警，配送延迟，当前人工服务繁忙，团团会尽力帮您解决问题的。<em>${原话术内容}</em></td>
+          </tr>
+          <tr>
+            <td><span class="tag orange">发票/低时效场景</span></td>
+            <td>暑期爆单，商家/美团值班财务人力紧张，如您不是必须在 XX 月 XX 日至 XX 月 XX 日期间解决发票报销问题，建议您稍后再进线反馈。</td>
+          </tr>
+          <tr>
+            <td><span class="tag blue">神券无可用商家</span></td>
+            <td>外卖券附近无可用商家问题，由于活动火爆部分门店暂时繁忙或您所在区域参与商家较少，建议稍等片刻再试、换时间段下单、切换定位或为亲朋好友下单使用。</td>
+          </tr>
+          <tr>
+            <td><span class="tag purple">通用繁忙</span></td>
+            <td>当前人工服务繁忙，团团会尽力帮您解决问题的。<em>${原话术内容}</em></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  【预案】智能客服环节峰值应对 V0.1 · 所有者：胡晨蕊 · 2026-06-23 · 仅供内部使用，未经授权，切勿外传
+</div>
+
+</body>
+</html>

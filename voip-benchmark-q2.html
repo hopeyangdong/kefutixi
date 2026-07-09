@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026Q2 VOIP 智能客服竞对横向对比</title>
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-light: #eef2ff;
+    --blue: #3b82f6;
+    --blue-light: #dbeafe;
+    --green: #10b981;
+    --green-light: #d1fae5;
+    --amber: #f59e0b;
+    --amber-light: #fef3c7;
+    --red: #ef4444;
+    --red-light: #fee2e2;
+    --orange: #f97316;
+    --cyan: #06b6d4;
+    --cyan-light: #cffafe;
+    --pink: #ec4899;
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-sec: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 6px 20px rgba(0,0,0,.04);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, #312e81 0%, #6366f1 40%, #06b6d4 100%);
+    color: #fff;
+    padding: 52px 24px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content:'';position:absolute;top:-50%;left:-10%;width:120%;height:200%;
+    background: radial-gradient(circle at 70% 30%, rgba(255,255,255,.07) 0%, transparent 55%);
+  }
+  .hero h1 { font-size:2rem; font-weight:800; position:relative; margin-bottom:10px; }
+  .hero .sub { font-size:.95rem; opacity:.8; position:relative; }
+  .hero .badges { margin-top:16px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap; position:relative; }
+  .hero .badge {
+    display:inline-flex; align-items:center; gap:5px;
+    background:rgba(255,255,255,.15); backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.2); border-radius:20px;
+    padding:5px 14px; font-size:.82rem;
+  }
+
+  /* ── Container ── */
+  .container { max-width:960px; margin:0 auto; padding:28px 16px 60px; }
+
+  /* ── Section Card ── */
+  .card {
+    background:var(--card); border-radius:16px; box-shadow:var(--shadow);
+    padding:28px 28px 24px; margin-bottom:24px; border:1px solid var(--border);
+    transition: box-shadow .2s;
+  }
+  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08), 0 10px 28px rgba(0,0,0,.06); }
+  .card h2 { font-size:1.25rem; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .card h3 { font-size:1rem; font-weight:600; margin:18px 0 10px; color:var(--primary); }
+
+  /* ── Dimension Cards (4) ── */
+  .dim-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin:16px 0; }
+  .dim-card {
+    border-radius:14px; padding:18px 14px; text-align:center;
+    border:1px solid var(--border); position:relative; overflow:hidden;
+  }
+  .dim-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  }
+  .dim-card.d1::before { background:var(--blue); }
+  .dim-card.d2::before { background:var(--primary); }
+  .dim-card.d3::before { background:var(--amber); }
+  .dim-card.d4::before { background:var(--green); }
+  .dim-card .dim-icon { font-size:1.6rem; margin-bottom:6px; }
+  .dim-card .dim-title { font-weight:700; font-size:.95rem; }
+  .dim-card .dim-sub { font-size:.78rem; color:var(--text-sec); margin-top:4px; line-height:1.4; }
+
+  /* ── Tier ── */
+  .tier-wrap { display:flex; flex-direction:column; gap:14px; margin:16px 0; }
+  .tier {
+    border-radius:14px; padding:18px 22px; display:flex; align-items:center; gap:16px;
+    border:1px solid var(--border);
+  }
+  .tier.t1 { background: linear-gradient(90deg, #fef3c7 0%, #fff 40%); border-left:5px solid var(--amber); }
+  .tier.t2 { background: linear-gradient(90deg, var(--blue-light) 0%, #fff 40%); border-left:5px solid var(--blue); }
+  .tier.t3 { background: linear-gradient(90deg, #f1f5f9 0%, #fff 40%); border-left:5px solid #94a3b8; }
+  .tier-badge {
+    flex-shrink:0; width:80px; text-align:center;
+    font-weight:800; font-size:.82rem; border-radius:8px; padding:6px 0;
+  }
+  .tier.t1 .tier-badge { background:var(--amber); color:#fff; }
+  .tier.t2 .tier-badge { background:var(--blue); color:#fff; }
+  .tier.t3 .tier-badge { background:#94a3b8; color:#fff; }
+  .tier-items { flex:1; display:flex; flex-wrap:wrap; gap:10px; }
+  .tier-item {
+    display:flex; align-items:center; gap:8px;
+    background:#fff; border:1px solid var(--border); border-radius:10px;
+    padding:8px 14px; font-size:.9rem; font-weight:600;
+  }
+  .tier-item .score {
+    font-size:1.1rem; font-weight:800;
+  }
+  .tier.t1 .tier-item .score { color:var(--amber); }
+  .tier.t2 .tier-item .score { color:var(--blue); }
+  .tier.t3 .tier-item .score { color:#94a3b8; }
+
+  /* ── Radar-like bars ── */
+  .radar-bars { margin:16px 0; }
+  .rb-company { margin-bottom:18px; }
+  .rb-header {
+    display:flex; align-items:center; gap:10px; margin-bottom:8px;
+  }
+  .rb-logo {
+    width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    font-size:.85rem; font-weight:700; color:#fff; flex-shrink:0;
+  }
+  .rb-name { font-weight:700; font-size:.92rem; }
+  .rb-total { font-size:.82rem; color:var(--text-sec); margin-left:auto; }
+  .rb-bar-row { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .rb-dim-label { width:56px; text-align:right; font-size:.75rem; color:var(--text-sec); flex-shrink:0; }
+  .rb-track { flex:1; height:18px; background:#f1f5f9; border-radius:6px; overflow:hidden; position:relative; }
+  .rb-fill {
+    height:100%; border-radius:6px; display:flex; align-items:center; justify-content:flex-end;
+    padding-right:6px; font-size:.68rem; font-weight:700; color:#fff;
+    transition: width .5s ease;
+  }
+  .rb-val { width:36px; font-size:.78rem; font-weight:600; text-align:left; flex-shrink:0; }
+
+  /* ── Highlight cards ── */
+  .insight-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:14px; margin:16px 0; }
+  .insight-card {
+    border-radius:14px; padding:18px; border:1px solid var(--border);
+    position:relative; overflow:hidden;
+  }
+  .insight-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  }
+  .insight-card .ic-head { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .insight-card .ic-icon { font-size:1.3rem; }
+  .insight-card .ic-name { font-weight:700; font-size:.95rem; }
+  .insight-card .ic-tag {
+    margin-left:auto; font-size:.72rem; font-weight:600; padding:2px 8px; border-radius:6px;
+  }
+  .insight-card ul { list-style:none; padding:0; }
+  .insight-card li { padding:3px 0 3px 20px; position:relative; font-size:.88rem; line-height:1.5; }
+  .insight-card li::before {
+    position:absolute; left:0; font-weight:700; font-size:.85rem;
+  }
+  .insight-card li.pro::before { content:'✓'; color:var(--green); }
+  .insight-card li.con::before { content:'✗'; color:var(--red); }
+  .insight-card li.neutral::before { content:'•'; color:var(--blue); }
+
+  /* company colors */
+  .c-ant::before { background:#1677ff; }  .c-ant .ic-tag { background:#dbeafe; color:#1d4ed8; }
+  .c-dy::before  { background:#000; }      .c-dy .ic-tag  { background:#f1f5f9; color:#1e293b; }
+  .c-dye::before { background:#fe2c55; }   .c-dye .ic-tag { background:#fee2e2; color:#991b1b; }
+  .c-mt::before  { background:#ffcd00; }   .c-mt .ic-tag  { background:#fef3c7; color:#92400e; }
+  .c-cx::before  { background:#2563eb; }   .c-cx .ic-tag  { background:#dbeafe; color:#1d4ed8; }
+
+  /* ── Upgrade section ── */
+  .upgrade-grid { display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin:16px 0; }
+  .ug-card {
+    border-radius:12px; padding:16px; border:1px solid var(--border);
+  }
+  .ug-card.good { background:var(--green-light); border-color:#a7f3d0; }
+  .ug-card.bad  { background:var(--red-light); border-color:#fecaca; }
+  .ug-card .ug-head { font-weight:700; font-size:.9rem; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .ug-card.good .ug-head { color:#065f46; }
+  .ug-card.bad .ug-head  { color:#991b1b; }
+  .ug-card li { font-size:.85rem; margin-bottom:4px; line-height:1.5; }
+
+  /* ── Pain point pills ── */
+  .pain-row { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+  .pain-pill {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:6px 14px; border-radius:20px; font-size:.82rem; font-weight:600;
+    background:var(--red-light); color:#991b1b; border:1px solid #fecaca;
+  }
+
+  /* ── Annotation ── */
+  .note {
+    display:flex; align-items:flex-start; gap:10px;
+    padding:14px 18px; border-radius:0 10px 10px 0;
+    margin:16px 0; font-size:.88rem;
+  }
+  .note.info  { background:#eef2ff; border-left:4px solid var(--primary); }
+  .note.warn  { background:#fffbeb; border-left:4px solid var(--amber); }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x:auto; margin:14px 0; border-radius:12px; border:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; font-size:.88rem; }
+  thead { background:#f8fafc; }
+  th,td { padding:10px 14px; text-align:left; border-bottom:1px solid var(--border); }
+  th { font-weight:600; color:var(--text-sec); font-size:.78rem; text-transform:uppercase; letter-spacing:.5px; }
+  tr:last-child td { border-bottom:none; }
+  tr.best { background:var(--amber-light); font-weight:600; }
+
+  /* ── Footer ── */
+  .footer { text-align:center; padding:20px; color:var(--text-sec); font-size:.8rem; }
+
+  @media (max-width:640px) {
+    .hero h1 { font-size:1.4rem; }
+    .dim-grid { grid-template-columns: repeat(2,1fr); }
+    .card { padding:20px 16px; }
+    .upgrade-grid { grid-template-columns:1fr; }
+    .tier { flex-direction:column; align-items:flex-start; }
+    .insight-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>📞 VOIP 智能客服竞对横向对比</h1>
+  <div class="sub">2026 Q2 · 国内头部互联网公司 VOIP 智能客服能力评测</div>
+  <div class="badges">
+    <span class="badge">📊 4 大维度</span>
+    <span class="badge">🔬 17 项细分指标</span>
+    <span class="badge">🏢 5 家公司 6 个产品</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 评测对象 -->
+  <div class="card">
+    <h2>🎯 评测概览</h2>
+    <p>横向对比国内互联网公司 VOIP（网络电话）智能客服能力，与美团 Nova 创新产品对比。</p>
+
+    <h3>评测对象</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>公司</th><th>产品</th><th>场景</th></tr></thead>
+        <tbody>
+          <tr><td>🐜 蚂蚁</td><td>花呗客服</td><td>金融客服</td></tr>
+          <tr><td>🎵 抖音</td><td>社区客服</td><td>社区服务</td></tr>
+          <tr><td>🛒 抖音</td><td>电商客服</td><td>电商售后</td></tr>
+          <tr><td>🟡 美团</td><td>闪购客服（男声）</td><td>即时零售</td></tr>
+          <tr><td>🟡 美团</td><td>闪购客服（女声）</td><td>即时零售</td></tr>
+          <tr><td>✈️ 携程</td><td>酒店客服</td><td>酒旅服务</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 评测框架 -->
+  <div class="card">
+    <h2>📐 评测框架 · 4 大维度 × 17 项指标</h2>
+    <div class="dim-grid">
+      <div class="dim-card d1">
+        <div class="dim-icon">🔊</div>
+        <div class="dim-title">听得清</div>
+        <div class="dim-sub">ASR 识别准确率<br>双工打断能力</div>
+      </div>
+      <div class="dim-card d2">
+        <div class="dim-icon">🧠</div>
+        <div class="dim-title">听得懂</div>
+        <div class="dim-sub">多意图处理<br>上下文意图切换</div>
+      </div>
+      <div class="dim-card d3">
+        <div class="dim-icon">🗣️</div>
+        <div class="dim-title">说人话</div>
+        <div class="dim-sub">时延 · 情绪感知<br>TTS 自然度 · 话术多样性</div>
+      </div>
+      <div class="dim-card d4">
+        <div class="dim-icon">✅</div>
+        <div class="dim-title">能解决</div>
+        <div class="dim-sub">跨模态能力<br>短期记忆 · 转人工</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 梯队排名 -->
+  <div class="card">
+    <h2>🏆 总分排名（通用维度 / 22 分）</h2>
+    <div class="tier-wrap">
+      <div class="tier t1">
+        <div class="tier-badge">🥇 第一梯队</div>
+        <div class="tier-items">
+          <div class="tier-item">🐜 蚂蚁花呗 <span class="score">15.92</span></div>
+          <div class="tier-item">🎵 抖音社区 <span class="score">15.59</span></div>
+        </div>
+      </div>
+      <div class="tier t2">
+        <div class="tier-badge">🥈 第二梯队</div>
+        <div class="tier-items">
+          <div class="tier-item">🟡 美团闪购♀ <span class="score">13.85</span></div>
+          <div class="tier-item">🟡 美团闪购♂ <span class="score">13.75</span></div>
+          <div class="tier-item">🛒 抖音电商 <span class="score">13.75</span></div>
+        </div>
+      </div>
+      <div class="tier t3">
+        <div class="tier-badge">🥉 第三梯队</div>
+        <div class="tier-items">
+          <div class="tier-item">✈️ 携程酒店 <span class="score">3.50</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score bar visualization -->
+    <h3>📊 得分可视化</h3>
+    <div class="radar-bars">
+      <!-- 蚂蚁 -->
+      <div class="rb-company">
+        <div class="rb-header">
+          <div class="rb-logo" style="background:#1677ff;">蚁</div>
+          <div class="rb-name">蚂蚁花呗</div>
+          <div class="rb-total">15.92 / 22</div>
+        </div>
+        <div class="rb-bar-row">
+          <div class="rb-dim-label">总分</div>
+          <div class="rb-track"><div class="rb-fill" style="width:72.4%;background:linear-gradient(90deg,#60a5fa,#1677ff);">15.92</div></div>
+        </div>
+      </div>
+      <!-- 抖音社区 -->
+      <div class="rb-company">
+        <div class="rb-header">
+          <div class="rb-logo" style="background:#000;">抖</div>
+          <div class="rb-name">抖音社区</div>
+          <div class="rb-total">15.59 / 22</div>
+        </div>
+        <div class="rb-bar-row">
+          <div class="rb-dim-label">总分</div>
+          <div class="rb-track"><div class="rb-fill" style="width:70.9%;background:linear-gradient(90deg,#6b7280,#1f2937);">15.59</div></div>
+        </div>
+      </div>
+      <!-- 美团闪购 女声 -->
+      <div class="rb-company">
+        <div class="rb-header">
+          <div class="rb-logo" style="background:#ffcd00;color:#1e293b;">美</div>
+          <div class="rb-name">美团闪购（女声）</div>
+          <div class="rb-total">13.85 / 22</div>
+        </div>
+        <div class="rb-bar-row">
+          <div class="rb-dim-label">总分</div>
+          <div class="rb-track"><div class="rb-fill" style="width:62.9%;background:linear-gradient(90deg,#fbbf24,#f59e0b);">13.85</div></div>
+        </div>
+      </div>
+      <!-- 美团闪购 男声 -->
+      <div class="rb-company">
+        <div class="rb-header">
+          <div class="rb-logo" style="background:#ffcd00;color:#1e293b;">美</div>
+          <div class="rb-name">美团闪购（男声）</div>
+          <div class="rb-total">13.75 / 22</div>
+        </div>
+        <div class="rb-bar-row">
+          <div class="rb-dim-label">总分</div>
+          <div class="rb-track"><div class="rb-fill" style="width:62.5%;background:linear-gradient(90deg,#fcd34d,#d97706);">13.75</div></div>
+        </div>
+      </div>
+      <!-- 抖音电商 -->
+      <div class="rb-company">
+        <div class="rb-header">
+          <div class="rb-logo" style="background:#fe2c55;">商</div>
+          <div class="rb-name">抖音电商</div>
+          <div class="rb-total">13.75 / 22</div>
+        </div>
+        <div class="rb-bar-row">
+          <div class="rb-dim-label">总分</div>
+          <div class="rb-track"><div class="rb-fill" style="width:62.5%;background:linear-gradient(90deg,#fb7185,#e11d48);">13.75</div></div>
+        </div>
+      </div>
+      <!-- 携程 -->
+      <div class="rb-company">
+        <div class="rb-header">
+          <div class="rb-logo" style="background:#2563eb;">携</div>
+          <div class="rb-name">携程酒店</div>
+          <div class="rb-total">3.50 / 22</div>
+        </div>
+        <div class="rb-bar-row">
+          <div class="rb-dim-label">总分</div>
+          <div class="rb-track"><div class="rb-fill" style="width:15.9%;background:linear-gradient(90deg,#93c5fd,#60a5fa);">3.50</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 各家差异化优势 -->
+  <div class="card">
+    <h2>🔍 各家差异化优势</h2>
+    <div class="insight-grid">
+      <!-- 蚂蚁 -->
+      <div class="insight-card c-ant">
+        <div class="ic-head">
+          <span class="ic-icon">🐜</span>
+          <span class="ic-name">蚂蚁花呗</span>
+          <span class="ic-tag">第一梯队</span>
+        </div>
+        <ul>
+          <li class="pro">打断响应最快 <strong>1.53s</strong></li>
+          <li class="pro">意图理解准确率高</li>
+          <li class="pro">短期记忆完整</li>
+        </ul>
+      </div>
+      <!-- 抖音社区 -->
+      <div class="insight-card c-dy">
+        <div class="ic-head">
+          <span class="ic-icon">🎵</span>
+          <span class="ic-name">抖音社区</span>
+          <span class="ic-tag">第一梯队</span>
+        </div>
+        <ul>
+          <li class="pro">ASR 转译 + 字幕展现</li>
+          <li class="pro">首字时延最快 <strong>1.86s</strong></li>
+          <li class="pro">话术多样化 <strong>满分</strong></li>
+        </ul>
+      </div>
+      <!-- 抖音电商 -->
+      <div class="insight-card c-dye">
+        <div class="ic-head">
+          <span class="ic-icon">🛒</span>
+          <span class="ic-name">抖音电商</span>
+          <span class="ic-tag">第二梯队</span>
+        </div>
+        <ul>
+          <li class="pro">双工能力优于美团</li>
+          <li class="pro">多意图处理较好</li>
+          <li class="con">时延极差（垫词空档 <strong>6.5s</strong>）</li>
+        </ul>
+      </div>
+      <!-- 美团闪购 -->
+      <div class="insight-card c-mt">
+        <div class="ic-head">
+          <span class="ic-icon">🟡</span>
+          <span class="ic-name">美团闪购</span>
+          <span class="ic-tag">第二梯队</span>
+        </div>
+        <ul>
+          <li class="pro"><strong>行业唯一</strong>支持实时图片上传识别</li>
+          <li class="pro">女声版 TTS 自然度最优</li>
+          <li class="con">双工能力差（<strong>3.3s</strong>）</li>
+          <li class="con">VAD 切断频繁，多意图受损</li>
+        </ul>
+      </div>
+      <!-- 携程 -->
+      <div class="insight-card c-cx">
+        <div class="ic-head">
+          <span class="ic-icon">✈️</span>
+          <span class="ic-name">携程酒店</span>
+          <span class="ic-tag">第三梯队</span>
+        </div>
+        <ul>
+          <li class="con">智能化程度最低</li>
+          <li class="neutral">仅双工和自助卡片勉强达标</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 行业共性短板 -->
+  <div class="card">
+    <h2>⚠️ 行业共性短板</h2>
+    <p style="margin-bottom:10px;">以下维度是整个行业普遍表现不佳的领域，各家均需重点突破：</p>
+    <div class="pain-row">
+      <span class="pain-pill">⏱️ 时延</span>
+      <span class="pain-pill">🗣️ TTS 自然度</span>
+      <span class="pain-pill">😢 情绪感知</span>
+      <span class="pain-pill">📱 多模态感知</span>
+    </div>
+    <div class="note warn">
+      <span>💡</span>
+      <span>这四个维度是当前 VOIP 客服体验的<strong>天花板瓶颈</strong>，率先突破的产品将获得显著竞争优势。美团在多模态（图片识别）上已有领先。</span>
+    </div>
+  </div>
+
+  <!-- 男声→女声升级 -->
+  <div class="card">
+    <h2>🔄 美团闪购 男声 → 女声 升级变化</h2>
+    <div class="upgrade-grid">
+      <div class="ug-card good">
+        <div class="ug-head">✅ 提升项</div>
+        <ul>
+          <li>🗣️ TTS 自然度提升（消除断句问题）</li>
+          <li>⏱️ 垫词后空档缩短（<strong>1.50s → 0.67s</strong>）</li>
+          <li>🧠 短期记忆改善（<strong>1.33 → 2.00</strong> 分）</li>
+        </ul>
+      </div>
+      <div class="ug-card bad">
+        <div class="ug-head">❌ 退步项</div>
+        <ul>
+          <li>⏱️ 首字响应更慢（<strong>4.25s → 5.58s</strong>）</li>
+          <li>🎙️ VAD 切断频繁，多意图处理大幅下降（<strong>1.67 → 0.60</strong> 分）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note info">
+      <span>📌</span>
+      <span><strong>升级建议：</strong>女声版在 TTS 和垫词上有明显提升，但首字响应和 VAD 策略需要重点优化。VAD 过于激进会切断用户的复合意图表达，直接影响多意图处理得分。</span>
+    </div>
+  </div>
+
+  <!-- 关键时延对比 -->
+  <div class="card">
+    <h2>⏱️ 关键时延指标对比</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>产品</th><th>首字时延</th><th>打断响应</th><th>垫词空档</th></tr>
+        </thead>
+        <tbody>
+          <tr class="best"><td>🎵 抖音社区</td><td><strong>1.86s</strong> ⚡</td><td>—</td><td>—</td></tr>
+          <tr class="best"><td>🐜 蚂蚁花呗</td><td>—</td><td><strong>1.53s</strong> ⚡</td><td>—</td></tr>
+          <tr><td>🟡 美团闪购♂</td><td>4.25s</td><td>3.3s</td><td>1.50s</td></tr>
+          <tr><td>🟡 美团闪购♀</td><td>5.58s</td><td>3.3s</td><td><strong>0.67s</strong> ⚡</td></tr>
+          <tr><td>🛒 抖音电商</td><td>—</td><td>—</td><td>6.5s ⚠️</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  2026 Q2 · VOIP 智能客服竞对横向对比 · 美团 Nova 创新产品评测
+</div>
+
+</body>
+</html>
