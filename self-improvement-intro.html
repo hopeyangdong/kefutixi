@@ -19,6 +19,7 @@
   --c5: #FDCB6E;
   --c6: #E84393;
   --c7: #00CEC9;
+  --c8: #FF7675;
   --font: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
   --radius: 16px;
   --radius-sm: 10px;
@@ -577,7 +578,7 @@ img { max-width: 100%; }
   top: 0;
   bottom: 0;
   width: 3px;
-  background: linear-gradient(to bottom, var(--c1), var(--c2), var(--c3), var(--c4), var(--c5), var(--c6), var(--c7));
+  background: linear-gradient(to bottom, var(--c1), var(--c2), var(--c3), var(--c4), var(--c5), var(--c6), var(--c7), var(--c8));
   border-radius: 3px;
 }
 .tl-item {
@@ -1036,7 +1037,7 @@ img { max-width: 100%; }
     <div class="stats-bar">
       <div class="stat-item">
         <span class="stat-icon">📚</span>
-        7 章深度内容
+        8 章深度内容
       </div>
       <div class="stat-item">
         <span class="stat-icon">🧪</span>
@@ -1048,7 +1049,7 @@ img { max-width: 100%; }
       </div>
       <div class="stat-item">
         <span class="stat-icon">💾</span>
-        ~73KB 沉浸式体验
+        ~110KB 沉浸式体验
       </div>
     </div>
 
@@ -1073,8 +1074,8 @@ img { max-width: 100%; }
 <section class="architecture" id="architecture">
   <div class="container">
     <div class="section-title fade-up">
-      <h2>三层课程架构</h2>
-      <p>从概念拆分到业务落地，再到用户认知——层层递进的完整认知框架</p>
+      <h2>四层课程架构</h2>
+      <p>从概念拆分到业务落地，再到用户认知，最终到工程实战——层层递进的完整认知框架</p>
     </div>
 
     <div class="arch-visual">
@@ -1141,14 +1142,34 @@ img { max-width: 100%; }
       <!-- Layer 3 -->
       <div class="arch-layer fade-up" style="--layer-color: var(--c7);">
         <div class="layer-header">
-          <div class="layer-badge" style="background: linear-gradient(135deg, var(--c7), var(--c1));">Layer 3</div>
+          <div class="layer-badge" style="background: linear-gradient(135deg, var(--c7), var(--c8));">Layer 3</div>
           <div class="layer-title">用户认知 · User Cognition</div>
         </div>
         <div class="layer-chapters">
-          <div class="layer-ch" style="max-width: 100%;">
+          <div class="layer-ch">
             <div class="layer-ch-num" style="color: var(--c7);">Chapter 7</div>
             <div class="layer-ch-title">从用户视角看自进化 — Prompt 四象限模型</div>
-            <div class="layer-ch-desc">基于 Anthropic 研究员 Amanda Johansson 在 WAIC 2025 分享的 Johari Window 变体。四象限：已知已知 / 已知未知 / 未知已知 / 未知未知。三维飞轮模型：改模型 × 改系统 × 改人</div>
+            <div class="layer-ch-desc">基于 Anthropic 研究员 Amanda Johansson 在 WAIC 2025 分享的 Johari Window 变体。四象限 × 三维飞轮模型：改模型 × 改系统 × 改人</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connector -->
+      <div class="arch-connector fade-up">
+        <svg viewBox="0 0 40 32"><path d="M20 0 L20 32" stroke-dasharray="6,4"/></svg>
+      </div>
+
+      <!-- Layer 4 -->
+      <div class="arch-layer fade-up" style="--layer-color: var(--c8);">
+        <div class="layer-header">
+          <div class="layer-badge" style="background: linear-gradient(135deg, var(--c8), var(--c1));">Layer 4</div>
+          <div class="layer-title">工程落地 · Engineering</div>
+        </div>
+        <div class="layer-chapters">
+          <div class="layer-ch" style="max-width: 100%;">
+            <div class="layer-ch-num" style="color: var(--c8);">Chapter 8</div>
+            <div class="layer-ch-title">Loop Engineering：从路线图到施工图</div>
+            <div class="layer-ch-desc">五模块架构（Automation / Worktree / Skill / Plugins / Sub-agents）、Maker/Checker 制衡设计、熔断机制、成本公式，含 Bun 移植 75 万行代码实战案例</div>
           </div>
         </div>
       </div>
@@ -1192,7 +1213,7 @@ img { max-width: 100%; }
 <section class="chapters" id="chapters">
   <div class="container">
     <div class="section-title fade-up">
-      <h2>七章深度内容</h2>
+      <h2>八章深度内容</h2>
       <p>每一章都经过精心设计，从概念到案例、从理论到工具，层层深入</p>
     </div>
 
@@ -1301,6 +1322,21 @@ img { max-width: 100%; }
           <span class="ch-tag" style="--ch-color: var(--c7);">三维飞轮</span>
         </div>
       </div>
+
+      <!-- Ch8 -->
+      <div class="chapter-card fade-up delay-8" style="--ch-color: var(--c8);">
+        <div class="card-header">
+          <div class="ch-badge" style="background: var(--c8); color: #1A1A2E;">08</div>
+          <div class="ch-emoji">⚙️</div>
+        </div>
+        <div class="ch-title">Loop Engineering — 从路线图到施工图</div>
+        <div class="ch-desc">五模块架构、Maker/Checker 制衡、熔断机制（300s/$2/3 次重复）、成本公式，以及 Bun 移植 75 万行代码 / 11 天 / 99.8% 通过率的实战案例。</div>
+        <div class="ch-tags">
+          <span class="ch-tag" style="--ch-color: var(--c8);">五模块架构</span>
+          <span class="ch-tag" style="--ch-color: var(--c8);">熔断机制</span>
+          <span class="ch-tag" style="--ch-color: var(--c8);">Bun 案例</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1376,6 +1412,15 @@ img { max-width: 100%; }
           <div class="tl-chapter">Chapter 7 · 认知升维</div>
           <div class="tl-title">从用户视角重新审视 AI 进化的完整图景</div>
           <div class="tl-desc">四象限 × 三维飞轮 = 改模型 × 改系统 × 改人</div>
+        </div>
+      </div>
+
+      <div class="tl-item fade-up" style="--tl-color: var(--c8);">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-chapter">Chapter 8 · 工程实战</div>
+          <div class="tl-title">把路线图变成可执行的施工图</div>
+          <div class="tl-desc">五模块架构 × 制衡设计 × 熔断机制 × 成本公式 × Bun 实战</div>
         </div>
       </div>
     </div>
