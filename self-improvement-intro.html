@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 自进化：真进化与假进化 — 课程介绍</title>
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  --bg: #0F0F1A;
+  --card: #1A1A2E;
+  --txt: #E8E8F0;
+  --txt2: #A0A0B8;
+  --border: #2A2A4A;
+  --c1: #6C5CE7;
+  --c2: #00B894;
+  --c3: #E17055;
+  --c4: #0984E3;
+  --c5: #FDCB6E;
+  --c6: #E84393;
+  --c7: #00CEC9;
+  --font: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--txt);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; }
+
+/* ===== Scroll Animations ===== */
+.fade-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-up.delay-1 { transition-delay: 0.1s; }
+.fade-up.delay-2 { transition-delay: 0.2s; }
+.fade-up.delay-3 { transition-delay: 0.3s; }
+.fade-up.delay-4 { transition-delay: 0.4s; }
+.fade-up.delay-5 { transition-delay: 0.5s; }
+.fade-up.delay-6 { transition-delay: 0.6s; }
+.fade-up.delay-7 { transition-delay: 0.7s; }
+
+/* ===== Container ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== Section Titles ===== */
+.section-title {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.section-title h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--c1), var(--c7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.section-title p {
+  color: var(--txt2);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ===== Navigation ===== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(15, 15, 26, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+.nav.scrolled {
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.nav-logo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-logo .logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--c1), var(--c4));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--txt2);
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--txt); }
+.nav-cta {
+  background: linear-gradient(135deg, var(--c1), var(--c4));
+  color: #fff !important;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem !important;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.nav-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+}
+
+/* ===== Hero Section ===== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(108,92,231,0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(0,206,201,0.1) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 50%, rgba(9,132,227,0.08) 0%, transparent 60%);
+  animation: heroBgPulse 8s ease-in-out infinite alternate;
+}
+@keyframes heroBgPulse {
+  0% { transform: scale(1) rotate(0deg); }
+  100% { transform: scale(1.05) rotate(2deg); }
+}
+
+/* Floating particles */
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.3; }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(108, 92, 231, 0.15);
+  border: 1px solid rgba(108, 92, 231, 0.3);
+  border-radius: 100px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  color: var(--c1);
+  margin-bottom: 32px;
+  animation: badgePulse 3s ease-in-out infinite;
+}
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(108, 92, 231, 0); }
+}
+.hero-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c2);
+  animation: dotBlink 2s ease-in-out infinite;
+}
+@keyframes dotBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.hero h1 {
+  font-size: 3.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff 0%, var(--txt) 50%, var(--c7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .subtitle-en {
+  font-size: 1.3rem;
+  color: var(--txt2);
+  margin-bottom: 20px;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+.hero .subtitle-zh {
+  font-size: 1.2rem;
+  color: var(--txt2);
+  margin-bottom: 40px;
+  font-weight: 300;
+}
+
+/* Stats Bar */
+.stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  color: var(--txt);
+  backdrop-filter: blur(10px);
+}
+.stat-item .stat-icon {
+  font-size: 1.1rem;
+}
+.stat-divider {
+  color: var(--border);
+  display: none;
+}
+
+/* Hero CTA */
+.hero-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--c1), var(--c4));
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(108, 92, 231, 0.5);
+}
+.btn-secondary {
+  background: rgba(255,255,255,0.05);
+  color: var(--txt);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--c7);
+  transform: translateY(-2px);
+}
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--txt2);
+  font-size: 0.8rem;
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+.scroll-arrow {
+  width: 24px;
+  height: 24px;
+  border-right: 2px solid var(--txt2);
+  border-bottom: 2px solid var(--txt2);
+  transform: rotate(45deg);
+  opacity: 0.5;
+}
+
+/* ===== Architecture Section ===== */
+.architecture {
+  padding: 100px 0;
+  position: relative;
+}
+.arch-visual {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.arch-layer {
+  position: relative;
+  margin-bottom: 24px;
+  border-radius: var(--radius);
+  padding: 32px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+.arch-layer:hover {
+  border-color: var(--layer-color, var(--c1));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+.arch-layer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--layer-color, var(--c1));
+  border-radius: 4px 0 0 4px;
+}
+.layer-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.layer-badge {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--layer-color, var(--c1));
+  white-space: nowrap;
+}
+.layer-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.layer-chapters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.layer-ch {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  transition: background 0.3s;
+}
+.layer-ch:hover {
+  background: rgba(255,255,255,0.06);
+}
+.layer-ch-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--layer-color, var(--c1));
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.layer-ch-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+.layer-ch-desc {
+  font-size: 0.82rem;
+  color: var(--txt2);
+  line-height: 1.5;
+}
+
+/* Connectors between layers */
+.arch-connector {
+  display: flex;
+  justify-content: center;
+  margin: -8px 0;
+  position: relative;
+  z-index: 2;
+}
+.arch-connector svg {
+  width: 40px;
+  height: 32px;
+}
+.arch-connector path {
+  stroke: var(--border);
+  stroke-width: 2;
+  fill: none;
+  stroke-dasharray: 6, 4;
+}
+
+/* ===== Chapter Cards ===== */
+.chapters {
+  padding: 100px 0;
+}
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+.chapter-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: default;
+}
+.chapter-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  border-color: var(--ch-color, var(--c1));
+}
+.chapter-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--ch-color, var(--c1));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.chapter-card:hover::after {
+  transform: scaleX(1);
+}
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.ch-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #fff;
+  background: var(--ch-color, var(--c1));
+  flex-shrink: 0;
+}
+.ch-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+.ch-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.ch-desc {
+  font-size: 0.9rem;
+  color: var(--txt2);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.ch-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ch-tag {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(255,255,255,0.05);
+  color: var(--ch-color, var(--txt2));
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ===== Timeline ===== */
+.timeline {
+  padding: 100px 0;
+}
+.timeline-track {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.timeline-line {
+  position: absolute;
+  left: 28px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--c1), var(--c2), var(--c3), var(--c4), var(--c5), var(--c6), var(--c7));
+  border-radius: 3px;
+}
+.tl-item {
+  position: relative;
+  padding-left: 72px;
+  padding-bottom: 40px;
+}
+.tl-item:last-child { padding-bottom: 0; }
+.tl-dot {
+  position: absolute;
+  left: 16px;
+  top: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 3px solid var(--tl-color, var(--c1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: all 0.3s;
+}
+.tl-dot::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tl-color, var(--c1));
+}
+.tl-item:hover .tl-dot {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px var(--tl-color, var(--c1));
+}
+.tl-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px 24px;
+  transition: border-color 0.3s;
+}
+.tl-item:hover .tl-content {
+  border-color: var(--tl-color, var(--c1));
+}
+.tl-chapter {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--tl-color, var(--c1));
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.tl-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.tl-desc {
+  font-size: 0.85rem;
+  color: var(--txt2);
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .timeline-line { left: 18px; }
+  .tl-dot { left: 6px; width: 24px; height: 24px; }
+  .tl-item { padding-left: 52px; }
+}
+
+/* ===== Features Section ===== */
+.features {
+  padding: 100px 0;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+.feature-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+  transition: all 0.3s;
+}
+.feature-card:hover {
+  border-color: var(--c1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.feature-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.feature-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+.feature-desc {
+  font-size: 0.85rem;
+  color: var(--txt2);
+  line-height: 1.5;
+}
+
+/* ===== Who / Why / What Section ===== */
+.origin {
+  padding: 100px 0;
+}
+.origin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+.origin-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.origin-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.origin-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--oc-color, var(--c1));
+}
+.origin-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  display: block;
+}
+.origin-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+.origin-card p {
+  color: var(--txt2);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.origin-list {
+  list-style: none;
+  margin-top: 12px;
+}
+.origin-list li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 8px;
+  color: var(--txt2);
+  font-size: 0.9rem;
+}
+.origin-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--oc-color, var(--c2));
+  font-weight: 700;
+}
+
+/* ===== Quiz Preview ===== */
+.quiz-preview {
+  padding: 100px 0;
+}
+.quiz-card {
+  max-width: 700px;
+  margin: 0 auto 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  position: relative;
+}
+.quiz-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(108,92,231,0.05), rgba(0,206,201,0.05));
+  pointer-events: none;
+}
+.quiz-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(108,92,231,0.15);
+  color: var(--c1);
+  padding: 4px 14px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.quiz-question {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+.quiz-options {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+.quiz-option:hover {
+  border-color: var(--c1);
+  background: rgba(108,92,231,0.08);
+}
+.quiz-option.selected {
+  border-color: var(--c1);
+  background: rgba(108,92,231,0.12);
+}
+.quiz-option.correct {
+  border-color: var(--c2);
+  background: rgba(0,184,148,0.12);
+}
+.quiz-option.wrong {
+  border-color: var(--c3);
+  background: rgba(225,112,85,0.12);
+}
+.quiz-option-letter {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.quiz-feedback {
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  display: none;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct-fb {
+  background: rgba(0,184,148,0.1);
+  border: 1px solid rgba(0,184,148,0.3);
+  color: var(--c2);
+}
+.quiz-feedback.wrong-fb {
+  background: rgba(225,112,85,0.1);
+  border: 1px solid rgba(225,112,85,0.3);
+  color: var(--c3);
+}
+.quiz-note {
+  text-align: center;
+  color: var(--txt2);
+  font-size: 0.9rem;
+  margin-top: 32px;
+}
+.quiz-note a {
+  color: var(--c1);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ===== CTA Section ===== */
+.cta-section {
+  padding: 100px 0;
+}
+.cta-box {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 64px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.cta-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(108,92,231,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cta-box h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  position: relative;
+}
+.cta-box p {
+  color: var(--txt2);
+  font-size: 1.05rem;
+  margin-bottom: 36px;
+  position: relative;
+}
+.cta-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* ===== Footer ===== */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 24px;
+  text-align: center;
+}
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.footer-main {
+  color: var(--txt2);
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+.footer-meta {
+  color: var(--txt2);
+  font-size: 0.78rem;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+.footer-tech {
+  color: var(--txt2);
+  font-size: 0.75rem;
+  opacity: 0.4;
+  margin-top: 12px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2.4rem; }
+  .hero .subtitle-en { font-size: 1rem; }
+  .stats-bar { gap: 8px; }
+  .stat-item { padding: 8px 14px; font-size: 0.8rem; }
+  .section-title h2 { font-size: 1.8rem; }
+  .chapter-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .origin-grid { grid-template-columns: 1fr; }
+  .cta-box { padding: 40px 24px; }
+  .arch-layer { padding: 20px; }
+  .layer-chapters { grid-template-columns: 1fr; }
+}
+
+/* ===== Glow ring on hero ===== */
+.glow-ring {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  border: 1px solid rgba(108,92,231,0.1);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: glowRotate 20s linear infinite;
+}
+.glow-ring:nth-child(2) {
+  width: 500px;
+  height: 500px;
+  border-color: rgba(0,206,201,0.08);
+  animation-duration: 25s;
+  animation-direction: reverse;
+}
+.glow-ring:nth-child(3) {
+  width: 400px;
+  height: 400px;
+  border-color: rgba(9,132,227,0.06);
+  animation-duration: 15s;
+}
+@keyframes glowRotate {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ===== Flywheel visual ===== */
+.flywheel {
+  max-width: 500px;
+  margin: 40px auto 0;
+}
+.flywheel svg {
+  width: 100%;
+  height: auto;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <div class="logo-icon">🧬</div>
+      <span>AI 自进化</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#architecture">课程架构</a></li>
+      <li><a href="#chapters">章节预览</a></li>
+      <li><a href="#features">特色亮点</a></li>
+      <li><a href="#quiz">互动测验</a></li>
+      <li><a href="self-improvement.html" class="nav-cta">开始学习</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== Hero Section ===== -->
+<section class="hero" id="hero">
+  <!-- Decorative elements -->
+  <div class="glow-ring"></div>
+  <div class="glow-ring"></div>
+  <div class="glow-ring"></div>
+
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      2026 · 美团即时零售智能客服
+    </div>
+
+    <h1>AI 自进化</h1>
+    <div class="subtitle-en">真进化与假进化</div>
+    <div class="subtitle-zh">从模型原理到客服业务落地的完整认知框架</div>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-icon">📚</span>
+        7 章深度内容
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">🧪</span>
+        5 道互动测验
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">📎</span>
+        20+ 权威引用
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">💾</span>
+        ~73KB 沉浸式体验
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      <a href="self-improvement.html" class="btn btn-primary">
+        🚀 开始学习
+      </a>
+      <a href="https://github.com/hopeyangdong/kefutixi" target="_blank" rel="noopener" class="btn btn-secondary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub 仓库
+      </a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>向下滚动</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ===== Architecture Section ===== -->
+<section class="architecture" id="architecture">
+  <div class="container">
+    <div class="section-title fade-up">
+      <h2>三层课程架构</h2>
+      <p>从概念拆分到业务落地，再到用户认知——层层递进的完整认知框架</p>
+    </div>
+
+    <div class="arch-visual">
+      <!-- Layer 1 -->
+      <div class="arch-layer fade-up" style="--layer-color: var(--c1);">
+        <div class="layer-header">
+          <div class="layer-badge" style="background: linear-gradient(135deg, var(--c1), var(--c2));">Layer 1</div>
+          <div class="layer-title">概念拆分 · Concept Split</div>
+        </div>
+        <div class="layer-chapters">
+          <div class="layer-ch">
+            <div class="layer-ch-num" style="color: var(--c1);">Chapter 1</div>
+            <div class="layer-ch-title">什么是 Self-Improvement</div>
+            <div class="layer-ch-desc">建立"真进化 vs 假进化"的核心区分框架，厘清概念边界</div>
+          </div>
+          <div class="layer-ch">
+            <div class="layer-ch-num" style="color: var(--c2);">Chapter 2</div>
+            <div class="layer-ch-title">真进化 — 模型级自我改进</div>
+            <div class="layer-ch-desc">RL-AIF、STaR、Self-Correction 等模型自主进化技术</div>
+          </div>
+          <div class="layer-ch">
+            <div class="layer-ch-num" style="color: var(--c3);">Chapter 3</div>
+            <div class="layer-ch-title">假进化 — 系统级改进</div>
+            <div class="layer-ch-desc">Frozen Model + Evolving System，大多数落地场景的真相</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connector -->
+      <div class="arch-connector fade-up">
+        <svg viewBox="0 0 40 32"><path d="M20 0 L20 32" stroke-dasharray="6,4"/></svg>
+      </div>
+
+      <!-- Layer 2 -->
+      <div class="arch-layer fade-up" style="--layer-color: var(--c4);">
+        <div class="layer-header">
+          <div class="layer-badge" style="background: linear-gradient(135deg, var(--c4), var(--c5));">Layer 2</div>
+          <div class="layer-title">落地展开 · Implementation</div>
+        </div>
+        <div class="layer-chapters">
+          <div class="layer-ch">
+            <div class="layer-ch-num" style="color: var(--c4);">Chapter 4</div>
+            <div class="layer-ch-title">七阶段演进</div>
+            <div class="layer-ch-desc">从 Prompt Engineering 到 Loop / Multi-Agent 的完整路线图</div>
+          </div>
+          <div class="layer-ch">
+            <div class="layer-ch-num" style="color: var(--c5);">Chapter 5</div>
+            <div class="layer-ch-title">落地路径</div>
+            <div class="layer-ch-desc">阶段→工具→场景的具体映射，可直接对照自评</div>
+          </div>
+          <div class="layer-ch">
+            <div class="layer-ch-num" style="color: var(--c6);">Chapter 6</div>
+            <div class="layer-ch-title">四要素框架</div>
+            <div class="layer-ch-desc">自验证、约束、反馈、可度量性——含 💡 "Loop = 路" 修辞彩蛋</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connector -->
+      <div class="arch-connector fade-up">
+        <svg viewBox="0 0 40 32"><path d="M20 0 L20 32" stroke-dasharray="6,4"/></svg>
+      </div>
+
+      <!-- Layer 3 -->
+      <div class="arch-layer fade-up" style="--layer-color: var(--c7);">
+        <div class="layer-header">
+          <div class="layer-badge" style="background: linear-gradient(135deg, var(--c7), var(--c1));">Layer 3</div>
+          <div class="layer-title">用户认知 · User Cognition</div>
+        </div>
+        <div class="layer-chapters">
+          <div class="layer-ch" style="max-width: 100%;">
+            <div class="layer-ch-num" style="color: var(--c7);">Chapter 7</div>
+            <div class="layer-ch-title">从用户视角看自进化 — Prompt 四象限模型</div>
+            <div class="layer-ch-desc">基于 Anthropic 研究员 Amanda Johansson 在 WAIC 2025 分享的 Johari Window 变体。四象限：已知已知 / 已知未知 / 未知已知 / 未知未知。三维飞轮模型：改模型 × 改系统 × 改人</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Three-Dimension Flywheel SVG -->
+    <div class="flywheel fade-up">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background circle -->
+        <circle cx="200" cy="150" r="120" fill="none" stroke="#2A2A4A" stroke-width="1" stroke-dasharray="4,4"/>
+        <circle cx="200" cy="150" r="80" fill="none" stroke="#2A2A4A" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- Three arrows forming a flywheel -->
+        <!-- Arrow 1: 改模型 -->
+        <path d="M200 40 Q280 40 280 120" fill="none" stroke="#6C5CE7" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="280,120 274,108 286,108" fill="#6C5CE7"/>
+        <text x="240" y="55" fill="#6C5CE7" font-size="13" font-weight="700" font-family="PingFang SC, sans-serif">改模型</text>
+        <text x="240" y="72" fill="#A0A0B8" font-size="10" font-family="PingFang SC, sans-serif">Model</text>
+
+        <!-- Arrow 2: 改系统 -->
+        <path d="M280 180 Q280 260 200 260" fill="none" stroke="#00CEC9" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="200,260 212,254 212,266" fill="#00CEC9"/>
+        <text x="282" y="220" fill="#00CEC9" font-size="13" font-weight="700" font-family="PingFang SC, sans-serif">改系统</text>
+        <text x="282" y="237" fill="#A0A0B8" font-size="10" font-family="PingFang SC, sans-serif">System</text>
+
+        <!-- Arrow 3: 改人 -->
+        <path d="M140 260 Q60 260 120 120" fill="none" stroke="#E84393" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="120,120 114,132 126,132" fill="#E84393"/>
+        <text x="60" y="200" fill="#E84393" font-size="13" font-weight="700" font-family="PingFang SC, sans-serif">改人</text>
+        <text x="60" y="217" fill="#A0A0B8" font-size="10" font-family="PingFang SC, sans-serif">Human</text>
+
+        <!-- Center text -->
+        <text x="200" y="145" fill="#E8E8F0" font-size="14" font-weight="700" text-anchor="middle" font-family="PingFang SC, sans-serif">三维飞轮</text>
+        <text x="200" y="165" fill="#A0A0B8" font-size="11" text-anchor="middle" font-family="PingFang SC, sans-serif">Self-Improvement Flywheel</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Chapter Preview Cards ===== -->
+<section class="chapters" id="chapters">
+  <div class="container">
+    <div class="section-title fade-up">
+      <h2>七章深度内容</h2>
+      <p>每一章都经过精心设计，从概念到案例、从理论到工具，层层深入</p>
+    </div>
+
+    <div class="chapter-grid">
+      <!-- Ch1 -->
+      <div class="chapter-card fade-up delay-1" style="--ch-color: var(--c1);">
+        <div class="card-header">
+          <div class="ch-badge" style="background: var(--c1);">01</div>
+          <div class="ch-emoji">🔍</div>
+        </div>
+        <div class="ch-title">什么是 Self-Improvement</div>
+        <div class="ch-desc">建立"真进化"与"假进化"的核心概念区分。理解为什么这个区分对客服业务至关重要——它决定了你的技术投入方向。</div>
+        <div class="ch-tags">
+          <span class="ch-tag" style="--ch-color: var(--c1);">概念框架</span>
+          <span class="ch-tag" style="--ch-color: var(--c1);">真 vs 假</span>
+          <span class="ch-tag" style="--ch-color: var(--c1);">认知起点</span>
+        </div>
+      </div>
+
+      <!-- Ch2 -->
+      <div class="chapter-card fade-up delay-2" style="--ch-color: var(--c2);">
+        <div class="card-header">
+          <div class="ch-badge" style="background: var(--c2);">02</div>
+          <div class="ch-emoji">🧬</div>
+        </div>
+        <div class="ch-title">真进化 — 模型级自我改进</div>
+        <div class="ch-desc">深入 RL-AIF、STaR、Self-Correction 三大技术路线。理解模型如何在没有人类标注的情况下自主变得更强。</div>
+        <div class="ch-tags">
+          <span class="ch-tag" style="--ch-color: var(--c2);">RL-AIF</span>
+          <span class="ch-tag" style="--ch-color: var(--c2);">STaR</span>
+          <span class="ch-tag" style="--ch-color: var(--c2);">Self-Correction</span>
+        </div>
+      </div>
+
+      <!-- Ch3 -->
+      <div class="chapter-card fade-up delay-3" style="--ch-color: var(--c3);">
+        <div class="card-header">
+          <div class="ch-badge" style="background: var(--c3);">03</div>
+          <div class="ch-emoji">🏗️</div>
+        </div>
+        <div class="ch-title">假进化 — 系统级改进</div>
+        <div class="ch-desc">Frozen Model + Evolving System：模型不变，但系统在进化。这才是 90% 企业落地的真实路径。</div>
+        <div class="ch-tags">
+          <span class="ch-tag" style="--ch-color: var(--c3);">Frozen Model</span>
+          <span class="ch-tag" style="--ch-color: var(--c3);">系统进化</span>
+          <span class="ch-tag" style="--ch-color: var(--c3);">工程视角</span>
+        </div>
+      </div>
+
+      <!-- Ch4 -->
+      <div class="chapter-card fade-up delay-4" style="--ch-color: var(--c4);">
+        <div class="card-header">
+          <div class="ch-badge" style="background: var(--c4);">04</div>
+          <div class="ch-emoji">📈</div>
+        </div>
+        <div class="ch-title">七阶段演进路线图</div>
+        <div class="ch-desc">从 Prompt Engineering 起步，经过 RAG、Fine-tuning、Agent，直到 Loop 和 Multi-Agent。找到你团队当前所在的位置。</div>
+        <div class="ch-tags">
+          <span class="ch-tag" style="--ch-color: var(--c4);">七阶段</span>
+          <span class="ch-tag" style="--ch-color: var(--c4);">路线图</span>
+          <span class="ch-tag" style="--ch-color: var(--c4);">自评工具</span>
+        </div>
+      </div>
+
+      <!-- Ch5 -->
+      <div class="chapter-card fade-up delay-5" style="--ch-color: var(--c5);">
+        <div class="card-header">
+          <div class="ch-badge" style="background: var(--c5); color: #1A1A2E;">05</div>
+          <div class="ch-emoji">🗺️</div>
+        </div>
+        <div class="ch-title">落地路径 — 阶段到工具的映射</div>
+        <div class="ch-desc">将七阶段理论转化为具体的工具选型和实施路径。退款场景、投诉处理、骑手调度的真实案例。</div>
+        <div class="ch-tags">
+          <span class="ch-tag" style="--ch-color: var(--c5);">工具映射</span>
+          <span class="ch-tag" style="--ch-color: var(--c5);">退款场景</span>
+          <span class="ch-tag" style="--ch-color: var(--c5);">实操指南</span>
+        </div>
+      </div>
+
+      <!-- Ch6 -->
+      <div class="chapter-card fade-up delay-6" style="--ch-color: var(--c6);">
+        <div class="card-header">
+          <div class="ch-badge" style="background: var(--c6);">06</div>
+          <div class="ch-emoji">🔄</div>
+        </div>
+        <div class="ch-title">四要素框架</div>
+        <div class="ch-desc">自验证、约束、反馈、可度量性——构建 AI 自进化闭环的四个关键要素。含 💡 "Loop = 路" 修辞彩蛋。</div>
+        <div class="ch-tags">
+          <span class="ch-tag" style="--ch-color: var(--c6);">四要素</span>
+          <span class="ch-tag" style="--ch-color: var(--c6);">闭环设计</span>
+          <span class="ch-tag" style="--ch-color: var(--c6);">Loop = 路</span>
+        </div>
+      </div>
+
+      <!-- Ch7 -->
+      <div class="chapter-card fade-up delay-7" style="--ch-color: var(--c7);">
+        <div class="card-header">
+          <div class="ch-badge" style="background: var(--c7); color: #1A1A2E;">07</div>
+          <div class="ch-emoji">👁️</div>
+        </div>
+        <div class="ch-title">用户视角 — Prompt 四象限模型</div>
+        <div class="ch-desc">基于 Anthropic 研究员 Amanda Johansson 在 WAIC 2025 的 Johari Window 变体：已知已知 / 已知未知 / 未知已知 / 未知未知。</div>
+        <div class="ch-tags">
+          <span class="ch-tag" style="--ch-color: var(--c7);">四象限</span>
+          <span class="ch-tag" style="--ch-color: var(--c7);">Johari Window</span>
+          <span class="ch-tag" style="--ch-color: var(--c7);">三维飞轮</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Timeline Section ===== -->
+<section class="timeline" id="timeline">
+  <div class="container">
+    <div class="section-title fade-up">
+      <h2>学习旅程</h2>
+      <p>沿着这条路线，从零构建关于 AI 自进化的完整认知</p>
+    </div>
+
+    <div class="timeline-track">
+      <div class="timeline-line"></div>
+
+      <div class="tl-item fade-up" style="--tl-color: var(--c1);">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-chapter">Chapter 1 · 概念起点</div>
+          <div class="tl-title">建立「真进化 vs 假进化」认知框架</div>
+          <div class="tl-desc">明确概念边界，为后续所有讨论奠定基础</div>
+        </div>
+      </div>
+
+      <div class="tl-item fade-up" style="--tl-color: var(--c2);">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-chapter">Chapter 2 · 技术深潜</div>
+          <div class="tl-title">理解模型级自我改进的三条技术路线</div>
+          <div class="tl-desc">RL-AIF、STaR、Self-Correction 的原理与前沿进展</div>
+        </div>
+      </div>
+
+      <div class="tl-item fade-up" style="--tl-color: var(--c3);">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-chapter">Chapter 3 · 认知纠偏</div>
+          <div class="tl-title">认识系统级改进的本质和价值</div>
+          <div class="tl-desc">理解为什么"假进化"不代表"没价值"</div>
+        </div>
+      </div>
+
+      <div class="tl-item fade-up" style="--tl-color: var(--c4);">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-chapter">Chapter 4 · 全景路线</div>
+          <div class="tl-title">掌握从 Prompt 到 Multi-Agent 的七阶段演进图谱</div>
+          <div class="tl-desc">定位你的团队在进化路线上的当前位置</div>
+        </div>
+      </div>
+
+      <div class="tl-item fade-up" style="--tl-color: var(--c5);">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-chapter">Chapter 5 · 实操映射</div>
+          <div class="tl-title">将阶段理论转化为具体工具和行动方案</div>
+          <div class="tl-desc">退款、投诉、骑手调度等客服场景的真实案例</div>
+        </div>
+      </div>
+
+      <div class="tl-item fade-up" style="--tl-color: var(--c6);">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-chapter">Chapter 6 · 闭环构建</div>
+          <div class="tl-title">用四要素框架设计可持续进化的系统</div>
+          <div class="tl-desc">自验证 × 约束 × 反馈 × 可度量性 = 完整闭环</div>
+        </div>
+      </div>
+
+      <div class="tl-item fade-up" style="--tl-color: var(--c7);">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-chapter">Chapter 7 · 认知升维</div>
+          <div class="tl-title">从用户视角重新审视 AI 进化的完整图景</div>
+          <div class="tl-desc">四象限 × 三维飞轮 = 改模型 × 改系统 × 改人</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Features Section ===== -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-title fade-up">
+      <h2>五大课程特色</h2>
+      <p>不只是内容，更是一种沉浸式的学习体验</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card fade-up delay-1">
+        <div class="feature-icon">📄</div>
+        <div>
+          <div class="feature-title">权威来源</div>
+          <div class="feature-desc">每条信息可溯源到一手文献。引用来自 OpenAI、Anthropic、Google DeepMind 等一线机构的论文和报告。</div>
+        </div>
+      </div>
+
+      <div class="feature-card fade-up delay-2">
+        <div class="feature-icon">🎯</div>
+        <div>
+          <div class="feature-title">客服场景锚定</div>
+          <div class="feature-desc">所有案例来自退款/投诉/骑手调度等真实业务场景，不是空中楼阁的理论讨论。</div>
+        </div>
+      </div>
+
+      <div class="feature-card fade-up delay-3">
+        <div class="feature-icon">🧪</div>
+        <div>
+          <div class="feature-title">互动测验</div>
+          <div class="feature-desc">5 道精心设计的选择题，即时反馈机制帮助你检验理解程度，巩固核心概念。</div>
+        </div>
+      </div>
+
+      <div class="feature-card fade-up delay-4">
+        <div class="feature-icon">🎨</div>
+        <div>
+          <div class="feature-title">暗黑科技风</div>
+          <div class="feature-desc">精心设计的沉浸式阅读体验，暗色主题减少视觉疲劳，适合长时间深度阅读。</div>
+        </div>
+      </div>
+
+      <div class="feature-card fade-up delay-5">
+        <div class="feature-icon">📊</div>
+        <div>
+          <div class="feature-title">SVG 架构图</div>
+          <div class="feature-desc">内联矢量图解复杂概念，无需加载外部图片，离线也能完美呈现所有图表。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Origin Section ===== -->
+<section class="origin" id="origin">
+  <div class="container">
+    <div class="section-title fade-up">
+      <h2>关于这门课程</h2>
+      <p>为什么做、给谁看、学完能得到什么</p>
+    </div>
+
+    <div class="origin-grid">
+      <div class="origin-card fade-up delay-1" style="--oc-color: var(--c1);">
+        <div class="origin-emoji">💡</div>
+        <h3>为什么做这门课程</h3>
+        <p>AI 自进化是当前最热的技术方向之一，但"真进化"和"假进化"的区别常被混淆。市面上大量文章把 RAG 增强、Prompt 优化也叫"自进化"，这种概念混用导致：</p>
+        <ul class="origin-list">
+          <li>技术选型方向错误</li>
+          <li>对 AI 能力的预期偏差</li>
+          <li>团队沟通中的概念错位</li>
+        </ul>
+      </div>
+
+      <div class="origin-card fade-up delay-2" style="--oc-color: var(--c2);">
+        <div class="origin-emoji">👥</div>
+        <h3>适合谁学习</h3>
+        <p>这门课程为以下角色量身设计：</p>
+        <ul class="origin-list">
+          <li>客服 / 运营团队负责人</li>
+          <li>AI 产品经理</li>
+          <li>技术与业务的桥梁角色</li>
+          <li>对 AI 自进化感兴趣的从业者</li>
+        </ul>
+      </div>
+
+      <div class="origin-card fade-up delay-3" style="--oc-color: var(--c7);">
+        <div class="origin-emoji">🎁</div>
+        <h3>学完能获得什么</h3>
+        <p>完成全部七章内容后，你将拥有：</p>
+        <ul class="origin-list">
+          <li>区分真假进化的认知框架</li>
+          <li>七阶段自评工具</li>
+          <li>四要素闭环设计方法</li>
+          <li>四象限用户认知模型</li>
+          <li>可直接落地的行动清单</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Quiz Preview ===== -->
+<section class="quiz-preview" id="quiz">
+  <div class="container">
+    <div class="section-title fade-up">
+      <h2>互动测验预览</h2>
+      <p>来试试这两道题，检验你对 AI 自进化的理解</p>
+    </div>
+
+    <!-- Quiz 1 -->
+    <div class="quiz-card fade-up" id="quiz1">
+      <div class="quiz-label">🧪 测验预览 · 第 1 题</div>
+      <div class="quiz-question">以下哪个场景属于「真进化」（True Self-Improvement）？</div>
+      <ul class="quiz-options">
+        <li class="quiz-option" data-quiz="1" data-option="A" data-correct="false" onclick="handleQuiz(this)">
+          <span class="quiz-option-letter">A</span>
+          <span>运营人员优化了 Prompt 模板，客服回复质量提升 15%</span>
+        </li>
+        <li class="quiz-option" data-quiz="1" data-option="B" data-correct="false" onclick="handleQuiz(this)">
+          <span class="quiz-option-letter">B</span>
+          <span>接入了新的知识库，客服能回答更多问题</span>
+        </li>
+        <li class="quiz-option" data-quiz="1" data-option="C" data-correct="true" onclick="handleQuiz(this)">
+          <span class="quiz-option-letter">C</span>
+          <span>模型通过自我生成的训练数据进行强化学习，推理能力自主提升</span>
+        </li>
+        <li class="quiz-option" data-quiz="1" data-option="D" data-correct="false" onclick="handleQuiz(this)">
+          <span class="quiz-option-letter">D</span>
+          <span>增加了人工质检流程，错误回复率下降</span>
+        </li>
+      </ul>
+      <div class="quiz-feedback" id="quiz1-feedback"></div>
+    </div>
+
+    <!-- Quiz 2 -->
+    <div class="quiz-card fade-up" id="quiz2">
+      <div class="quiz-label">🧪 测验预览 · 第 2 题</div>
+      <div class="quiz-question">在 Prompt 四象限模型中，「用户不知道自己不知道」属于哪个象限？</div>
+      <ul class="quiz-options">
+        <li class="quiz-option" data-quiz="2" data-option="A" data-correct="false" onclick="handleQuiz(this)">
+          <span class="quiz-option-letter">A</span>
+          <span>已知已知（Known Knowns）</span>
+        </li>
+        <li class="quiz-option" data-quiz="2" data-option="B" data-correct="false" onclick="handleQuiz(this)">
+          <span class="quiz-option-letter">B</span>
+          <span>已知未知（Known Unknowns）</span>
+        </li>
+        <li class="quiz-option" data-quiz="2" data-option="C" data-correct="false" onclick="handleQuiz(this)">
+          <span class="quiz-option-letter">C</span>
+          <span>未知已知（Unknown Knowns）</span>
+        </li>
+        <li class="quiz-option" data-quiz="2" data-option="D" data-correct="true" onclick="handleQuiz(this)">
+          <span class="quiz-option-letter">D</span>
+          <span>未知未知（Unknown Unknowns）</span>
+        </li>
+      </ul>
+      <div class="quiz-feedback" id="quiz2-feedback"></div>
+    </div>
+
+    <div class="quiz-note fade-up">
+      💡 完整课程包含 5 道精心设计的互动测验 · <a href="self-improvement.html">进入课程查看全部 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA Section ===== -->
+<section class="cta-section" id="cta">
+  <div class="container">
+    <div class="cta-box fade-up">
+      <h2>准备好了吗？</h2>
+      <p>~73KB 的沉浸式体验，零依赖、离线可用<br>从打开到看完，建立关于 AI 自进化的完整认知</p>
+      <div class="cta-buttons">
+        <a href="self-improvement.html" class="btn btn-primary">
+          🚀 开始学习完整课程
+        </a>
+        <a href="https://github.com/hopeyangdong/kefutixi" target="_blank" rel="noopener" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          查看 GitHub 仓库
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-main">课程作者：杨东 | 美团即时零售智能客服运营</div>
+    <div class="footer-meta">最后更新：2026年7月</div>
+    <div class="footer-tech">技术栈：纯 HTML/CSS/JS，零依赖，离线可用</div>
+  </div>
+</footer>
+
+<!-- ===== JavaScript ===== -->
+<script>
+(function() {
+  'use strict';
+
+  // ===== Navigation scroll effect =====
+  const nav = document.getElementById('nav');
+  let lastScroll = 0;
+  window.addEventListener('scroll', function() {
+    const scroll = window.pageYOffset;
+    if (scroll > 50) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+    lastScroll = scroll;
+  }, { passive: true });
+
+  // ===== Scroll Fade-In with IntersectionObserver =====
+  const fadeElements = document.querySelectorAll('.fade-up');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.08,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    fadeElements.forEach(function(el) {
+      observer.observe(el);
+    });
+  } else {
+    // Fallback: show all immediately
+    fadeElements.forEach(function(el) {
+      el.classList.add('visible');
+    });
+  }
+
+  // ===== Floating Particles =====
+  const particlesContainer = document.getElementById('particles');
+  const colors = ['#6C5CE7', '#00B894', '#E17055', '#0984E3', '#FDCB6E', '#E84393', '#00CEC9'];
+
+  function createParticle() {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    const size = Math.random() * 4 + 2;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const duration = Math.random() * 15 + 10;
+    const left = Math.random() * 100;
+
+    particle.style.cssText = [
+      'width:' + size + 'px',
+      'height:' + size + 'px',
+      'left:' + left + '%',
+      'bottom:-10px',
+      'background:' + color,
+      'animation-duration:' + duration + 's',
+      'animation-delay:' + (Math.random() * 5) + 's'
+    ].join(';');
+
+    particlesContainer.appendChild(particle);
+
+    // Remove after animation
+    setTimeout(function() {
+      if (particle.parentNode) {
+        particle.parentNode.removeChild(particle);
+      }
+    }, (duration + 5) * 1000);
+  }
+
+  // Create initial particles
+  for (var i = 0; i < 15; i++) {
+    setTimeout(createParticle, i * 400);
+  }
+
+  // Continue creating particles
+  setInterval(createParticle, 2000);
+
+  // ===== Smooth Scroll for nav links =====
+  document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var href = this.getAttribute('href');
+      if (href === '#') return;
+      var target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        var offset = nav.offsetHeight + 20;
+        var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+  });
+
+})();
+
+// ===== Quiz Interaction =====
+function handleQuiz(el) {
+  var quizId = el.getAttribute('data-quiz');
+  var isCorrect = el.getAttribute('data-correct') === 'true';
+  var container = document.getElementById('quiz' + quizId);
+  var feedback = document.getElementById('quiz' + quizId + '-feedback');
+
+  // Check if already answered
+  if (container.getAttribute('data-answered') === 'true') return;
+  container.setAttribute('data-answered', 'true');
+
+  // Mark selected
+  el.classList.add('selected');
+
+  if (isCorrect) {
+    el.classList.add('correct');
+    feedback.className = 'quiz-feedback show correct-fb';
+    if (quizId === '1') {
+      feedback.innerHTML = '✅ 正确！只有 C 选项描述了模型权重的自主改变——这才是「真进化」。A/B/D 都属于系统级改进（假进化），模型本身并未改变。';
+    } else {
+      feedback.innerHTML = '✅ 正确！「用户不知道自己不知道」对应的正是 Unknown Unknowns（未知未知）象限——这也是 AI 最难帮助用户的领域。';
+    }
+  } else {
+    el.classList.add('wrong');
+    // Highlight correct answer
+    var options = container.querySelectorAll('.quiz-option');
+    options.forEach(function(opt) {
+      if (opt.getAttribute('data-correct') === 'true') {
+        opt.classList.add('correct');
+      }
+    });
+    feedback.className = 'quiz-feedback show wrong-fb';
+    if (quizId === '1') {
+      feedback.innerHTML = '❌ 不太对。正确答案是 C。「真进化」的关键判据是模型权重是否自主发生了改变。A（优化 Prompt）、B（接入知识库）、D（人工质检）都属于系统级改进，模型本身没有变化。<br><br>👉 进入课程第 1-2 章深入了解。';
+    } else {
+      feedback.innerHTML = '❌ 不太对。正确答案是 D。在 Johari Window 变体的四象限中，「用户不知道自己不知道」属于 Unknown Unknowns（未知未知），这是最难被触达的象限。<br><br>👉 进入课程第 7 章了解完整的四象限模型。';
+    }
+  }
+}
+</script>
+
+</body>
+</html>

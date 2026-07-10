@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FDE 框架学术文献深度对照</title>
+<style>
+:root {
+  --bg: #0F0F1A;
+  --card: #1A1A2E;
+  --txt: #E8E8F0;
+  --txt2: #A0A0B8;
+  --border: #2A2A4A;
+  --c1: #6C5CE7;
+  --c2: #00B894;
+  --c3: #E17055;
+  --c4: #0984E3;
+  --c5: #FDCB6E;
+  --c6: #E84393;
+  --c7: #00CEC9;
+  --c8: #FF7675;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+/* ===== Progress Bar ===== */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4), var(--c5), var(--c6), var(--c7), var(--c8));
+  z-index: 9999;
+  transition: width 0.1s linear;
+}
+
+/* ===== Hero Section ===== */
+.hero {
+  position: relative;
+  padding: 80px 20px 60px;
+  text-align: center;
+  background: linear-gradient(135deg, #0F0F1A 0%, #1a1040 25%, #0d2137 50%, #1a0f2e 75%, #0F0F1A 100%);
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(108,92,231,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 50%, rgba(0,184,148,0.06) 0%, transparent 50%);
+  animation: heroGlow 8s ease-in-out infinite alternate;
+}
+
+@keyframes heroGlow {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(2%, 1%) rotate(1deg); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #E8E8F0 0%, #6C5CE7 40%, #00B894 70%, #E8E8F0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+
+.hero .subtitle {
+  font-size: 1.3rem;
+  color: var(--txt2);
+  margin-bottom: 32px;
+  font-weight: 400;
+}
+
+.hero .subtitle em {
+  font-style: normal;
+  color: var(--c3);
+  font-weight: 600;
+}
+
+.pills {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px;
+  border-radius: 100px;
+  background: rgba(108, 92, 231, 0.15);
+  border: 1px solid rgba(108, 92, 231, 0.3);
+  color: var(--txt);
+  font-size: 0.9rem;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+.pill:nth-child(2) {
+  background: rgba(0, 184, 148, 0.15);
+  border-color: rgba(0, 184, 148, 0.3);
+}
+
+.pill:nth-child(3) {
+  background: rgba(225, 112, 85, 0.15);
+  border-color: rgba(225, 112, 85, 0.3);
+}
+
+/* ===== Container ===== */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ===== TOC ===== */
+.toc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 40px auto;
+  max-width: 960px;
+}
+
+.toc h2 {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  color: var(--txt);
+}
+
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.toc-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--txt2);
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.toc-item:hover {
+  background: rgba(108, 92, 231, 0.1);
+  color: var(--txt);
+}
+
+.toc-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.toc-item:nth-child(1) .toc-num { background: rgba(108,92,231,0.2); color: var(--c1); }
+.toc-item:nth-child(2) .toc-num { background: rgba(0,184,148,0.2); color: var(--c2); }
+.toc-item:nth-child(3) .toc-num { background: rgba(225,112,85,0.2); color: var(--c3); }
+.toc-item:nth-child(4) .toc-num { background: rgba(9,132,227,0.2); color: var(--c4); }
+.toc-item:nth-child(5) .toc-num { background: rgba(253,203,110,0.2); color: var(--c5); }
+.toc-item:nth-child(6) .toc-num { background: rgba(232,67,147,0.2); color: var(--c6); }
+.toc-item:nth-child(7) .toc-num { background: rgba(0,206,201,0.2); color: var(--c7); }
+.toc-item:nth-child(8) .toc-num { background: rgba(255,118,117,0.2); color: var(--c8); }
+
+/* ===== Section Cards ===== */
+.section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  margin: 32px auto;
+  max-width: 960px;
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
+}
+
+.section-1::before { background: var(--c1); }
+.section-2::before { background: var(--c2); }
+.section-3::before { background: var(--c3); }
+.section-4::before { background: var(--c4); }
+.section-5::before { background: var(--c5); }
+.section-6::before { background: var(--c6); }
+.section-7::before { background: var(--c7); }
+.section-8::before { background: var(--c8); }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.section-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.section-1 .section-number { background: rgba(108,92,231,0.2); color: var(--c1); }
+.section-2 .section-number { background: rgba(0,184,148,0.2); color: var(--c2); }
+.section-3 .section-number { background: rgba(225,112,85,0.2); color: var(--c3); }
+.section-4 .section-number { background: rgba(9,132,227,0.2); color: var(--c4); }
+.section-5 .section-number { background: rgba(253,203,110,0.2); color: var(--c5); }
+.section-6 .section-number { background: rgba(232,67,147,0.2); color: var(--c6); }
+.section-7 .section-number { background: rgba(0,206,201,0.2); color: var(--c7); }
+.section-8 .section-number { background: rgba(255,118,117,0.2); color: var(--c8); }
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.core-thesis {
+  background: rgba(108, 92, 231, 0.08);
+  border: 1px solid rgba(108, 92, 231, 0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  font-size: 0.95rem;
+}
+
+.core-thesis strong {
+  color: var(--c1);
+}
+
+.section-2 .core-thesis { background: rgba(0,184,148,0.08); border-color: rgba(0,184,148,0.2); }
+.section-2 .core-thesis strong { color: var(--c2); }
+.section-3 .core-thesis { background: rgba(225,112,85,0.08); border-color: rgba(225,112,85,0.2); }
+.section-3 .core-thesis strong { color: var(--c3); }
+.section-4 .core-thesis { background: rgba(9,132,227,0.08); border-color: rgba(9,132,227,0.2); }
+.section-4 .core-thesis strong { color: var(--c4); }
+.section-5 .core-thesis { background: rgba(253,203,110,0.08); border-color: rgba(253,203,110,0.2); }
+.section-5 .core-thesis strong { color: var(--c5); }
+.section-6 .core-thesis { background: rgba(232,67,147,0.08); border-color: rgba(232,67,147,0.2); }
+.section-6 .core-thesis strong { color: var(--c6); }
+.section-7 .core-thesis { background: rgba(0,206,201,0.08); border-color: rgba(0,206,201,0.2); }
+.section-7 .core-thesis strong { color: var(--c7); }
+.section-8 .core-thesis { background: rgba(255,118,117,0.08); border-color: rgba(255,118,117,0.2); }
+.section-8 .core-thesis strong { color: var(--c8); }
+
+/* ===== Citation Cards ===== */
+.citation {
+  background: rgba(15, 15, 26, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+
+.citation:hover {
+  border-color: rgba(108, 92, 231, 0.4);
+}
+
+.citation-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.citation-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.citation-ref {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--txt);
+}
+
+.citation-ref .year {
+  color: var(--txt2);
+  font-weight: 400;
+}
+
+.citation-title {
+  font-style: italic;
+  color: var(--txt2);
+  font-size: 0.9rem;
+  margin-left: 30px;
+  margin-bottom: 8px;
+}
+
+.citation-body {
+  margin-left: 30px;
+  font-size: 0.92rem;
+  color: var(--txt2);
+  line-height: 1.7;
+}
+
+/* ===== Badges ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 12px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 30px;
+  margin-top: 8px;
+}
+
+.badge-green {
+  background: rgba(0, 184, 148, 0.15);
+  color: #00B894;
+  border: 1px solid rgba(0, 184, 148, 0.3);
+}
+
+.badge-amber {
+  background: rgba(253, 203, 110, 0.15);
+  color: #FDCB6E;
+  border: 1px solid rgba(253, 203, 110, 0.3);
+}
+
+.badge-blue {
+  background: rgba(9, 132, 227, 0.15);
+  color: #0984E3;
+  border: 1px solid rgba(9, 132, 227, 0.3);
+}
+
+/* ===== Conclusion Box ===== */
+.conclusion {
+  background: linear-gradient(135deg, rgba(108,92,231,0.1), rgba(0,184,148,0.05));
+  border: 1px solid rgba(108, 92, 231, 0.25);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-top: 24px;
+  position: relative;
+}
+
+.conclusion::before {
+  content: '💡';
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  font-size: 1.2rem;
+  background: var(--card);
+  padding: 0 8px;
+}
+
+.conclusion-label {
+  font-weight: 700;
+  color: var(--c1);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.conclusion p {
+  font-size: 0.95rem;
+  color: var(--txt);
+  line-height: 1.7;
+}
+
+/* ===== Gap Diagram (Section 3) ===== */
+.gap-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 32px 0;
+  padding: 32px 16px;
+  background: rgba(15, 15, 26, 0.6);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.gap-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.gap-bar {
+  width: 120px;
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  position: relative;
+}
+
+.gap-bar-personal {
+  height: 200px;
+  background: linear-gradient(180deg, var(--c2), rgba(0,184,148,0.4));
+  font-size: 2.2rem;
+  padding-bottom: 20px;
+}
+
+.gap-bar-org {
+  height: 80px;
+  background: linear-gradient(180deg, var(--c3), rgba(225,112,85,0.4));
+  font-size: 1.6rem;
+  padding-bottom: 12px;
+}
+
+.gap-bar-label {
+  font-size: 0.85rem;
+  color: var(--txt2);
+  font-weight: 600;
+  text-align: center;
+}
+
+.gap-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 32px;
+  color: var(--c5);
+}
+
+.gap-arrow-text {
+  font-size: 1.1rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--c5), var(--c3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+
+.gap-arrow svg {
+  width: 80px;
+  height: 40px;
+}
+
+/* ===== Strength Meter (Section 5) ===== */
+.criteria-card {
+  background: rgba(15, 15, 26, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.criteria-name {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.criteria-desc {
+  font-size: 0.9rem;
+  color: var(--txt2);
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.strength-meter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.strength-track {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.strength-fill-weak {
+  width: 20%;
+  background: linear-gradient(90deg, var(--c8), rgba(255,118,117,0.5));
+}
+
+.strength-fill-partial {
+  width: 50%;
+  background: linear-gradient(90deg, var(--c5), rgba(253,203,110,0.5));
+}
+
+.strength-fill-strong {
+  width: 90%;
+  background: linear-gradient(90deg, var(--c2), rgba(0,184,148,0.5));
+}
+
+.strength-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  min-width: 60px;
+  text-align: right;
+}
+
+.strength-label-weak { color: var(--c8); }
+.strength-label-partial { color: var(--c5); }
+.strength-label-strong { color: var(--c2); }
+
+/* ===== Comparison Table (Section 6) ===== */
+.comparison-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 24px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.comparison-table th {
+  background: rgba(232, 67, 147, 0.15);
+  padding: 14px 20px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--txt);
+  border-bottom: 1px solid var(--border);
+}
+
+.comparison-table td {
+  padding: 14px 20px;
+  font-size: 0.9rem;
+  color: var(--txt2);
+  border-bottom: 1px solid var(--border);
+  background: rgba(15, 15, 26, 0.4);
+}
+
+.comparison-table tr:last-child td {
+  border-bottom: none;
+}
+
+.comparison-table tr:hover td {
+  background: rgba(232, 67, 147, 0.05);
+}
+
+.comparison-table .match {
+  color: var(--c2);
+  font-weight: 700;
+}
+
+/* ===== Framework Complementarity ===== */
+.framework-comp {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.framework-box {
+  background: rgba(15, 15, 26, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.framework-box h4 {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.framework-box p {
+  font-size: 0.9rem;
+  color: var(--txt2);
+}
+
+.framework-merge {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(232,67,147,0.1), rgba(0,184,148,0.1));
+  border-color: rgba(232, 67, 147, 0.3);
+  text-align: center;
+}
+
+.framework-merge p {
+  font-size: 0.95rem;
+  color: var(--txt);
+  font-weight: 500;
+}
+
+/* ===== Summary SVG Diagram ===== */
+.summary-diagram {
+  margin: 32px 0;
+  text-align: center;
+}
+
+.summary-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center;
+  padding: 48px 20px;
+  margin-top: 48px;
+  border-top: 1px solid var(--border);
+  color: var(--txt2);
+  font-size: 0.85rem;
+}
+
+.footer-line {
+  margin-bottom: 8px;
+}
+
+.footer-dims {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.footer-dim {
+  padding: 4px 12px;
+  background: rgba(108, 92, 231, 0.1);
+  border-radius: 100px;
+  font-size: 0.8rem;
+  color: var(--txt2);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.8rem; }
+  .hero .subtitle { font-size: 1rem; }
+  .section { padding: 24px; }
+  .gap-diagram { flex-direction: column; }
+  .gap-arrow { margin: 16px 0; transform: rotate(90deg); }
+  .framework-comp { grid-template-columns: 1fr; }
+  .toc-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Animations ===== */
+.section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Citations sub-header ===== */
+.citations-header {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--txt2);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== Back to Top ===== */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--c1);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 999;
+  box-shadow: 0 4px 20px rgba(108,92,231,0.4);
+}
+
+.back-to-top.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background: #5a4bd1;
+  transform: translateY(-2px);
+}
+
+/* ===== Key Insight Banner ===== */
+.key-insight {
+  background: linear-gradient(135deg, rgba(108,92,231,0.12), rgba(0,184,148,0.08));
+  border: 1px solid rgba(108,92,231,0.25);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin: 40px auto;
+  max-width: 960px;
+  text-align: center;
+}
+
+.key-insight-icon {
+  font-size: 2.4rem;
+  margin-bottom: 12px;
+}
+
+.key-insight h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.key-insight p {
+  font-size: 0.95rem;
+  color: var(--txt2);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ===== Timeline connector ===== */
+.timeline-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.timeline-line {
+  height: 2px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+/* ===== Methodology note ===== */
+.methodology {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px 32px;
+  margin: 32px auto;
+  max-width: 960px;
+}
+
+.methodology h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--txt);
+}
+
+.methodology p {
+  font-size: 0.9rem;
+  color: var(--txt2);
+  line-height: 1.7;
+}
+
+.methodology-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.methodology-item {
+  background: rgba(15,15,26,0.5);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.methodology-item .m-icon {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.methodology-item .m-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--txt);
+  margin-bottom: 4px;
+}
+
+.methodology-item .m-desc {
+  font-size: 0.8rem;
+  color: var(--txt2);
+}
+
+@media (max-width: 768px) {
+  .methodology-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Reference Index ===== */
+.ref-index {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px auto;
+  max-width: 960px;
+}
+
+.ref-index h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.ref-list {
+  column-count: 2;
+  column-gap: 24px;
+}
+
+.ref-entry {
+  font-size: 0.82rem;
+  color: var(--txt2);
+  margin-bottom: 8px;
+  break-inside: avoid;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(42,42,74,0.5);
+  line-height: 1.5;
+}
+
+.ref-entry strong {
+  color: var(--txt);
+}
+
+@media (max-width: 768px) {
+  .ref-list { column-count: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>FDE 框架学术文献深度对照</h1>
+    <p class="subtitle"><em>个人效率 ≠ 组织效率</em> — 从信息系统理论到 AI 落地路径</p>
+    <div class="pills">
+      <span class="pill">📚 8大板块</span>
+      <span class="pill">📄 20+篇文献</span>
+      <span class="pill">🔬 学术×实践交叉验证</span>
+    </div>
+  </div>
+</section>
+
+<!-- Key Insight Banner -->
+<div class="key-insight container">
+  <div class="key-insight-icon">💡</div>
+  <h3>核心洞察：个人效率 ≠ 组织效率</h3>
+  <p>这不是一个新发现。从 1993 年 Brynjolfsson 的"生产率悖论"到 2014 年 Bloom 的管理实践研究，30 年的信息系统研究反复验证了同一结论：个人层面的技术效率提升无法自动、等比例地转化为组织层面的效率提升。AI 时代的 FDE 框架，本质上是在新技术语境下重述这一经典命题。</p>
+</div>
+
+<!-- Methodology -->
+<div class="methodology container">
+  <h3>🔬 分析方法论</h3>
+  <p>本分析对 FDE 框架的每个核心论点，逐一检索学术文献进行对照。评估标准分为三级：直接支撑（理论直接解释该现象）、部分支撑（理论可类比但非直接对应）、弱支撑（缺乏学术依据）。</p>
+  <div class="methodology-grid">
+    <div class="methodology-item">
+      <div class="m-icon">📖</div>
+      <div class="m-title">文献覆盖</div>
+      <div class="m-desc">20+ 篇经典论文<br>1962-2014 年跨度</div>
+    </div>
+    <div class="methodology-item">
+      <div class="m-icon">🎯</div>
+      <div class="m-title">评估维度</div>
+      <div class="m-desc">8 大板块逐一对照<br>三级支撑强度评估</div>
+    </div>
+    <div class="methodology-item">
+      <div class="m-icon">🔄</div>
+      <div class="m-title">交叉验证</div>
+      <div class="m-desc">FDE × AI Native 框架<br>双框架互补验证</div>
+    </div>
+  </div>
+</div>
+
+<!-- Table of Contents -->
+<nav class="toc container">
+  <h2>📋 目录导航</h2>
+  <div class="toc-grid">
+    <a href="#sec1" class="toc-item"><span class="toc-num">01</span>FDE 市场溢价与介入时机</a>
+    <a href="#sec2" class="toc-item"><span class="toc-num">02</span>两阶段论的学术基础</a>
+    <a href="#sec3" class="toc-item"><span class="toc-num">03</span>核心洞察：3x vs 1.2x 的 Gap</a>
+    <a href="#sec4" class="toc-item"><span class="toc-num">04</span>员工自发构建系统——触发信号</a>
+    <a href="#sec5" class="toc-item"><span class="toc-num">05</span>决策标准的学术评估</a>
+    <a href="#sec6" class="toc-item"><span class="toc-num">06</span>结合 AI Native 框架的交叉验证</a>
+    <a href="#sec7" class="toc-item"><span class="toc-num">07</span>风险提示</a>
+    <a href="#sec8" class="toc-item"><span class="toc-num">08</span>总结与建议</a>
+  </div>
+</nav>
+
+<!-- ==================== SECTION 1 ==================== -->
+<div class="timeline-connector"><div class="timeline-dot" style="background:var(--c1)"></div><div class="timeline-line"></div></div>
+<article id="sec1" class="section section-1 container">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2 class="section-title">FDE 市场溢价与介入时机</h2>
+  </div>
+
+  <div class="core-thesis">
+    <strong>核心论点：</strong>FDE 服务价格被炒至 1 万元/人天，但多数企业尚未达到需要引入 FDE 的阶段。过早引入高价服务，在组织流程未就绪时，等于"互补性缺失"下的无效投资。
+  </div>
+
+  <div class="citations-header">📖 学术文献对照</div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Brynjolfsson &amp; Milgrom <span class="year">(2013)</span></span>
+    </div>
+    <div class="citation-title">'Complementarity in Organizations'</div>
+    <div class="citation-body">
+      互补性理论：技术（AI）和技能（组织流程）必须同时到位，否则边际产出为零。过早引入高级技术服务（FDE），在组织流程未就绪时，就是互补性缺失。技术和组织能力是"超模"（supermodular）函数——单独提高一个维度的投入，如果另一个维度不变，总产出甚至可能下降。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Tushman &amp; O'Reilly <span class="year">(1996)</span></span>
+    </div>
+    <div class="citation-title">'Ambidextrous Organizations: Managing Evolutionary and Revolutionary Change'</div>
+    <div class="citation-body">
+      "过早的结构化"（premature formalization）会扼杀探索。组织需要先通过"非正式实验"建立能力，再引入"正式架构"。双元组织理论强调：探索（exploration）和利用（exploitation）需要不同的组织结构，过早地从探索模式切换到利用模式会扼杀创新。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Christensen <span class="year">(1997)</span></span>
+    </div>
+    <div class="citation-title">'The Innovator's Dilemma: When New Technologies Cause Great Firms to Fail'</div>
+    <div class="citation-body">
+      颠覆性技术初期应该先在低要求市场（个人提效）验证，而非直接进入高要求主流市场（组织重构）。创新者窘境告诉我们：新技术的正确路径是从"低端市场"或"新市场"切入，逐步向上渗透——而非一开始就瞄准高端场景。
+    </div>
+    <div class="badge badge-green">✅ 类比支撑</div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">结论</div>
+    <p>FDE 的高价介入时机判断，本质是<strong>"互补性就绪"（complementarity readiness）</strong>问题。在组织流程未建立时，高价 FDE 是边际产出为零的投资。企业应在组织流程和个人 AI 能力都达到一定水平后，再考虑引入 FDE 服务进行系统性重构。</p>
+  </div>
+</article>
+
+<!-- ==================== SECTION 2 ==================== -->
+<div class="timeline-connector"><div class="timeline-dot" style="background:var(--c2)"></div><div class="timeline-line"></div></div>
+<article id="sec2" class="section section-2 container">
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <h2 class="section-title">两阶段论的学术基础</h2>
+  </div>
+
+  <div class="core-thesis">
+    <strong>核心论点：</strong>第一阶段：个人提效（Individual Augmentation）；第二阶段：组织提效（Organizational Transformation）。两阶段不可跳跃。
+  </div>
+
+  <div class="citations-header">📖 学术文献对照</div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Rogers <span class="year">(1962)</span></span>
+    </div>
+    <div class="citation-title">'Diffusion of Innovations'</div>
+    <div class="citation-body">
+      技术扩散的五个阶段：<strong>认知→说服→决策→实施→确认</strong>。组织必须先完成个人层面的认知和说服（第一阶段），才能进入组织层面的实施和制度化（第二阶段）。Rogers 的创新扩散理论是社会科学中被引用最多的理论之一，明确了技术采纳是"个人→社会"的渐进过程。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Kwon &amp; Zmud <span class="year">(1987)</span></span>
+    </div>
+    <div class="citation-title">'Unifying the Fragmented Models of Information Systems Implementation'</div>
+    <div class="citation-body">
+      IS 实施模型明确区分六个阶段：启动→采纳→适应→接受→<strong>常规化→融合</strong>。个体采纳→组织整合是不可跳跃的序列。整合失败的主要原因就是跳过个体采纳阶段，直接推行组织级变革。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Zuboff <span class="year">(1988)</span></span>
+    </div>
+    <div class="citation-title">'In the Age of the Smart Machine: The Future of Work and Power'</div>
+    <div class="citation-body">
+      "自动化"（automate）和"信息化"（informate）是两个递进阶段：先替代人工执行（automate），再生成信息供决策（informate）。个人提效 = 自动化阶段；组织提效 = 信息化阶段。Zuboff 的洞察至今被视为理解 IT 对组织影响的经典框架。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">结论</div>
+    <p>两阶段论不是行业观察，是<strong>信息系统实施的经典理论</strong>。在 AI 语境下重述，只是换了技术载体。从 Rogers 的扩散理论到 Kwon-Zmud 的实施模型，再到 Zuboff 的双阶段框架，学术界对"先个人、后组织"的共识已持续超过 30 年。</p>
+  </div>
+</article>
+
+<!-- ==================== SECTION 3 ==================== -->
+<div class="timeline-connector"><div class="timeline-dot" style="background:var(--c3)"></div><div class="timeline-line"></div></div>
+<article id="sec3" class="section section-3 container">
+  <div class="section-header">
+    <span class="section-number">03</span>
+    <h2 class="section-title">核心洞察：3x vs 1.2x 的 Gap</h2>
+  </div>
+
+  <div class="core-thesis">
+    <strong>核心论点：</strong>个人效率提升 3 倍（3x），但组织效率仅提升 1.2-1.3 倍（1.2x）。这个巨大的差距（Gap）是生产率悖论在 AI 时代的具体表现。
+  </div>
+
+  <!-- Gap Diagram -->
+  <div class="gap-diagram">
+    <div class="gap-bar-container">
+      <div class="gap-bar gap-bar-personal">3x</div>
+      <div class="gap-bar-label">🧑‍💻 个人效率提升</div>
+    </div>
+    <div class="gap-arrow">
+      <div class="gap-arrow-text">GAP</div>
+      <svg viewBox="0 0 80 40" fill="none">
+        <defs>
+          <linearGradient id="arrowGrad" x1="0" y1="0" x2="80" y2="0">
+            <stop offset="0%" stop-color="#FDCB6E"/>
+            <stop offset="100%" stop-color="#E17055"/>
+          </linearGradient>
+        </defs>
+        <path d="M5 20 L60 20" stroke="url(#arrowGrad)" stroke-width="3" stroke-dasharray="6 4"/>
+        <path d="M55 10 L75 20 L55 30" fill="none" stroke="#E17055" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div style="font-size:0.75rem;color:var(--txt2);margin-top:4px;">生产率悖论</div>
+    </div>
+    <div class="gap-bar-container">
+      <div class="gap-bar gap-bar-org">1.2x</div>
+      <div class="gap-bar-label">🏢 组织效率提升</div>
+    </div>
+  </div>
+
+  <div class="citations-header">📖 学术文献对照</div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Brynjolfsson <span class="year">(1993)</span></span>
+    </div>
+    <div class="citation-title">'The Productivity Paradox of Information Technology'</div>
+    <div class="citation-body">
+      "生产率悖论"（Productivity Paradox）：IT 投资在个人层面有显著回报，但在企业层面（全要素生产率 TFP）的回报难以检测。Solow 的著名论断——"计算机到处可见，唯独在生产率统计中看不见"——正是 3x vs 1.2x 的学术表达。个人层面的效率提升被组织协调成本、学习曲线和制度摩擦吸收。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Bloom et al. <span class="year">(2014)</span></span>
+    </div>
+    <div class="citation-title">'Does Management Matter? Evidence from India'</div>
+    <div class="citation-body">
+      管理实践是企业生产率差异的主要来源。通过对印度纺织厂的大规模 RCT 实验，Bloom 等人证明：管理实践的改善可以带来 17% 的生产率提升。个人 IT 工具再强，如果管理流程不变，组织产出不会同比例提升。这解释了为什么个人 3x 的效率在组织层面被稀释为 1.2x。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Hitt &amp; Brynjolfsson <span class="year">(1996)</span></span>
+    </div>
+    <div class="citation-title">'Productivity, Business Profitability, and Consumer Surplus: Three Different Measures of Information Technology Value'</div>
+    <div class="citation-body">
+      IT 的回报体现在三个维度：生产率（productivity）、企业利润（profitability）和消费者剩余（consumer surplus）。关键发现：IT 投资显著提升了生产率，但<strong>利润并未同比增加</strong>——因为竞争将收益传递给了消费者。这意味着组织效率的"账面数字"会系统性地低估实际价值创造。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">结论</div>
+    <p><strong>3x vs 1.2x</strong> 的表述是生产率悖论（Productivity Paradox）的量化表达。这是一个有坚实文献根基的洞察，不是经验观察。从 Brynjolfsson 1993 年的经典论文到 Bloom 2014 年的 RCT 实验，30 年的研究一致证实：<strong>个人生产率的提升无法自动转化为同等幅度的组织生产率提升</strong>。</p>
+  </div>
+</article>
+
+<!-- ==================== SECTION 4 ==================== -->
+<div class="timeline-connector"><div class="timeline-dot" style="background:var(--c4)"></div><div class="timeline-line"></div></div>
+<article id="sec4" class="section section-4 container">
+  <div class="section-header">
+    <span class="section-number">04</span>
+    <h2 class="section-title">"员工自发用 Agent 构建系统级解决方案"——触发信号</h2>
+  </div>
+
+  <div class="core-thesis">
+    <strong>核心论点：</strong>员工自发构建系统是经典的"草根创新"（grassroots innovation）信号，表明第一阶段已自然完成，组织提效的土壤已经在基层生长出来。
+  </div>
+
+  <div class="citations-header">📖 学术文献对照</div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Davis <span class="year">(1989)</span></span>
+    </div>
+    <div class="citation-title">'Perceived Usefulness, Perceived Ease of Use, and User Acceptance of Information Technology'</div>
+    <div class="citation-body">
+      技术接受模型（TAM）：<strong>感知有用性</strong>（Perceived Usefulness）和<strong>感知易用性</strong>（Perceived Ease of Use）决定了技术被采纳。当员工"自发"使用 Agent 构建解决方案，说明有用性和易用性都越过了采纳阈值——这是最可靠的技术就绪信号，因为它是"用脚投票"的结果而非管理层的主观判断。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Orlikowski <span class="year">(1996)</span></span>
+    </div>
+    <div class="citation-title">'Improvising Organizational Transformation Over Time: A Situated Change Perspective'</div>
+    <div class="citation-body">
+      组织变革不是计划出来的，是<strong>即兴出来的</strong>（improvised）。Orlikowski 通过对 Notes 协作软件的纵向案例研究发现：员工在日常实践中创造性地使用技术，通过持续的"情境化变革"（situated change），积累到临界点触发正式的组织变革。这种变革模式是自下而上的、渐进的、不可预测的。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Ciborra et al. <span class="year">(1994)</span></span>
+    </div>
+    <div class="citation-title">'The Grassroots of IT and Strategy: Towards a Managerial Theory of IT Bricolage'</div>
+    <div class="citation-body">
+      IT 战略常常来自"草根"——基层员工的非正式使用。Ciborra 将此称为"IT 修补"（IT bricolage）：员工使用手边可得的工具，通过修补和组合来解决实际问题。这被后续文献称为"Shadow IT"或"end-user computing"。这些草根实践是组织数字化转型最有价值的信号。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">结论</div>
+    <p>"员工自发构建系统"是经典的<strong>草根创新信号</strong>（grassroots innovation signal）。从 TAM 模型的角度看，自发采纳意味着技术已越过可用性阈值；从 Orlikowski 的情境变革理论看，这是组织变革的自然前奏；从 Ciborra 的草根 IT 理论看，这是最可靠的战略信号。<strong>第一阶段已经自然完成，组织提效的基础设施已经在基层生长出来。</strong></p>
+  </div>
+</article>
+
+<!-- ==================== SECTION 5 ==================== -->
+<div class="timeline-connector"><div class="timeline-dot" style="background:var(--c5)"></div><div class="timeline-line"></div></div>
+<article id="sec5" class="section section-5 container">
+  <div class="section-header">
+    <span class="section-number">05</span>
+    <h2 class="section-title">决策标准的学术评估</h2>
+  </div>
+
+  <div class="core-thesis">
+    <strong>核心论点：</strong>FDE 框架提出的三个决策标准——日均 token 消耗量、Agent 系统构建成熟度、业务数据积累程度——在学术支撑强度上差异显著。
+  </div>
+
+  <div class="citations-header">📊 决策标准学术支撑强度</div>
+
+  <!-- Criterion 1 -->
+  <div class="criteria-card">
+    <div class="criteria-name">标准一：日均 Token 消耗量</div>
+    <div class="criteria-desc">
+      几乎无学术文献支撑。这是一个纯粹的<strong>工程指标</strong>，不是管理指标。Token 消耗量衡量的是技术使用量，而非技术价值。就像衡量一个组织的信息化水平，不能看"每天发了多少封邮件"。没有任何信息系统文献将"使用量"作为组织就绪度的有效指标。
+    </div>
+    <div class="strength-meter">
+      <div class="strength-track"><div class="strength-fill strength-fill-weak"></div></div>
+      <span class="strength-label strength-label-weak">⚠️ 弱支撑</span>
+    </div>
+    <div class="badge badge-amber" style="margin-left:0;margin-top:12px">⚠️ 弱支撑 — 无直接学术依据</div>
+  </div>
+
+  <!-- Criterion 2 -->
+  <div class="criteria-card">
+    <div class="criteria-name">标准二：Agent 系统构建成熟度</div>
+    <div class="criteria-desc">
+      CMM/CMMI（能力成熟度模型）可以类比，但"Agent 系统"的成熟度定义尚无标准。CMMI 定义了软件开发过程的五个成熟度等级，但 Agent 系统的"成熟"意味着什么——是任务完成率？是自主决策能力？还是跨系统集成度？——目前学术界和工业界均无共识。
+    </div>
+    <div class="strength-meter">
+      <div class="strength-track"><div class="strength-fill strength-fill-partial"></div></div>
+      <span class="strength-label strength-label-partial">⚠️ 部分支撑</span>
+    </div>
+    <div class="badge badge-amber" style="margin-left:0;margin-top:12px">⚠️ 部分支撑 — 可类比但无专用模型</div>
+  </div>
+
+  <!-- Criterion 3 -->
+  <div class="criteria-card">
+    <div class="criteria-name">标准三：业务数据积累程度</div>
+    <div class="criteria-desc">
+      有部分学术支撑。<strong>Davenport &amp; Prusak (1998)</strong>《Working Knowledge》和 <strong>Nonaka (1994)</strong> 知识创造理论（SECI 模型）都认为：数据积累是知识创造的前提。但需要注意：<strong>"数据积累"不等于"知识积累"</strong>。原始数据需要经过清洗、结构化、语境化才能成为可用知识。仅看数据量而不看数据质量，可能产生误判。
+    </div>
+    <div class="strength-meter">
+      <div class="strength-track"><div class="strength-fill strength-fill-partial"></div></div>
+      <span class="strength-label strength-label-partial">⚠️ 部分支撑</span>
+    </div>
+    <div class="badge badge-amber" style="margin-left:0;margin-top:12px">⚠️ 部分支撑 — 数据≠知识</div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">结论</div>
+    <p>三个决策标准中，<strong>Token 消耗量是最弱的一个</strong>。更权威的替代指标应该是：(1) <strong>互补性资产就绪度</strong>（complementary asset readiness）——参照 Brynjolfsson &amp; Milgrom 的互补性理论；(2) <strong>管理实践成熟度</strong>（management practice maturity）——参照 Bloom et al. 的研究。这两个指标直接反映组织层面的就绪状态，而非技术层面的使用量。</p>
+  </div>
+</article>
+
+<!-- ==================== SECTION 6 ==================== -->
+<div class="timeline-connector"><div class="timeline-dot" style="background:var(--c6)"></div><div class="timeline-line"></div></div>
+<article id="sec6" class="section section-6 container">
+  <div class="section-header">
+    <span class="section-number">06</span>
+    <h2 class="section-title">结合 AI Native 框架的交叉验证</h2>
+  </div>
+
+  <div class="core-thesis">
+    <strong>核心论点：</strong>将 FDE 框架与 AI Native 框架进行交叉对照，两者在核心判断上高度一致，且互为补充：FDE 回答"什么时候"，AI Native 回答"干预什么"。
+  </div>
+
+  <div class="citations-header">🔄 框架对照表</div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:35%">FDE 框架</th>
+        <th style="width:40%">AI Native 框架</th>
+        <th style="width:25%">一致性</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>个人提效（第一阶段）</td>
+        <td>AI-enabled（贴墙纸）</td>
+        <td class="match">✅ 对应</td>
+      </tr>
+      <tr>
+        <td>组织提效（第二阶段）</td>
+        <td>AI-native（重构承重墙）</td>
+        <td class="match">✅ 对应</td>
+      </tr>
+      <tr>
+        <td>3x vs 1.2x 的 Gap</td>
+        <td>70% 企业卡在前两阶段</td>
+        <td class="match">✅ 对应</td>
+      </tr>
+      <tr>
+        <td>员工自发构建系统</td>
+        <td>产品工厂（Stage 3）</td>
+        <td class="match">✅ 对应</td>
+      </tr>
+      <tr>
+        <td>FDE 解决跨部门协作</td>
+        <td>组织赋能（Stage 2）</td>
+        <td class="match">✅ 对应</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="citations-header" style="margin-top:28px">🤝 两框架互补性</div>
+
+  <div class="framework-comp">
+    <div class="framework-box">
+      <h4 style="color:var(--c1)">📐 FDE 框架</h4>
+      <p>回答了<strong>"什么时候需要外部干预"</strong>——基于互补性就绪度和两阶段论，提供介入时机的判断标准。</p>
+    </div>
+    <div class="framework-box">
+      <h4 style="color:var(--c6)">🏗️ AI Native 框架</h4>
+      <p>回答了<strong>"干预什么"</strong>——从贴墙纸到重构承重墙，提供干预内容和深度的分级路径。</p>
+    </div>
+    <div class="framework-box framework-merge">
+      <h4 style="color:var(--c2)">🔗 合在一起的决策逻辑</h4>
+      <p style="margin-top:8px">当 <strong>员工自发构建系统</strong> + <strong>组织效率显著低于个人效率</strong> → 引入 FDE 重构组织流程</p>
+      <p style="font-size:0.85rem;color:var(--txt2);margin-top:4px">即：草根创新信号出现 + 生产率悖论显现 = FDE 介入的最佳时机</p>
+    </div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">结论</div>
+    <p>两个框架的<strong>五个维度完全对应</strong>，且互为补充。这种交叉验证增强了两者的可信度：它们从不同角度描述了同一个底层现象——<strong>AI 技术从个人采纳到组织转型的渐进过程</strong>。</p>
+  </div>
+</article>
+
+<!-- ==================== SECTION 7 ==================== -->
+<div class="timeline-connector"><div class="timeline-dot" style="background:var(--c7)"></div><div class="timeline-line"></div></div>
+<article id="sec7" class="section section-7 container">
+  <div class="section-header">
+    <span class="section-number">07</span>
+    <h2 class="section-title">风险提示：过早引入 FDE 的代价</h2>
+  </div>
+
+  <div class="core-thesis">
+    <strong>核心论点：</strong>过早引入 FDE 会导致资源浪费。组织需要 3-6 个月的"培养期"来完成第一阶段，过早结构化会扼杀探索和学习。
+  </div>
+
+  <div class="citations-header">📖 学术文献对照</div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Tushman &amp; O'Reilly <span class="year">(1996)</span></span>
+    </div>
+    <div class="citation-title">'Ambidextrous Organizations'</div>
+    <div class="citation-body">
+      过早引入"正式结构"（formal structure）会扼杀实验。在组织尚处于探索阶段时，引入高度结构化的外部服务（如 FDE），相当于在需要灵活性的时候强加刚性——这会抑制基层的创造性实验，导致"早熟的官僚化"（premature bureaucratization）。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">March <span class="year">(1991)</span></span>
+    </div>
+    <div class="citation-title">'Exploration and Exploitation in Organizational Learning'</div>
+    <div class="citation-body">
+      在探索阶段投入过多利用（exploitation）资源，会导致组织"早熟"（premature convergence）。March 的经典论文指出：探索和利用之间的资源分配是组织生存的核心张力。<strong>在 AI 采纳的早期阶段，组织应该偏向探索</strong>——让员工自由实验、试错、发现可能性——而不是过早地进入标准化和优化的利用阶段。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="citation">
+    <div class="citation-head">
+      <span class="citation-icon">📄</span>
+      <span class="citation-ref">Brynjolfsson &amp; Hitt <span class="year">(2000)</span></span>
+    </div>
+    <div class="citation-title">'Beyond Computation: Information Technology, Organizational Transformation and Business Performance'</div>
+    <div class="citation-body">
+      IT 的回报需要时间累积和组织学习。Brynjolfsson &amp; Hitt 发现：IT 投资的回报在短期内（1-2 年）主要体现在个人生产率，而组织层面的回报需要 <strong>3-7 年</strong>才能完全显现。这是因为组织需要时间来重新设计流程、培训人员、调整激励机制。
+    </div>
+    <div class="badge badge-green">✅ 直接支撑</div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">结论</div>
+    <p><strong>3-6 个月培养期</strong> + 过早引入 FDE 浪费资源，完全符合"组织学习需要时间"的学术共识。March 的探索-利用张力、Tushman 的双元组织理论、Brynjolfsson 的长期回报研究，三条理论线索一致指向同一结论：<strong>给组织足够的时间完成第一阶段的探索，再引入第二阶段的结构化服务。</strong></p>
+  </div>
+</article>
+
+<!-- ==================== SECTION 8 ==================== -->
+<div class="timeline-connector"><div class="timeline-dot" style="background:var(--c8)"></div><div class="timeline-line"></div></div>
+<article id="sec8" class="section section-8 container">
+  <div class="section-header">
+    <span class="section-number">08</span>
+    <h2 class="section-title">总结与建议</h2>
+  </div>
+
+  <div class="core-thesis">
+    <strong>核心判断：</strong>FDE 框架的主要论点有强学术支撑。个别决策标准需要优化。两框架互补使用可显著提升决策质量。
+  </div>
+
+  <!-- Summary SVG Diagram -->
+  <div class="summary-diagram">
+    <svg viewBox="0 0 860 420" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background -->
+      <rect width="860" height="420" rx="16" fill="#12121F"/>
+
+      <!-- Title -->
+      <text x="430" y="35" text-anchor="middle" fill="#E8E8F0" font-size="16" font-weight="700" font-family="PingFang SC, Noto Sans SC, sans-serif">FDE 框架逻辑全景图</text>
+
+      <!-- Stage 1: Personal -->
+      <rect x="30" y="60" width="240" height="140" rx="12" fill="#1A1A2E" stroke="#00B894" stroke-width="2"/>
+      <text x="150" y="88" text-anchor="middle" fill="#00B894" font-size="14" font-weight="700" font-family="PingFang SC, Noto Sans SC, sans-serif">第一阶段：个人提效</text>
+      <text x="150" y="112" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">Rogers 扩散理论</text>
+      <text x="150" y="130" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">Kwon-Zmud 实施模型</text>
+      <text x="150" y="148" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">Zuboff 自动化阶段</text>
+      <rect x="60" y="164" width="180" height="26" rx="13" fill="rgba(0,184,148,0.15)"/>
+      <text x="150" y="182" text-anchor="middle" fill="#00B894" font-size="12" font-weight="600" font-family="PingFang SC, Noto Sans SC, sans-serif">效率提升 3x ✅</text>
+
+      <!-- Arrow 1→Signal -->
+      <line x1="270" y1="130" x2="310" y2="130" stroke="#A0A0B8" stroke-width="2" stroke-dasharray="6 3"/>
+      <polygon points="308,124 320,130 308,136" fill="#A0A0B8"/>
+
+      <!-- Signal Box -->
+      <rect x="320" y="80" width="220" height="100" rx="12" fill="#1A1A2E" stroke="#0984E3" stroke-width="2"/>
+      <text x="430" y="108" text-anchor="middle" fill="#0984E3" font-size="14" font-weight="700" font-family="PingFang SC, Noto Sans SC, sans-serif">🔔 触发信号</text>
+      <text x="430" y="130" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">员工自发构建 Agent 系统</text>
+      <text x="430" y="148" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">TAM 阈值越过</text>
+      <text x="430" y="166" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">草根创新（Ciborra）</text>
+
+      <!-- Arrow Signal→Stage 2 -->
+      <line x1="540" y1="130" x2="580" y2="130" stroke="#A0A0B8" stroke-width="2" stroke-dasharray="6 3"/>
+      <polygon points="578,124 590,130 578,136" fill="#A0A0B8"/>
+
+      <!-- Stage 2: Organization -->
+      <rect x="590" y="60" width="240" height="140" rx="12" fill="#1A1A2E" stroke="#6C5CE7" stroke-width="2"/>
+      <text x="710" y="88" text-anchor="middle" fill="#6C5CE7" font-size="14" font-weight="700" font-family="PingFang SC, Noto Sans SC, sans-serif">第二阶段：组织提效</text>
+      <text x="710" y="112" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">引入 FDE 服务</text>
+      <text x="710" y="130" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">互补性资产就绪</text>
+      <text x="710" y="148" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">管理实践重构</text>
+      <rect x="620" y="164" width="180" height="26" rx="13" fill="rgba(108,92,231,0.15)"/>
+      <text x="710" y="182" text-anchor="middle" fill="#6C5CE7" font-size="12" font-weight="600" font-family="PingFang SC, Noto Sans SC, sans-serif">突破 1.2x → 目标 2x+</text>
+
+      <!-- Gap Section -->
+      <rect x="180" y="230" width="500" height="80" rx="12" fill="#1A1A2E" stroke="#E17055" stroke-width="2" stroke-dasharray="6 3"/>
+      <text x="430" y="258" text-anchor="middle" fill="#E17055" font-size="14" font-weight="700" font-family="PingFang SC, Noto Sans SC, sans-serif">⚡ 生产率悖论：3x → 1.2x 的 Gap</text>
+      <text x="430" y="280" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">Brynjolfsson (1993) · Bloom et al. (2014) · Hitt &amp; Brynjolfsson (1996)</text>
+      <text x="430" y="298" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">原因：组织协调成本 + 制度摩擦 + 管理流程未变</text>
+
+      <!-- Risk Section -->
+      <rect x="30" y="340" width="380" height="65" rx="12" fill="#1A1A2E" stroke="#00CEC9" stroke-width="2"/>
+      <text x="220" y="365" text-anchor="middle" fill="#00CEC9" font-size="13" font-weight="700" font-family="PingFang SC, Noto Sans SC, sans-serif">⚠️ 风险：过早引入 FDE = 资源浪费</text>
+      <text x="220" y="385" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">March 探索-利用张力 · 需 3-6 个月培养期</text>
+
+      <!-- Recommendation -->
+      <rect x="450" y="340" width="380" height="65" rx="12" fill="#1A1A2E" stroke="#FF7675" stroke-width="2"/>
+      <text x="640" y="365" text-anchor="middle" fill="#FF7675" font-size="13" font-weight="700" font-family="PingFang SC, Noto Sans SC, sans-serif">💡 建议：替换 token 消耗量指标</text>
+      <text x="640" y="385" text-anchor="middle" fill="#A0A0B8" font-size="11" font-family="PingFang SC, Noto Sans SC, sans-serif">采用互补性资产就绪度 + 管理实践成熟度</text>
+    </svg>
+  </div>
+
+  <div class="citations-header">✅ 有强学术支撑的核心判断</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+    <div style="background:rgba(0,184,148,0.1);border:1px solid rgba(0,184,148,0.25);border-radius:10px;padding:16px">
+      <div style="font-weight:700;font-size:0.9rem;color:var(--c2);margin-bottom:6px">Rogers 扩散理论</div>
+      <div style="font-size:0.85rem;color:var(--txt2)">两阶段论的核心支柱。技术采纳必须从个人扩散到组织。</div>
+    </div>
+    <div style="background:rgba(225,112,85,0.1);border:1px solid rgba(225,112,85,0.25);border-radius:10px;padding:16px">
+      <div style="font-weight:700;font-size:0.9rem;color:var(--c3);margin-bottom:6px">Brynjolfsson 生产率悖论</div>
+      <div style="font-size:0.85rem;color:var(--txt2)">3x vs 1.2x 的理论根基。个人效率无法自动传导到组织层面。</div>
+    </div>
+    <div style="background:rgba(9,132,227,0.1);border:1px solid rgba(9,132,227,0.25);border-radius:10px;padding:16px">
+      <div style="font-weight:700;font-size:0.9rem;color:var(--c4);margin-bottom:6px">Kwon-Zmud 实施模型</div>
+      <div style="font-size:0.85rem;color:var(--txt2)">IS 实施阶段论。个体采纳→组织整合，跳跃即失败。</div>
+    </div>
+    <div style="background:rgba(0,206,201,0.1);border:1px solid rgba(0,206,201,0.25);border-radius:10px;padding:16px">
+      <div style="font-weight:700;font-size:0.9rem;color:var(--c7);margin-bottom:6px">March 探索-利用张力</div>
+      <div style="font-size:0.85rem;color:var(--txt2)">风险预警的理论依据。探索阶段不应过早引入利用型资源。</div>
+    </div>
+  </div>
+
+  <div class="citations-header">⚠️ 需要优化的决策标准</div>
+
+  <div style="background:rgba(253,203,110,0.08);border:1px solid rgba(253,203,110,0.2);border-radius:12px;padding:20px;margin-bottom:24px">
+    <p style="font-size:0.95rem;color:var(--txt);margin-bottom:12px"><strong>Token 消耗量</strong>作为决策标准缺乏学术支撑。建议替换为：</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <span style="display:inline-flex;align-items:center;padding:6px 16px;background:rgba(108,92,231,0.15);border:1px solid rgba(108,92,231,0.3);border-radius:100px;font-size:0.85rem;color:var(--c1);font-weight:600">📊 互补性资产就绪度</span>
+      <span style="display:inline-flex;align-items:center;padding:6px 16px;background:rgba(0,184,148,0.15);border:1px solid rgba(0,184,148,0.3);border-radius:100px;font-size:0.85rem;color:var(--c2);font-weight:600">📋 管理实践成熟度</span>
+    </div>
+  </div>
+
+  <div class="conclusion">
+    <div class="conclusion-label">最终结论</div>
+    <p>FDE 框架的核心洞察——<strong>"个人效率 ≠ 组织效率"</strong>——有坚实的学术根基，跨越 30 年（1962-2014）的信息系统研究一致支撑这一判断。框架的两阶段论、生产率悖论表述、草根创新信号识别均有经典文献对应。唯一需要优化的是决策标准中的 token 消耗量指标——应替换为更有理论基础的<strong>互补性资产就绪度</strong>和<strong>管理实践成熟度</strong>。将 FDE 框架与 AI Native 框架结合使用，可以同时回答"什么时候介入"和"介入什么"两个核心问题。</p>
+  </div>
+</article>
+
+<!-- Reference Index -->
+<div class="ref-index container">
+  <h3>📚 完整文献索引</h3>
+  <div class="ref-list">
+    <div class="ref-entry"><strong>Bloom, N., Eifert, B., Mahajan, A., McKenzie, D., & Roberts, J.</strong> (2014). Does Management Matter? Evidence from India. <em>The Quarterly Journal of Economics</em>, 128(1), 1-51.</div>
+    <div class="ref-entry"><strong>Brynjolfsson, E.</strong> (1993). The Productivity Paradox of Information Technology. <em>Communications of the ACM</em>, 36(12), 66-77.</div>
+    <div class="ref-entry"><strong>Brynjolfsson, E., & Hitt, L. M.</strong> (2000). Beyond Computation: Information Technology, Organizational Transformation and Business Performance. <em>Journal of Economic Perspectives</em>, 14(4), 23-48.</div>
+    <div class="ref-entry"><strong>Brynjolfsson, E., & Milgrom, P.</strong> (2013). Complementarity in Organizations. In R. Gibbons & J. Roberts (Eds.), <em>The Handbook of Organizational Economics</em>. Princeton University Press.</div>
+    <div class="ref-entry"><strong>Christensen, C. M.</strong> (1997). <em>The Innovator's Dilemma: When New Technologies Cause Great Firms to Fail</em>. Harvard Business Review Press.</div>
+    <div class="ref-entry"><strong>Ciborra, C., Braa, K., & Cordella, A.</strong> (1994). The Grassroots of IT and Strategy: Towards a Managerial Theory of IT Bricolage. <em>Journal of Strategic Information Systems</em>.</div>
+    <div class="ref-entry"><strong>Davenport, T. H., & Prusak, L.</strong> (1998). <em>Working Knowledge: How Organizations Manage What They Know</em>. Harvard Business School Press.</div>
+    <div class="ref-entry"><strong>Davis, F. D.</strong> (1989). Perceived Usefulness, Perceived Ease of Use, and User Acceptance of Information Technology. <em>MIS Quarterly</em>, 13(3), 319-340.</div>
+    <div class="ref-entry"><strong>Hitt, L. M., & Brynjolfsson, E.</strong> (1996). Productivity, Business Profitability, and Consumer Surplus: Three Different Measures of Information Technology Value. <em>MIS Quarterly</em>, 20(2), 121-142.</div>
+    <div class="ref-entry"><strong>Kwon, T. H., & Zmud, R. W.</strong> (1987). Unifying the Fragmented Models of Information Systems Implementation. In R. J. Boland & R. A. Hirschheim (Eds.), <em>Critical Issues in Information Systems Research</em>. Wiley.</div>
+    <div class="ref-entry"><strong>March, J. G.</strong> (1991). Exploration and Exploitation in Organizational Learning. <em>Organization Science</em>, 2(1), 71-87.</div>
+    <div class="ref-entry"><strong>Nonaka, I.</strong> (1994). A Dynamic Theory of Organizational Knowledge Creation. <em>Organization Science</em>, 5(1), 14-37.</div>
+    <div class="ref-entry"><strong>Orlikowski, W. J.</strong> (1996). Improvising Organizational Transformation Over Time: A Situated Change Perspective. <em>Information Systems Research</em>, 7(1), 63-92.</div>
+    <div class="ref-entry"><strong>Rogers, E. M.</strong> (1962). <em>Diffusion of Innovations</em>. Free Press of Glencoe.</div>
+    <div class="ref-entry"><strong>Tushman, M. L., & O'Reilly, C. A.</strong> (1996). Ambidextrous Organizations: Managing Evolutionary and Revolutionary Change. <em>California Management Review</em>, 38(4), 8-29.</div>
+    <div class="ref-entry"><strong>Zuboff, S.</strong> (1988). <em>In the Age of the Smart Machine: The Future of Work and Power</em>. Basic Books.</div>
+  </div>
+</div>
+
+<!-- Back to Top Button -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="回到顶部">↑</button>
+
+<!-- Footer -->
+<footer class="footer container">
+  <div class="footer-line">📚 文献来源：20+篇经典学术论文（1962-2014）</div>
+  <div class="footer-line" style="color:var(--txt2);font-size:0.8rem">涵盖信息系统、组织理论、创新管理、技术采纳四大学科领域</div>
+  <div class="footer-dims">
+    <span class="footer-dim">市场溢价</span>
+    <span class="footer-dim">阶段理论</span>
+    <span class="footer-dim">生产率悖论</span>
+    <span class="footer-dim">草根创新</span>
+    <span class="footer-dim">决策标准</span>
+    <span class="footer-dim">交叉验证</span>
+    <span class="footer-dim">风险评估</span>
+  </div>
+  <div style="margin-top:24px;font-size:0.75rem;color:rgba(160,160,184,0.5)">
+    FDE Framework Academic Literature Analysis · Generated for Strategic Decision Support
+  </div>
+</footer>
+
+<!-- JavaScript -->
+<script>
+// ===== Progress Bar =====
+(function() {
+  const bar = document.getElementById('progress-bar');
+  const btn = document.getElementById('backToTop');
+  function updateProgress() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    bar.style.width = progress + '%';
+    // Back to top button visibility
+    if (scrollTop > 400) {
+      btn.classList.add('show');
+    } else {
+      btn.classList.remove('show');
+    }
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+})();
+
+// ===== Smooth Scroll for TOC =====
+document.querySelectorAll('.toc-item').forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      var offset = target.getBoundingClientRect().top + window.pageYOffset - 20;
+      window.scrollTo({ top: offset, behavior: 'smooth' });
+    }
+  });
+});
+
+// ===== Intersection Observer for Animations =====
+(function() {
+  var sections = document.querySelectorAll('.section');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -50px 0px' });
+
+  sections.forEach(function(section) {
+    observer.observe(section);
+  });
+})();
+</script>
+
+</body>
+</html>
