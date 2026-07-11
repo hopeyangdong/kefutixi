@@ -524,7 +524,100 @@ Loop 2: 基于错误修正方案
   </div>
 
   <div class="card">
-    <h3>5.3 Self-Play：自我博弈的极致</h3>
+    <h3>5.3 为什么要分开“原理层”和“工程层”？</h3>
+
+    <p>上面三行定义看起来简单，但它底层撕开了一个关键误区——很多人认为 <strong>“自己优化” = “重新训练模型”</strong>。其实不是。让我用客服场景说清楚：</p>
+
+    <div class="code">
+原理层（Self-Improvement）：
+    → “怎么让 AI 能从自己的失误中学习变强？”
+    → 答案：设计一个“执行→评估→反思→优化”的循环。
+    → 这是理论架构，不管你用什么编程语言实现，不管你用什么模型。
+
+工程层（Loop）：
+    → “如何在产品里做一个持续运行的这个循环？”
+    → 答案：每天自动分析 5000 条工单→自动存入经验库→下次推理时自动检索→
+      运营周演示过后自动更新 prompt。
+    → 这是实现细节，每个团队的实现都不一样。</div>
+
+    <p>分开的好处是什么？理论层给你一个通用框架，工程层让你根据自己的业务场景灵活切换实现方案。比如客服团队可以用体验回放，编码团队可以用测试用例验马，教育团队可以用学生正确率反馈——但都套用同一套原理。</p>
+
+    <h4>📊 三层 Loop 机制 × 进化类型对照</h4>
+    <p>如果你学过《从 Prompt 到 Loop》六阶段课程，会知道 Loop 有三个层次。它们分别对应自进化课程中的两种进化类型：</p>
+
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:.9em">
+      <thead>
+        <tr style="border-bottom:2px solid var(--border)">
+          <th style="padding:10px 14px;text-align:left;color:var(--text)">Loop 层次</th>
+          <th style="padding:10px 14px;text-align:left;color:var(--text)">进化类型</th>
+          <th style="padding:10px 14px;text-align:left;color:var(--text)">改变的是什么</th>
+          <th style="padding:10px 14px;text-align:left;color:var(--text)">安全性</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:10px 14px;color:#74b9ff">🔵 Layer 1：经验回放</td>
+          <td style="padding:10px 14px"><strong style="color:var(--g7)">假进化</strong></td>
+          <td style="padding:10px 14px;color:var(--muted)">模型不变，经验库在增长</td>
+          <td style="padding:10px 14px;color:var(--g4)">✅ 可逆</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:10px 14px;color:#fdcb6e">🟡 Layer 2：自我优化</td>
+          <td style="padding:10px 14px"><strong style="color:var(--g7)">假进化</strong></td>
+          <td style="padding:10px 14px;color:var(--muted)">模型不变，prompt/流程/规则在改进</td>
+          <td style="padding:10px 14px;color:var(--g4)">✅ 可逆</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:10px 14px;color:#ff7675">🔴 Layer 3：技能涌现</td>
+          <td style="padding:10px 14px"><strong style="color:var(--g1)">假进化→真进化边缘</strong></td>
+          <td style="padding:10px 14px;color:var(--muted)">模型不变，但能力边界在扩展</td>
+          <td style="padding:10px 14px;color:var(--g5)">⚠️ 需要熔断</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>为什么这是好事？</strong> 假进化意味着：不用等 GPU 训练，不用担心模型改坏后回不去，不用求助算法工程师——一个业务业运就能做到 Layer 1和 Layer 2。</p>
+
+    <h4>💡 两个维度对照</h4>
+    <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:.9em">
+      <thead>
+        <tr style="border-bottom:2px solid var(--border)">
+          <th style="padding:10px 14px;text-align:left;color:var(--text)">维度</th>
+          <th style="padding:10px 14px;text-align:left;color:var(--text)">真进化（重新训练）</th>
+          <th style="padding:10px 14px;text-align:left;color:var(--text)">假进化（Loop的主要形态）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:10px 14px;color:var(--text)">迭代速度</td>
+          <td style="padding:10px 14px;color:var(--muted)">周级、月级</td>
+          <td style="padding:10px 14px;color:var(--g4)">秒级、分钟级</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:10px 14px;color:var(--text)">可逆性</td>
+          <td style="padding:10px 14px;color:var(--g1)">⚠️ 不可逆——权重改了回不去</td>
+          <td style="padding:10px 14px;color:var(--g4)">✅ 可逆——删掉经验库就恢复</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:10px 14px;color:var(--text)">可审计性</td>
+          <td style="padding:10px 14px;color:var(--muted)">差——权重不知道怎么改的</td>
+          <td style="padding:10px 14px;color:var(--g4)">好——每条经验看得见来源</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:10px 14px;color:var(--text)">成本</td>
+          <td style="padding:10px 14px;color:var(--muted)">极高（GPU 训练）</td>
+          <td style="padding:10px 14px;color:var(--g4)">极低（写个文件就能走）</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight hl-compare">
+      <strong>最佳实践</strong>：用假进化做快速迭代（记忆、技能、规则积累），用真进化做深度提升（等基座模型升级）。两者结合，而不是非此即彼。
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>5.4 Self-Play：自我博弈的极致</h3>
     <p>比 Loop 更激进的是 <strong>Self-Play</strong>（自我博弈），DeepMind 的 AlphaProof、AlphaGeometry 2 以及 OpenAI 的 o1 都在用这个范式：</p>
     <div class="code">
 第1步: 模型生成一个答案
@@ -541,7 +634,7 @@ Loop 2: 基于错误修正方案
   </div>
 
   <div class="card">
-    <h3>5.4 关系总结</h3>
+    <h3>5.5 关系总结</h3>
     <div class="svg-container">
       <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="max-width:660px;">
         <rect x="20" y="50" width="160" height="100" rx="12" fill="rgba(255,107,107,.1)" stroke="#ff6b6b" stroke-width="2"/>
