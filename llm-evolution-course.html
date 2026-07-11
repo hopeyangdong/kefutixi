@@ -118,10 +118,14 @@ body{font-family:-apple-system,'PingFang SC','Noto Sans SC','Microsoft YaHei',sa
 .ft{text-align:center;padding:36px 20px;color:var(--txt2);font-size:12px;border-top:1px solid var(--border);margin-top:36px;}
 
 /* fade */
-.fi{opacity:0;transform:translateY(20px);transition:all .5s ease-out;}
+.fi{opacity:0;transform:translateY(20px);transition:all .6s cubic-bezier(.22,1,.36,1);}
 .fi.vis{opacity:1;transform:translateY(0);}
+/* fallback: if JS fails or IntersectionObserver unsupported, show everything */
+.no-io .fi,.fi.vis{opacity:1;transform:none;}
 
 @media(max-width:640px){.ch{padding:36px 14px;}.blk{padding:18px;}.tb{font-size:11px;}.tb th,.tb td{padding:7px 9px;}}
+/* ensure print/reader-mode shows all content */
+@media print{.fi{opacity:1!important;transform:none!important;}}
 </style>
 </head>
 <body>
@@ -1107,10 +1111,9 @@ Output: 一段专业的客服回复（用用户的原始语言输出）
 </section>
 <!-- ============== 第4章：Agent 智能体 ============== -->
 <section class="ch fi" id="ch4">
-  <div class="ch-hd" style="background:linear-gradient(135deg,#0984E3,#74B9FF)">
-    <span class="ch-n">第四章</span>
-    <h2>Agent 智能体 <small>(2023-2024)</small></h2>
-    <p>让 AI 自己决定下一步做什么</p>
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,var(--c4d),var(--c4));">04</div>
+    <div><h2>Agent 智能体 <span class="ch-tag" style="background:rgba(9,132,227,.12);color:var(--c4l);">2023—2024</span></h2></div>
   </div>
 
   <div class="blk">
@@ -1563,10 +1566,9 @@ AI输出 → { "tool": "query_order", "parameters": { "order_id": "20250601001" 
 
 <!-- ============== 第5章：Harness 运行外骨骼 ============== -->
 <section class="ch fi" id="ch5">
-  <div class="ch-hd" style="background:linear-gradient(135deg,#F39C12,#FDCB6E)">
-    <span class="ch-n">第五章</span>
-    <h2>Harness 运行外骨骼 <small>(2025-2026)</small></h2>
-    <p>让 Agent 持续工作几小时甚至几天</p>
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,var(--c5d),var(--c5));">05</div>
+    <div><h2>Harness 运行外骨骼 <span class="ch-tag" style="background:rgba(243,156,18,.12);color:var(--c5l);">2025—2026</span></h2></div>
   </div>
 
   <div class="blk">
@@ -1849,10 +1851,9 @@ Initializer 的思考过程：
 
 <!-- ============== 第6章：Loop 自主循环 ============== -->
 <section class="ch fi" id="ch6">
-  <div class="ch-hd" style="background:linear-gradient(135deg,#E84393,#FD79A8)">
-    <span class="ch-n">第六章</span>
-    <h2>Loop 自主循环 <small>(2026)</small></h2>
-    <p>AI 自己决定什么时候开始、什么时候停下</p>
+  <div class="ch-hd">
+    <div class="ch-n" style="background:linear-gradient(135deg,var(--c6d),var(--c6));">06</div>
+    <div><h2>Loop 自主循环 <span class="ch-tag" style="background:rgba(232,67,147,.12);color:var(--c6l);">2026</span></h2></div>
   </div>
 
   <div class="blk">
@@ -2410,8 +2411,30 @@ Agent 自主将第2版话术部署到10%的真实流量中。
 
 <script>
 window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-window.innerHeight;document.getElementById('pb').style.width=(h>0?(scrollY/h)*100:0)+'%';});
-const ob=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis');});},{threshold:.08});
-document.querySelectorAll('.fi').forEach(e=>ob.observe(e));
+/* ===== Fade-in with IntersectionObserver — robust fallback ===== */
+(function(){
+  var els=document.querySelectorAll('.fi');
+  /* Fallback 1: if IO is not supported (very old browsers), show all immediately */
+  if(typeof IntersectionObserver==='undefined'){
+    document.documentElement.classList.add('no-io');
+    return;
+  }
+  /* Fallback 2: safety net — if any .fi is still invisible after 3s, force show */
+  var timer=setTimeout(function(){
+    els.forEach(function(e){e.classList.add('vis');});
+  },3000);
+  /* Use threshold:0 (any pixel visible = trigger) instead of 0.08 (8% area).
+     0.08 on very tall sections (400+ lines) may never fire on small viewports. */
+  var ob=new IntersectionObserver(function(entries){
+    entries.forEach(function(x){
+      if(x.isIntersecting){x.target.classList.add('vis');ob.unobserve(x.target);}
+    });
+  },{threshold:0, rootMargin:'200px 0px'});
+  els.forEach(function(e){ob.observe(e);});
+  /* Clear fallback timer once first observe fires (proves IO is working) */
+  var orig=ob.observe.bind(ob);
+  ob.observe=function(e){clearTimeout(timer);ob.observe=orig;return orig(e);};
+})();
 function qa(el,ok,id){const p=el.closest('.quiz'),os=p.querySelectorAll('.qo');os.forEach(o=>{o.style.pointerEvents='none';if(o===el)o.classList.add(ok?'ok':'no');});if(ok){document.getElementById(id).style.display='block';}else{const h=document.createElement('div');h.style.cssText='margin-top:6px;padding:6px 10px;border-radius:6px;background:rgba(225,112,85,.08);font-size:12px;color:#FAB1A0;';h.textContent='❌ 不对哦，再想想？';el.after(h);setTimeout(()=>{os.forEach(o=>{if(o!==el)o.style.pointerEvents='auto';});},600);}}
 </script>
 </body>
